@@ -1,7 +1,19 @@
 {
   "name": "admin-dileepa-dev",
   "version": "1.0.0",
+  "description": "Admin dashboard for managing personal website and API content.",
+  "author": {
+    "name": "Dileepa Bandara",
+    "email": "contact@dileepa.dev",
+    "url": "https://dileepa.dev"
+  },
   "private": true,
+  "license": "MIT",
+  "homepage": "https://admin.dileepa.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dileepadev/admin-dileepa-dev.git"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
