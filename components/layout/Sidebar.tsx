@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { logout } from "@/app/actions/auth";
 import {
   LayoutDashboard,
   User,
@@ -14,6 +15,7 @@ import {
   Users,
   Wrench,
   Settings,
+  LogOut,
 } from "lucide-react";
 
 const navigation = [
@@ -56,7 +58,7 @@ export function Sidebar({ className }: { className?: string }) {
           })}
         </nav>
       </div>
-      <div className="border-t p-4">
+      <div className="border-t p-4 space-y-1">
         <Link
           href="/settings"
           className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
@@ -64,7 +66,15 @@ export function Sidebar({ className }: { className?: string }) {
           <Settings className="h-4 w-4" />
           Settings
         </Link>
+        <button
+          onClick={() => logout()}
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-destructive hover:text-destructive-foreground"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign out
+        </button>
       </div>
     </div>
   );
 }
+
