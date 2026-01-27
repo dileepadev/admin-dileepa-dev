@@ -148,7 +148,7 @@ export function VideosList() {
               
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                <span>{new Date(video.date).toLocaleDateString()}</span>
+                <span>{video.date ? new Date(video.date).toISOString().slice(0,10) : ''}</span>
               </div>
               
               <div className="flex items-center gap-2">

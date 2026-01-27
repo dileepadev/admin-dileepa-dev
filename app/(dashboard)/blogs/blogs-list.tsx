@@ -149,7 +149,7 @@ export function BlogsList() {
 
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="h-4 w-4" />
-                <span>{new Date(blog.date).toLocaleDateString()}</span>
+                <span>{blog.date ? new Date(blog.date).toISOString().slice(0,10) : ''}</span>
               </div>
 
               <p className="text-sm text-muted-foreground line-clamp-2">

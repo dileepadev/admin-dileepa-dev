@@ -163,7 +163,7 @@ export function EventsList() {
               <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-1">
                   <Calendar className="h-4 w-4" />
-                  <span>{new Date(event.date).toLocaleDateString()}</span>
+                  <span>{event.date ? new Date(event.date).toISOString().slice(0,10) : ''}</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <MapPin className="h-4 w-4" />
