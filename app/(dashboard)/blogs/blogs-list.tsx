@@ -1,36 +1,43 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import {
   getBlogs,
   deleteBlog,
   BlogFormData
 } from "@/app/actions/blogs";
 import { BlogForm } from "./blog-form";
-import { Loader2, Plus, Pencil, Trash2, Calendar, ExternalLink } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Calendar, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
 
 export function BlogsList() {
   const [data, setData] = useState<BlogFormData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isEditing, setIsEditing] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<BlogFormData | undefined>(undefined);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const blogs = await getBlogs();
+      // sort blogs by date according to sortOrder
+      blogs.sort((a, b) => {
+        const ta = new Date(a.date).getTime() || 0;
+        const tb = new Date(b.date).getTime() || 0;
+        return sortOrder === 'desc' ? tb - ta : ta - tb;
+      });
       setData(blogs);
     } catch (error) {
       console.error("Failed to load blogs", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [sortOrder]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const handleCreate = () => {
     setSelectedBlog(undefined);
@@ -93,13 +100,42 @@ export function BlogsList() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Blogs List</h2>
-        <button
-          onClick={handleCreate}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Blog
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              const next = sortOrder === 'desc' ? 'asc' : 'desc';
+              setSortOrder(next);
+              setData((prev) => {
+                const copy = [...prev];
+                copy.sort((a, b) => {
+                  const ta = new Date(a.date).getTime() || 0;
+                  const tb = new Date(b.date).getTime() || 0;
+                  return next === 'desc' ? tb - ta : ta - tb;
+                });
+                return copy;
+              });
+            }}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-3 py-2"
+            title={sortOrder === 'desc' ? 'Sort: Newest first' : 'Sort: Oldest first'}
+          >
+            {sortOrder === 'desc' ? (
+              <>
+                <ChevronDown className="mr-2 h-4 w-4" />Newest
+              </>
+            ) : (
+              <>
+                <ChevronUp className="mr-2 h-4 w-4" />Oldest
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleCreate}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Blog
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-4">
