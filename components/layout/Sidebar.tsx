@@ -1,7 +1,9 @@
 "use client";
 
+import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
 import { logout } from "@/app/actions/auth";
 import {
@@ -14,8 +16,9 @@ import {
   FileText,
   Users,
   Wrench,
-  // Settings,
   LogOut,
+  Sun,
+  Moon,
 } from "lucide-react";
 
 const navigation = [
@@ -32,6 +35,12 @@ const navigation = [
 
 export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
+  const { setTheme, theme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className={cn("flex h-full w-64 flex-col border-r bg-card", className)}>
@@ -59,13 +68,17 @@ export function Sidebar({ className }: { className?: string }) {
         </nav>
       </div>
       <div className="border-t p-4 space-y-1">
-        {/* <Link
-          href="/settings"
-          className="flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+        <button
+          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
         >
-          <Settings className="h-4 w-4" />
-          Settings
-        </Link> */}
+          {mounted ? (
+             theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />
+          ) : (
+            <span className="h-4 w-4" /> // Placeholder to prevent layout shift
+          )}
+          <span>{mounted ? (theme === "dark" ? "Light Mode" : "Dark Mode") : "Toggle Theme"}</span>
+        </button>
         <button
           onClick={() => logout()}
           className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-destructive hover:text-destructive-foreground"
