@@ -1,36 +1,42 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { 
   getVideos, 
   deleteVideo, 
   VideoFormData 
 } from "@/app/actions/videos";
 import { VideoForm } from "./video-form";
-import { Loader2, Plus, Pencil, Trash2, Calendar, Play } from "lucide-react";
+import { Loader2, Plus, Pencil, Trash2, Calendar, Play, ChevronUp, ChevronDown } from "lucide-react";
 
 export function VideosList() {
   const [data, setData] = useState<VideoFormData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isEditing, setIsEditing] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<VideoFormData | undefined>(undefined);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const videos = await getVideos();
+      videos.sort((a, b) => {
+        const ta = new Date(a.date).getTime() || 0;
+        const tb = new Date(b.date).getTime() || 0;
+        return sortOrder === 'desc' ? tb - ta : ta - tb;
+      });
       setData(videos);
     } catch (error) {
       console.error("Failed to load videos", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [sortOrder]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const handleCreate = () => {
     setSelectedVideo(undefined);
@@ -93,13 +99,42 @@ export function VideosList() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Videos List</h2>
-        <button
-          onClick={handleCreate}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Video
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              const next = sortOrder === 'desc' ? 'asc' : 'desc';
+              setSortOrder(next);
+              setData((prev) => {
+                const copy = [...prev];
+                copy.sort((a, b) => {
+                  const ta = new Date(a.date).getTime() || 0;
+                  const tb = new Date(b.date).getTime() || 0;
+                  return next === 'desc' ? tb - ta : ta - tb;
+                });
+                return copy;
+              });
+            }}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-3 py-2"
+            title={sortOrder === 'desc' ? 'Sort: Newest first' : 'Sort: Oldest first'}
+          >
+            {sortOrder === 'desc' ? (
+              <>
+                <ChevronDown className="mr-2 h-4 w-4" />Newest
+              </>
+            ) : (
+              <>
+                <ChevronUp className="mr-2 h-4 w-4" />Oldest
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleCreate}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Video
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-4">
