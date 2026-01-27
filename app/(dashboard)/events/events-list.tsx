@@ -1,40 +1,72 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { 
-  getEvents, 
-  deleteEvent, 
-  EventFormData 
+import { useEffect, useState, useCallback } from "react";
+import {
+  getEvents,
+  deleteEvent,
+  EventFormData,
 } from "@/app/actions/events";
 import { EventForm } from "./event-form";
-import { Loader2, Plus, Pencil, Trash2, Calendar, MapPin, Monitor } from "lucide-react";
+import {
+  Loader2,
+  Plus,
+  Pencil,
+  Trash2,
+  Calendar,
+  MapPin,
+  Monitor,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react";
 
 export function EventsList() {
   const [data, setData] = useState<EventFormData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isEditing, setIsEditing] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventFormData | undefined>(undefined);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setLoading(true);
     try {
       const events = await getEvents();
+      // sort events by date according to sortOrder (initial load uses initial sortOrder)
+      events.sort((a, b) => {
+        const ta = new Date(a.date).getTime() || 0;
+        const tb = new Date(b.date).getTime() || 0;
+        return sortOrder === 'desc' ? tb - ta : ta - tb;
+      });
       setData(events);
     } catch (error) {
       console.error("Failed to load events", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [sortOrder]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const handleCreate = () => {
     setSelectedEvent(undefined);
     setIsEditing(true);
+  };
+
+  const toggleSort = () => {
+    const next = sortOrder === 'desc' ? 'asc' : 'desc';
+    setSortOrder(next);
+    // re-sort currently loaded data
+    setData((prev) => {
+      const copy = [...prev];
+      copy.sort((a, b) => {
+        const ta = new Date(a.date).getTime() || 0;
+        const tb = new Date(b.date).getTime() || 0;
+        return next === 'desc' ? tb - ta : ta - tb;
+      });
+      return copy;
+    });
   };
 
   const handleEdit = (event: EventFormData) => {
@@ -93,13 +125,30 @@ export function EventsList() {
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold">Events List</h2>
-        <button
-          onClick={handleCreate}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
-        >
-          <Plus className="mr-2 h-4 w-4" />
-          Add Event
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleSort}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-3 py-2"
+            title={sortOrder === 'desc' ? 'Sort: Newest first' : 'Sort: Oldest first'}
+          >
+            {sortOrder === 'desc' ? (
+              <>
+                <ChevronDown className="mr-2 h-4 w-4" />Newest
+              </>
+            ) : (
+              <>
+                <ChevronUp className="mr-2 h-4 w-4" />Oldest
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleCreate}
+            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+          >
+            <Plus className="mr-2 h-4 w-4" />
+            Add Event
+          </button>
+        </div>
       </div>
 
       <div className="grid gap-4">
