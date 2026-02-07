@@ -17,7 +17,7 @@ function SubmitButton() {
   return (
     <Button type="submit" disabled={pending} className="w-full">
       {pending ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
-      {pending ? 'Signing in...' : 'Sign in'}
+      {pending ? 'Log in...' : 'Log in'}
     </Button>
   );
 }
