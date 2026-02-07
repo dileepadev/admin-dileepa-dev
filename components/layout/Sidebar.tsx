@@ -16,6 +16,7 @@ import {
   FileText,
   Users,
   Wrench,
+  ImageUp,
   LogOut,
   Sun,
   Moon,
@@ -31,6 +32,7 @@ const navigation = [
   { name: 'Blogs', href: '/blogs', icon: FileText },
   { name: 'Communities', href: '/communities', icon: Users },
   { name: 'Tools', href: '/tools', icon: Wrench },
+  { name: 'Media', href: '/media', icon: ImageUp },
 ];
 
 export function Sidebar({ className }: { className?: string }) {
