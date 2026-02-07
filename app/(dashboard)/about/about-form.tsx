@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState } from 'react';
 import { updateAbout, getAboutData, AboutFormData, UpdateAboutState } from '@/app/actions/about';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
+import Image from 'next/image';
 
 const initialState: UpdateAboutState = {
   message: '',
@@ -13,11 +14,23 @@ export function AboutForm() {
   const [state, formAction] = useActionState(updateAbout, initialState);
   const [data, setData] = useState<AboutFormData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [previews, setPreviews] = useState({
+    bannerWebp: '',
+    profilePng: '',
+    profileWebp: '',
+  });
 
   useEffect(() => {
     async function loadData() {
       const aboutData = await getAboutData();
       setData(aboutData);
+      if (aboutData) {
+        setPreviews({
+          bannerWebp: aboutData.bannerWebp || '',
+          profilePng: aboutData.profilePng || '',
+          profileWebp: aboutData.profileWebp || '',
+        });
+      }
       setLoading(false);
     }
     loadData();
@@ -207,8 +220,23 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.bannerWebp}
+            onChange={(e) => setPreviews({ ...previews, bannerWebp: e.target.value })}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
+          {previews.bannerWebp && (
+            <div className="bg-muted relative mt-2 h-32 w-full overflow-hidden rounded-md border">
+              <Image
+                src={previews.bannerWebp}
+                alt="Banner preview"
+                fill
+                className="object-cover"
+                unoptimized
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </div>
+          )}
           {state.errors?.bannerWebp && (
             <p className="text-destructive mt-1 text-sm">{state.errors.bannerWebp.join(', ')}</p>
           )}
@@ -224,8 +252,23 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.profilePng}
+            onChange={(e) => setPreviews({ ...previews, profilePng: e.target.value })}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
+          {previews.profilePng && (
+            <div className="bg-muted relative mt-2 h-24 w-24 overflow-hidden rounded-md border">
+              <Image
+                src={previews.profilePng}
+                alt="Profile PNG preview"
+                fill
+                className="object-cover"
+                unoptimized
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </div>
+          )}
           {state.errors?.profilePng && (
             <p className="text-destructive mt-1 text-sm">{state.errors.profilePng.join(', ')}</p>
           )}
@@ -241,8 +284,23 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.profileWebp}
+            onChange={(e) => setPreviews({ ...previews, profileWebp: e.target.value })}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
+          {previews.profileWebp && (
+            <div className="bg-muted relative mt-2 h-24 w-24 overflow-hidden rounded-md border">
+              <Image
+                src={previews.profileWebp}
+                alt="Profile WebP preview"
+                fill
+                className="object-cover"
+                unoptimized
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            </div>
+          )}
           {state.errors?.profileWebp && (
             <p className="text-destructive mt-1 text-sm">{state.errors.profileWebp.join(', ')}</p>
           )}

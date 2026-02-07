@@ -1,13 +1,19 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
-import { 
-  getVideos, 
-  deleteVideo, 
-  VideoFormData 
-} from "@/app/actions/videos";
-import { VideoForm } from "./video-form";
-import { Loader2, Plus, Pencil, Trash2, Calendar, Play, ChevronUp, ChevronDown } from "lucide-react";
+import { useEffect, useState, useCallback } from 'react';
+import { getVideos, deleteVideo, VideoFormData } from '@/app/actions/videos';
+import { VideoForm } from './video-form';
+import {
+  Loader2,
+  Plus,
+  Pencil,
+  Trash2,
+  Calendar,
+  Play,
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-react';
+import Image from 'next/image';
 
 export function VideosList() {
   const [data, setData] = useState<VideoFormData[]>([]);
@@ -28,7 +34,7 @@ export function VideosList() {
       });
       setData(videos);
     } catch (error) {
-      console.error("Failed to load videos", error);
+      console.error('Failed to load videos', error);
     } finally {
       setLoading(false);
     }
@@ -49,8 +55,8 @@ export function VideosList() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this video?")) return;
-    
+    if (!confirm('Are you sure you want to delete this video?')) return;
+
     setDeletingId(id);
     try {
       const result = await deleteVideo(id);
@@ -60,9 +66,9 @@ export function VideosList() {
         alert(result.message);
       }
     } catch (error) {
-      console.error("Failed to delete video", error);
+      console.error('Failed to delete video', error);
     } finally {
-        setDeletingId(null);
+      setDeletingId(null);
     }
   };
 
@@ -80,24 +86,20 @@ export function VideosList() {
   if (loading && !data.length) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="animate-spin h-8 w-8" />
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (isEditing) {
     return (
-      <VideoForm 
-        initialData={selectedVideo} 
-        onSuccess={handleSuccess} 
-        onCancel={handleCancel} 
-      />
+      <VideoForm initialData={selectedVideo} onSuccess={handleSuccess} onCancel={handleCancel} />
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Videos List</h2>
         <div className="flex items-center gap-2">
           <button
@@ -114,22 +116,24 @@ export function VideosList() {
                 return copy;
               });
             }}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-3 py-2"
+            className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
             title={sortOrder === 'desc' ? 'Sort: Newest first' : 'Sort: Oldest first'}
           >
             {sortOrder === 'desc' ? (
               <>
-                <ChevronDown className="mr-2 h-4 w-4" />Newest
+                <ChevronDown className="mr-2 h-4 w-4" />
+                Newest
               </>
             ) : (
               <>
-                <ChevronUp className="mr-2 h-4 w-4" />Oldest
+                <ChevronUp className="mr-2 h-4 w-4" />
+                Oldest
               </>
             )}
           </button>
           <button
             onClick={handleCreate}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+            className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
           >
             <Plus className="mr-2 h-4 w-4" />
             Add Video
@@ -141,20 +145,34 @@ export function VideosList() {
         {data.map((video) => (
           <div
             key={video._id}
-            className="bg-card rounded-lg border border-border p-6 flex flex-col md:flex-row gap-4 items-start md:items-center justify-between shadow-sm"
+            className="bg-card border-border flex flex-col items-start justify-between gap-4 rounded-lg border p-6 shadow-sm md:flex-row md:items-center"
           >
-            <div className="flex-1 space-y-2">
-              <h3 className="font-semibold text-lg">{video.title}</h3>
-              
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4" />
-                <span>{video.date ? new Date(video.date).toISOString().slice(0,10) : ''}</span>
+            {video.thumbnail && (
+              <div className="bg-muted border-border relative aspect-video w-32 shrink-0 overflow-hidden rounded border">
+                <Image
+                  src={video.thumbnail}
+                  alt={video.title}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
               </div>
-              
+            )}
+            <div className="flex-1 space-y-2">
+              <h3 className="text-lg font-semibold">{video.title}</h3>
+
+              <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                <Calendar className="h-4 w-4" />
+                <span>{video.date ? new Date(video.date).toISOString().slice(0, 10) : ''}</span>
+              </div>
+
               <div className="flex items-center gap-2">
-                <a 
-                  href={video.link} 
-                  target="_blank" 
+                <a
+                  href={video.link}
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
                 >
@@ -164,10 +182,10 @@ export function VideosList() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full md:w-auto mt-4 md:mt-0">
+            <div className="mt-4 flex w-full items-center gap-2 md:mt-0 md:w-auto">
               <button
                 onClick={() => handleEdit(video)}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
+                className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                 title="Edit"
               >
                 <Pencil className="h-4 w-4" />
@@ -175,13 +193,13 @@ export function VideosList() {
               <button
                 onClick={() => handleDelete(video._id!)}
                 disabled={deletingId === video._id}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-destructive hover:text-destructive-foreground h-9 w-9 text-destructive"
+                className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-destructive hover:text-destructive-foreground text-destructive inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                 title="Delete"
               >
                 {deletingId === video._id ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                    <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                 )}
               </button>
             </div>
@@ -189,7 +207,7 @@ export function VideosList() {
         ))}
 
         {!loading && data.length === 0 && (
-          <div className="text-center p-8 bg-card rounded-lg border border-border">
+          <div className="bg-card border-border rounded-lg border p-8 text-center">
             <p className="text-muted-foreground">No videos found. Add one to get started.</p>
           </div>
         )}

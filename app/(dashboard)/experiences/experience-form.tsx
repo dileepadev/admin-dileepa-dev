@@ -1,13 +1,14 @@
-"use client";
+'use client';
 
-import { useActionState, useEffect, useState } from "react";
-import { 
-  createExperience, 
-  updateExperience, 
-  ExperienceFormData, 
-  ExperienceState 
-} from "@/app/actions/experiences";
-import { Loader2, Plus, Trash2, Save, X } from "lucide-react";
+import { useActionState, useEffect, useState } from 'react';
+import {
+  createExperience,
+  updateExperience,
+  ExperienceFormData,
+  ExperienceState,
+} from '@/app/actions/experiences';
+import { Loader2, Plus, Trash2, Save, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface ExperienceFormProps {
   initialData?: ExperienceFormData;
@@ -16,22 +17,20 @@ interface ExperienceFormProps {
 }
 
 const initialState: ExperienceState = {
-  message: "",
+  message: '',
   errors: {},
 };
 
 export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceFormProps) {
   // Bind the ID if updating
-  const action = initialData 
-    ? updateExperience.bind(null, initialData._id!) 
-    : createExperience;
+  const action = initialData ? updateExperience.bind(null, initialData._id!) : createExperience;
 
   const [state, formAction, isPending] = useActionState(action, initialState);
-  
+  const [lightPreview, setLightPreview] = useState(initialData?.logo?.light || '');
+  const [darkPreview, setDarkPreview] = useState(initialData?.logo?.dark || '');
+
   // Local state for array fields which need dynamic UI
-  const [technologies, setTechnologies] = useState<string[]>(
-    initialData?.technologies || [""]
-  );
+  const [technologies, setTechnologies] = useState<string[]>(initialData?.technologies || ['']);
 
   useEffect(() => {
     if (state.success) {
@@ -40,7 +39,7 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
   }, [state.success, onSuccess]);
 
   const addTechnology = () => {
-    setTechnologies([...technologies, ""]);
+    setTechnologies([...technologies, '']);
   };
 
   const removeTechnology = (index: number) => {
@@ -54,21 +53,21 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
   };
 
   return (
-    <form action={formAction} className="space-y-6 bg-card p-6 rounded-lg border border-border">
-      <div className="flex justify-between items-center mb-4">
+    <form action={formAction} className="bg-card border-border space-y-6 rounded-lg border p-6">
+      <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">
-          {initialData ? "Edit Experience" : "Add New Experience"}
+          {initialData ? 'Edit Experience' : 'Add New Experience'}
         </h2>
         <button
           type="button"
           onClick={onCancel}
           className="text-muted-foreground hover:text-foreground"
         >
-          <X className="w-5 h-5" />
+          <X className="h-5 w-5" />
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <label htmlFor="title" className="text-sm font-medium">
             Title
@@ -77,12 +76,10 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
             id="title"
             name="title"
             defaultValue={initialData?.title}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
-          {state.errors?.title && (
-            <p className="text-red-500 text-sm">{state.errors.title[0]}</p>
-          )}
+          {state.errors?.title && <p className="text-sm text-red-500">{state.errors.title[0]}</p>}
         </div>
 
         <div className="space-y-2">
@@ -93,11 +90,11 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
             id="company"
             name="company"
             defaultValue={initialData?.company}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
           {state.errors?.company && (
-            <p className="text-red-500 text-sm">{state.errors.company[0]}</p>
+            <p className="text-sm text-red-500">{state.errors.company[0]}</p>
           )}
         </div>
 
@@ -110,12 +107,10 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
             name="period"
             defaultValue={initialData?.period}
             placeholder="e.g. 2020 - Present"
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
-          {state.errors?.period && (
-            <p className="text-red-500 text-sm">{state.errors.period[0]}</p>
-          )}
+          {state.errors?.period && <p className="text-sm text-red-500">{state.errors.period[0]}</p>}
         </div>
 
         <div className="space-y-2">
@@ -126,12 +121,10 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
             id="url"
             name="url"
             defaultValue={initialData?.url}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
-          {state.errors?.url && (
-            <p className="text-red-500 text-sm">{state.errors.url[0]}</p>
-          )}
+          {state.errors?.url && <p className="text-sm text-red-500">{state.errors.url[0]}</p>}
         </div>
       </div>
 
@@ -144,15 +137,15 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
           name="description"
           defaultValue={initialData?.description}
           rows={4}
-          className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-20 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           required
         />
         {state.errors?.description && (
-          <p className="text-red-500 text-sm">{state.errors.description[0]}</p>
+          <p className="text-sm text-red-500">{state.errors.description[0]}</p>
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <label htmlFor="logo.light" className="text-sm font-medium">
             Logo (Light Mode) URL
@@ -161,11 +154,24 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
             id="logo.light"
             name="logo.light"
             defaultValue={initialData?.logo?.light}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            onChange={(e) => setLightPreview(e.target.value)}
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
-          {state.errors?.["logo.light"] && (
-            <p className="text-red-500 text-sm">{state.errors["logo.light"][0]}</p>
+          {lightPreview && (
+            <div className="relative mt-2 h-16 w-16 overflow-hidden rounded-md border">
+              <Image
+                src={lightPreview}
+                alt="Light logo preview"
+                fill
+                unoptimized
+                className="object-contain p-2"
+                onError={(e) => (e.currentTarget.style.display = 'none')}
+              />
+            </div>
+          )}
+          {state.errors?.['logo.light'] && (
+            <p className="text-sm text-red-500">{state.errors['logo.light'][0]}</p>
           )}
         </div>
 
@@ -177,11 +183,24 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
             id="logo.dark"
             name="logo.dark"
             defaultValue={initialData?.logo?.dark}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            onChange={(e) => setDarkPreview(e.target.value)}
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
-          {state.errors?.["logo.dark"] && (
-            <p className="text-red-500 text-sm">{state.errors["logo.dark"][0]}</p>
+          {darkPreview && (
+            <div className="relative mt-2 h-16 w-16 overflow-hidden rounded-md border">
+              <Image
+                src={darkPreview}
+                alt="Dark logo preview"
+                fill
+                unoptimized
+                className="object-contain p-2"
+                onError={(e) => (e.currentTarget.style.display = 'none')}
+              />
+            </div>
+          )}
+          {state.errors?.['logo.dark'] && (
+            <p className="text-sm text-red-500">{state.errors['logo.dark'][0]}</p>
           )}
         </div>
       </div>
@@ -192,21 +211,21 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
           <button
             type="button"
             onClick={addTechnology}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+            className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 items-center justify-center rounded-md border px-3 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
           >
-            <Plus className="w-4 h-4 mr-2" />
+            <Plus className="mr-2 h-4 w-4" />
             Add Tech
           </button>
         </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {technologies.map((tech, index) => (
             <div key={index} className="flex gap-2">
               <input
                 name="technologies"
                 value={tech}
                 onChange={(e) => updateTechnology(index, e.target.value)}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="Technology name"
                 required
               />
@@ -214,21 +233,21 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
                 <button
                   type="button"
                   onClick={() => removeTechnology(index)}
-                  className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-destructive h-10 w-10"
+                  className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-destructive inline-flex h-10 w-10 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                 >
-                  <Trash2 className="w-4 h-4" />
+                  <Trash2 className="h-4 w-4" />
                 </button>
               )}
             </div>
           ))}
         </div>
         {state.errors?.technologies && (
-          <p className="text-red-500 text-sm">{state.errors.technologies[0]}</p>
+          <p className="text-sm text-red-500">{state.errors.technologies[0]}</p>
         )}
       </div>
 
       {state.message && (
-        <p className={`text-sm ${state.success ? "text-green-500" : "text-red-500"}`}>
+        <p className={`text-sm ${state.success ? 'text-green-500' : 'text-red-500'}`}>
           {state.message}
         </p>
       )}
@@ -237,14 +256,14 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
         <button
           type="button"
           onClick={onCancel}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+          className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+          className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
         >
           {isPending ? (
             <>

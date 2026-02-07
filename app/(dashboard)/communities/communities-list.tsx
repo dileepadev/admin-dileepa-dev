@@ -1,20 +1,22 @@
-"use client";
+'use client';
 
-import { useEffect, useState } from "react";
-import {
-  getCommunities,
-  deleteCommunity,
-  CommunityFormData
-} from "@/app/actions/communities";
-import { CommunityForm } from "./community-form";
-import { Loader2, Plus, Pencil, Trash2, Calendar, CheckCircle } from "lucide-react";
+import { useEffect, useState } from 'react';
+import { getCommunities, deleteCommunity, CommunityFormData } from '@/app/actions/communities';
+import { CommunityForm } from './community-form';
+import { Loader2, Plus, Pencil, Trash2, Calendar, CheckCircle } from 'lucide-react';
+import Image from 'next/image';
+import { useTheme } from 'next-themes';
 
 export function CommunitiesList() {
   const [data, setData] = useState<CommunityFormData[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedCommunity, setSelectedCommunity] = useState<CommunityFormData | undefined>(undefined);
+  const [selectedCommunity, setSelectedCommunity] = useState<CommunityFormData | undefined>(
+    undefined,
+  );
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === 'dark';
 
   const loadData = async () => {
     setLoading(true);
@@ -22,7 +24,7 @@ export function CommunitiesList() {
       const communities = await getCommunities();
       setData(communities);
     } catch (error) {
-      console.error("Failed to load communities", error);
+      console.error('Failed to load communities', error);
     } finally {
       setLoading(false);
     }
@@ -43,7 +45,7 @@ export function CommunitiesList() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this community?")) return;
+    if (!confirm('Are you sure you want to delete this community?')) return;
 
     setDeletingId(id);
     try {
@@ -54,9 +56,9 @@ export function CommunitiesList() {
         alert(result.message);
       }
     } catch (error) {
-      console.error("Failed to delete community", error);
+      console.error('Failed to delete community', error);
     } finally {
-        setDeletingId(null);
+      setDeletingId(null);
     }
   };
 
@@ -74,7 +76,7 @@ export function CommunitiesList() {
   if (loading && !data.length) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="animate-spin h-8 w-8" />
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
@@ -91,11 +93,11 @@ export function CommunitiesList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Communities List</h2>
         <button
           onClick={handleCreate}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+          className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
         >
           <Plus className="mr-2 h-4 w-4" />
           Add Community
@@ -106,36 +108,52 @@ export function CommunitiesList() {
         {data.map((community) => (
           <div
             key={community._id}
-            className="bg-card rounded-lg border border-border p-6 flex flex-col gap-4 shadow-sm"
+            className="bg-card border-border flex flex-col gap-4 rounded-lg border p-6 shadow-sm"
           >
             <div className="flex-1 space-y-3">
               <div className="flex items-start gap-4">
+                {(community.logo?.light || community.logo?.dark) && (
+                  <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded border">
+                    <Image
+                      src={
+                        isDark
+                          ? (community.logo.light ?? community.logo.dark)
+                          : (community.logo.dark ?? community.logo.light)
+                      }
+                      alt={community.name}
+                      fill
+                      unoptimized
+                      className="object-contain p-1"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+                )}
                 <div className="flex-1 space-y-2">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-lg">{community.name}</h3>
+                    <h3 className="text-lg font-semibold">{community.name}</h3>
                     {community.current && (
                       <span title="Currently active">
                         <CheckCircle className="h-5 w-5 text-green-600" />
                       </span>
                     )}
                   </div>
-                  <p className="text-sm font-medium text-muted-foreground">{community.role}</p>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <p className="text-muted-foreground text-sm font-medium">{community.role}</p>
+                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
                     <Calendar className="h-4 w-4" />
                     <span>{community.period}</span>
                   </div>
                 </div>
               </div>
 
-              <p className="text-sm text-muted-foreground line-clamp-2">
-                {community.description}
-              </p>
+              <p className="text-muted-foreground line-clamp-2 text-sm">{community.description}</p>
             </div>
 
-            <div className="flex items-center gap-2 w-full justify-end mt-4">
+            <div className="mt-4 flex w-full items-center justify-end gap-2">
               <button
                 onClick={() => handleEdit(community)}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
+                className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                 title="Edit"
               >
                 <Pencil className="h-4 w-4" />
@@ -143,13 +161,13 @@ export function CommunitiesList() {
               <button
                 onClick={() => handleDelete(community._id!)}
                 disabled={deletingId === community._id}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-destructive hover:text-destructive-foreground h-9 w-9 text-destructive"
+                className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-destructive hover:text-destructive-foreground text-destructive inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                 title="Delete"
               >
                 {deletingId === community._id ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                    <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                 )}
               </button>
             </div>
@@ -157,7 +175,7 @@ export function CommunitiesList() {
         ))}
 
         {!loading && data.length === 0 && (
-          <div className="text-center p-8 bg-card rounded-lg border border-border">
+          <div className="bg-card border-border rounded-lg border p-8 text-center">
             <p className="text-muted-foreground">No communities found. Add one to get started.</p>
           </div>
         )}

@@ -1,13 +1,9 @@
-"use client";
+'use client';
 
-import { useActionState, useEffect } from "react";
-import { 
-  createVideo, 
-  updateVideo, 
-  VideoFormData, 
-  VideoState 
-} from "@/app/actions/videos";
-import { Loader2, Save, X } from "lucide-react";
+import { useActionState, useEffect, useState } from 'react';
+import { createVideo, updateVideo, VideoFormData, VideoState } from '@/app/actions/videos';
+import { Loader2, Save, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface VideoFormProps {
   initialData?: VideoFormData;
@@ -16,18 +12,17 @@ interface VideoFormProps {
 }
 
 const initialState: VideoState = {
-  message: "",
+  message: '',
   errors: {},
 };
 
 export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) {
   // Bind the ID if updating
-  const action = initialData 
-    ? updateVideo.bind(null, initialData._id!) 
-    : createVideo;
+  const action = initialData ? updateVideo.bind(null, initialData._id!) : createVideo;
 
   const [state, formAction, isPending] = useActionState(action, initialState);
-  
+  const [thumbnailPreview, setThumbnailPreview] = useState(initialData?.thumbnail || '');
+
   useEffect(() => {
     if (state.success) {
       onSuccess();
@@ -35,21 +30,19 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
   }, [state.success, onSuccess]);
 
   return (
-    <form action={formAction} className="space-y-6 bg-card p-6 rounded-lg border border-border">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-semibold">
-          {initialData ? "Edit Video" : "Add New Video"}
-        </h2>
+    <form action={formAction} className="bg-card border-border space-y-6 rounded-lg border p-6">
+      <div className="mb-4 flex items-center justify-between">
+        <h2 className="text-xl font-semibold">{initialData ? 'Edit Video' : 'Add New Video'}</h2>
         <button
           type="button"
           onClick={onCancel}
           className="text-muted-foreground hover:text-foreground"
         >
-          <X className="w-5 h-5" />
+          <X className="h-5 w-5" />
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <label htmlFor="title" className="text-sm font-medium">
             Title
@@ -58,12 +51,10 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
             id="title"
             name="title"
             defaultValue={initialData?.title}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
-          {state.errors?.title && (
-            <p className="text-red-500 text-sm">{state.errors.title[0]}</p>
-          )}
+          {state.errors?.title && <p className="text-sm text-red-500">{state.errors.title[0]}</p>}
         </div>
 
         <div className="space-y-2">
@@ -74,13 +65,13 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
             id="date"
             name="date"
             type="date"
-            defaultValue={initialData?.date ? new Date(initialData.date).toISOString().slice(0,10) : undefined}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            defaultValue={
+              initialData?.date ? new Date(initialData.date).toISOString().slice(0, 10) : undefined
+            }
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
-          {state.errors?.date && (
-            <p className="text-red-500 text-sm">{state.errors.date[0]}</p>
-          )}
+          {state.errors?.date && <p className="text-sm text-red-500">{state.errors.date[0]}</p>}
         </div>
 
         <div className="space-y-2 md:col-span-2">
@@ -93,12 +84,10 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
             type="url"
             defaultValue={initialData?.link}
             placeholder="https://www.youtube.com/watch?v=..."
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
-          {state.errors?.link && (
-            <p className="text-red-500 text-sm">{state.errors.link[0]}</p>
-          )}
+          {state.errors?.link && <p className="text-sm text-red-500">{state.errors.link[0]}</p>}
         </div>
 
         <div className="space-y-2 md:col-span-2">
@@ -110,18 +99,31 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
             name="thumbnail"
             type="url"
             defaultValue={initialData?.thumbnail}
+            onChange={(e) => setThumbnailPreview(e.target.value)}
             placeholder="https://example.com/thumbnail.jpg"
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
+          {thumbnailPreview && (
+            <div className="bg-muted relative mt-2 aspect-video w-full max-w-sm overflow-hidden rounded-md border">
+              <Image
+                src={thumbnailPreview}
+                alt="Thumbnail preview"
+                fill
+                unoptimized
+                className="object-cover"
+                onError={(e) => (e.currentTarget.style.display = 'none')}
+              />
+            </div>
+          )}
           {state.errors?.thumbnail && (
-            <p className="text-red-500 text-sm">{state.errors.thumbnail[0]}</p>
+            <p className="text-sm text-red-500">{state.errors.thumbnail[0]}</p>
           )}
         </div>
       </div>
 
       {state.message && (
-        <p className={`text-sm ${state.success ? "text-green-500" : "text-red-500"}`}>
+        <p className={`text-sm ${state.success ? 'text-green-500' : 'text-red-500'}`}>
           {state.message}
         </p>
       )}
@@ -130,14 +132,14 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
         <button
           type="button"
           onClick={onCancel}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+          className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
         >
           Cancel
         </button>
         <button
           type="submit"
           disabled={isPending}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+          className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
         >
           {isPending ? (
             <>

@@ -1,8 +1,14 @@
-"use client";
+'use client';
 
-import { useActionState } from "react";
-import { createCommunity, updateCommunity, CommunityFormData, ActionState } from "@/app/actions/communities";
-import { Loader2, Save, X } from "lucide-react";
+import { useActionState, useState } from 'react';
+import {
+  createCommunity,
+  updateCommunity,
+  CommunityFormData,
+  ActionState,
+} from '@/app/actions/communities';
+import { Loader2, Save, X } from 'lucide-react';
+import Image from 'next/image';
 
 interface CommunityFormProps {
   initialData?: CommunityFormData;
@@ -23,18 +29,21 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
 
       return result;
     },
-    { success: false, message: "", errors: {} }
+    { success: false, message: '', errors: {} },
   );
 
+  const [lightPreview, setLightPreview] = useState(initialData?.logo?.light || '');
+  const [darkPreview, setDarkPreview] = useState(initialData?.logo?.dark || '');
+
   return (
-    <div className="bg-card rounded-lg border border-border p-6">
-      <div className="flex items-center justify-between mb-6">
+    <div className="bg-card border-border rounded-lg border p-6">
+      <div className="mb-6 flex items-center justify-between">
         <h2 className="text-xl font-semibold">
-          {initialData ? "Edit Community" : "Add New Community"}
+          {initialData ? 'Edit Community' : 'Add New Community'}
         </h2>
         <button
           onClick={onCancel}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
+          className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
           type="button"
         >
           <X className="h-4 w-4" />
@@ -42,7 +51,7 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
       </div>
 
       <form action={formAction} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium">
               Community Name
@@ -51,13 +60,11 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
               id="name"
               name="name"
               defaultValue={initialData?.name}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="Enter community name"
               required
             />
-            {state.errors?.name && (
-              <p className="text-red-500 text-sm">{state.errors.name[0]}</p>
-            )}
+            {state.errors?.name && <p className="text-sm text-red-500">{state.errors.name[0]}</p>}
           </div>
 
           <div className="space-y-2">
@@ -68,17 +75,15 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
               id="role"
               name="role"
               defaultValue={initialData?.role}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="e.g., Founding Member & President"
               required
             />
-            {state.errors?.role && (
-              <p className="text-red-500 text-sm">{state.errors.role[0]}</p>
-            )}
+            {state.errors?.role && <p className="text-sm text-red-500">{state.errors.role[0]}</p>}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <label htmlFor="period" className="text-sm font-medium">
               Period
@@ -87,28 +92,29 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
               id="period"
               name="period"
               defaultValue={initialData?.period}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="e.g., Oct 2022 - Dec 2023"
               required
             />
             {state.errors?.period && (
-              <p className="text-red-500 text-sm">{state.errors.period[0]}</p>
+              <p className="text-sm text-red-500">{state.errors.period[0]}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium">
-              Currently Involved
-            </label>
+            <label className="text-sm font-medium">Currently Involved</label>
             <div className="flex items-center space-x-2">
               <input
                 id="current"
                 name="current"
                 type="checkbox"
                 defaultChecked={initialData?.current}
-                className="h-4 w-4 rounded border border-input bg-background ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                className="border-input bg-background ring-offset-background focus:ring-ring h-4 w-4 rounded border focus:ring-2 focus:ring-offset-2"
               />
-              <label htmlFor="current" className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              <label
+                htmlFor="current"
+                className="text-sm leading-none font-medium peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+              >
                 Currently active in this community
               </label>
             </div>
@@ -123,19 +129,19 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
             id="description"
             name="description"
             defaultValue={initialData?.description}
-            className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-20 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Describe your involvement in this community"
             required
           />
           {state.errors?.description && (
-            <p className="text-red-500 text-sm">{state.errors.description[0]}</p>
+            <p className="text-sm text-red-500">{state.errors.description[0]}</p>
           )}
         </div>
 
         <div className="space-y-4">
           <h3 className="text-lg font-medium">Community Logo</h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <label htmlFor="logo.light" className="text-sm font-medium">
                 Light Mode Logo URL
@@ -145,12 +151,25 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
                 name="logo.light"
                 type="url"
                 defaultValue={initialData?.logo?.light}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                onChange={(e) => setLightPreview(e.target.value)}
+                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="https://example.com/logo-light.svg"
                 required
               />
-              {state.errors?.["logo.light"] && (
-                <p className="text-red-500 text-sm">{state.errors["logo.light"][0]}</p>
+              {lightPreview && (
+                <div className="relative mt-2 h-16 w-16 overflow-hidden rounded-md border">
+                  <Image
+                    src={lightPreview}
+                    alt="Light logo preview"
+                    fill
+                    unoptimized
+                    className="object-contain p-2"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                </div>
+              )}
+              {state.errors?.['logo.light'] && (
+                <p className="text-sm text-red-500">{state.errors['logo.light'][0]}</p>
               )}
             </div>
 
@@ -163,20 +182,33 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
                 name="logo.dark"
                 type="url"
                 defaultValue={initialData?.logo?.dark}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                onChange={(e) => setDarkPreview(e.target.value)}
+                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
                 placeholder="https://example.com/logo-dark.svg"
                 required
               />
-              {state.errors?.["logo.dark"] && (
-                <p className="text-red-500 text-sm">{state.errors["logo.dark"][0]}</p>
+              {darkPreview && (
+                <div className="relative mt-2 h-16 w-16 overflow-hidden rounded-md border">
+                  <Image
+                    src={darkPreview}
+                    alt="Dark logo preview"
+                    fill
+                    unoptimized
+                    className="object-contain p-2"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                </div>
+              )}
+              {state.errors?.['logo.dark'] && (
+                <p className="text-sm text-red-500">{state.errors['logo.dark'][0]}</p>
               )}
             </div>
           </div>
         </div>
 
         {state.message && !state.success && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3">
-            <p className="text-red-800 text-sm">{state.message}</p>
+          <div className="rounded-md border border-red-200 bg-red-50 p-3">
+            <p className="text-sm text-red-800">{state.message}</p>
           </div>
         )}
 
@@ -184,7 +216,7 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+            className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
             disabled={isPending}
           >
             Cancel
@@ -192,7 +224,7 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+            className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
           >
             {isPending ? (
               <>
