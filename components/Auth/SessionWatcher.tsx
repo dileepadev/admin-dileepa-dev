@@ -8,17 +8,27 @@ function readCookie(name: string) {
 }
 
 async function doSignOut() {
+  const isSignInPage = window.location.pathname === '/sign-in';
+
   try {
     await fetch('/api/auth/sign-out', { method: 'POST', credentials: 'same-origin' });
   } catch {
     // ignore
   }
+
   // notify other tabs
   try {
     localStorage.setItem('signed_out', Date.now().toString());
   } catch {}
-  // redirect to sign-in
-  window.location.href = '/sign-in';
+
+  // clear client-side timer cookies to prevent loops
+  document.cookie = 'session_expires=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+  document.cookie = 'signed_out_broadcast=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+  // redirect to sign-in ONLY if we are not already there
+  if (!isSignInPage) {
+    window.location.href = '/sign-in';
+  }
 }
 
 export default function SessionWatcher() {
@@ -66,7 +76,12 @@ export default function SessionWatcher() {
     const win = window as unknown as Window & { fetch: typeof fetch };
     win.fetch = async function (...args: Parameters<typeof fetch>): Promise<Response> {
       const res = await originalFetch(...(args as Parameters<typeof fetch>));
-      if (res?.status === 401) {
+
+      // Avoid recursion if sign-out itself returns 401
+      const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request).url;
+      const isSignOut = url.includes('/api/auth/sign-out');
+
+      if (res?.status === 401 && !isSignOut) {
         // token invalid/expired, ensure we logout
         doSignOut();
       }
@@ -75,7 +90,7 @@ export default function SessionWatcher() {
 
     // Listen for storage events from other tabs (logout broadcast)
     function onStorage(e: StorageEvent) {
-      if (e.key === 'signed_out') {
+      if (e.key === 'signed_out' && window.location.pathname !== '/sign-in') {
         // another tab signed out
         window.location.href = '/sign-in';
       }
