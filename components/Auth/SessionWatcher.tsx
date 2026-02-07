@@ -1,0 +1,96 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+
+function readCookie(name: string) {
+  const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+  return match ? decodeURIComponent(match[2]) : undefined;
+}
+
+async function doLogout() {
+  try {
+    await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+  } catch {
+    // ignore
+  }
+  // notify other tabs
+  try {
+    localStorage.setItem('signed_out', Date.now().toString());
+  } catch {}
+  // redirect to login
+  window.location.href = '/login';
+}
+
+export default function SessionWatcher() {
+  const timeoutRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    function scheduleFromCookie() {
+      // Check server-initiated broadcast cookie first
+      const broadcast = readCookie('signed_out_broadcast');
+      if (broadcast) {
+        // clear the cookie so we don't keep triggering
+        document.cookie = 'signed_out_broadcast=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        doLogout();
+        return;
+      }
+
+      const expires = readCookie('session_expires');
+      if (!expires) return;
+      const expMs = Date.parse(expires);
+      const now = Date.now();
+      const msUntil = expMs - now;
+      if (msUntil <= 0) {
+        // already expired
+        doLogout();
+        return;
+      }
+      // clear previous
+      if (timeoutRef.current) {
+        window.clearTimeout(timeoutRef.current);
+      }
+      // schedule logout
+      timeoutRef.current = window.setTimeout(() => {
+        doLogout();
+      }, msUntil + 1000);
+    }
+
+    // run immediately
+    scheduleFromCookie();
+
+    // Also poll every minute as a backup
+    const interval = window.setInterval(scheduleFromCookie, 60 * 1000);
+
+    // Monkey-patch fetch to auto-logout on 401 responses (client-side requests)
+    const originalFetch = window.fetch;
+    const win = window as unknown as Window & { fetch: typeof fetch };
+    win.fetch = async function (...args: Parameters<typeof fetch>): Promise<Response> {
+      const res = await originalFetch(...(args as Parameters<typeof fetch>));
+      if (res?.status === 401) {
+        // token invalid/expired, ensure we logout
+        doLogout();
+      }
+      return res;
+    };
+
+    // Listen for storage events from other tabs (logout broadcast)
+    function onStorage(e: StorageEvent) {
+      if (e.key === 'signed_out') {
+        // another tab signed out
+        window.location.href = '/login';
+      }
+    }
+
+    window.addEventListener('storage', onStorage);
+
+    return () => {
+      // restore original fetch
+      win.fetch = originalFetch;
+      if (timeoutRef.current) window.clearTimeout(timeoutRef.current);
+      window.clearInterval(interval);
+      window.removeEventListener('storage', onStorage);
+    };
+  }, []);
+
+  return null;
+}

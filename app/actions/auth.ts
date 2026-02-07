@@ -1,7 +1,7 @@
 'use server';
 
 import { z } from 'zod';
-import { createSession, deleteSession } from '@/lib/session';
+import { createSession, deleteSession, broadcastSignOut } from '@/lib/session';
 import { redirect } from 'next/navigation';
 
 const loginSchema = z.object({
@@ -94,5 +94,6 @@ export async function login(prevState: LoginState, formData: FormData): Promise<
 
 export async function logout() {
   await deleteSession();
+  await broadcastSignOut();
   redirect('/login');
 }
