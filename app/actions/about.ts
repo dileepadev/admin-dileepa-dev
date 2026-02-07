@@ -4,10 +4,11 @@ import { z } from 'zod';
 import { getSession } from '@/lib/session';
 import { revalidatePath } from 'next/cache';
 
-const isValidUrl = (value: string) => {
+const isValidUrl = (value: unknown) => {
+  if (!value || typeof value !== 'string') return false;
   try {
-    new URL(value);
-    return true;
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:';
   } catch {
     return false;
   }
@@ -37,7 +38,10 @@ const aboutSchema = z.object({
   instagram: urlField('Invalid Instagram URL'),
   youtube: urlField('Invalid YouTube URL'),
   // facebook is optional
-  facebook: z.string().optional().refine(isValidUrl, { message: 'Invalid Facebook URL' }),
+  facebook: z
+    .string()
+    .optional()
+    .refine((val) => !val || isValidUrl(val), { message: 'Invalid Facebook URL' }),
   connect: z
     .array(z.string().min(1, 'Connect message cannot be empty'))
     .min(1, 'At least one connect message is required'),

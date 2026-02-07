@@ -12,6 +12,7 @@ interface ImageUploadFieldProps {
   required?: boolean;
   folder?: string;
   onChange?: (value: string) => void;
+  onUploadingChange?: (isUploading: boolean) => void;
   error?: string;
 }
 
@@ -22,6 +23,7 @@ export function ImageUploadField({
   required = false,
   folder = 'dileepa-dev',
   onChange,
+  onUploadingChange,
   error,
 }: ImageUploadFieldProps) {
   const [value, setValue] = useState(defaultValue);
@@ -41,6 +43,7 @@ export function ImageUploadField({
 
     setIsUploading(true);
     setUploadError(null);
+    if (onUploadingChange) onUploadingChange(true);
 
     try {
       const formData = new FormData();
@@ -61,6 +64,7 @@ export function ImageUploadField({
       console.error(err);
     } finally {
       setIsUploading(false);
+      if (onUploadingChange) onUploadingChange(false);
       // Reset file input so the same file can be selected again if needed
       if (fileInputRef.current) {
         fileInputRef.current.value = '';

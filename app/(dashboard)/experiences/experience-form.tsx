@@ -26,6 +26,7 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
   const action = initialData ? updateExperience.bind(null, initialData._id!) : createExperience;
 
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Local state for array fields which need dynamic UI
   const [technologies, setTechnologies] = useState<string[]>(initialData?.technologies || ['']);
@@ -151,6 +152,7 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
           required
           folder="experiences"
           error={state.errors?.['logo.light']?.[0]}
+          onUploadingChange={(val) => setIsUploading(val)}
         />
 
         <ImageUploadField
@@ -160,6 +162,7 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
           required
           folder="experiences"
           error={state.errors?.['logo.dark']?.[0]}
+          onUploadingChange={(val) => setIsUploading(val)}
         />
       </div>
 
@@ -210,6 +213,12 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
         </p>
       )}
 
+      {isUploading && (
+        <p className="text-muted-foreground text-sm">
+          Uploading images... please wait before saving.
+        </p>
+      )}
+
       <div className="flex justify-end gap-4 pt-4">
         <button
           type="button"
@@ -220,7 +229,7 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
         </button>
         <button
           type="submit"
-          disabled={isPending}
+          disabled={isPending || isUploading}
           className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
         >
           {isPending ? (
