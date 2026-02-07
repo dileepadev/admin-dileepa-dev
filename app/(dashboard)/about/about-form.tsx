@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import { useActionState, useEffect, useState } from "react";
-import { updateAbout, getAboutData, AboutFormData, UpdateAboutState } from "@/app/actions/about";
-import { Loader2, Plus, Trash2 } from "lucide-react";
+import { useActionState, useEffect, useState } from 'react';
+import { updateAbout, getAboutData, AboutFormData, UpdateAboutState } from '@/app/actions/about';
+import { Loader2, Plus, Trash2 } from 'lucide-react';
 
 const initialState: UpdateAboutState = {
-  message: "",
+  message: '',
   errors: {},
 };
 
@@ -27,7 +27,7 @@ export function AboutForm() {
     if (data) {
       setData({
         ...data,
-        description: [...data.description, ""],
+        description: [...data.description, ''],
       });
     }
   };
@@ -56,7 +56,7 @@ export function AboutForm() {
     if (data) {
       setData({
         ...data,
-        connect: [...data.connect, ""],
+        connect: [...data.connect, ''],
       });
     }
   };
@@ -84,14 +84,14 @@ export function AboutForm() {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="animate-spin h-8 w-8" />
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="text-center p-8">
+      <div className="p-8 text-center">
         <p className="text-muted-foreground">Failed to load about data</p>
       </div>
     );
@@ -100,9 +100,9 @@ export function AboutForm() {
   return (
     <form action={formAction} className="space-y-8">
       {/* Basic Information */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-foreground">
+          <label htmlFor="name" className="text-foreground block text-sm font-medium">
             Name
           </label>
           <input
@@ -111,15 +111,15 @@ export function AboutForm() {
             type="text"
             required
             defaultValue={data.name}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.name && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.name.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.name.join(', ')}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="title" className="block text-sm font-medium text-foreground">
+          <label htmlFor="title" className="text-foreground block text-sm font-medium">
             Title
           </label>
           <input
@@ -128,16 +128,16 @@ export function AboutForm() {
             type="text"
             required
             defaultValue={data.title}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.title && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.title.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.title.join(', ')}</p>
           )}
         </div>
       </div>
 
       <div>
-        <label htmlFor="tagline" className="block text-sm font-medium text-foreground">
+        <label htmlFor="tagline" className="text-foreground block text-sm font-medium">
           Tagline
         </label>
         <input
@@ -146,23 +146,21 @@ export function AboutForm() {
           type="text"
           required
           defaultValue={data.tagline}
-          className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+          className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
         />
         {state.errors?.tagline && (
-          <p className="mt-1 text-sm text-destructive">{state.errors.tagline.join(", ")}</p>
+          <p className="text-destructive mt-1 text-sm">{state.errors.tagline.join(', ')}</p>
         )}
       </div>
 
       {/* Description */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <label className="block text-sm font-medium text-foreground">
-            Description
-          </label>
+        <div className="mb-4 flex items-center justify-between">
+          <label className="text-foreground block text-sm font-medium">Description</label>
           <button
             type="button"
             onClick={addDescription}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-md px-3 py-1 text-sm font-medium"
           >
             <Plus className="h-4 w-4" />
             Add Paragraph
@@ -177,14 +175,14 @@ export function AboutForm() {
                 value={desc}
                 onChange={(e) => updateDescription(index, e.target.value)}
                 rows={3}
-                className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+                className="border-input bg-background focus:border-ring focus:ring-ring flex-1 rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
                 placeholder="Enter description paragraph..."
               />
               {data.description.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removeDescription(index)}
-                  className="self-start rounded-md bg-destructive p-2 text-destructive-foreground hover:bg-destructive/90"
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90 self-start rounded-md p-2"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -193,14 +191,14 @@ export function AboutForm() {
           ))}
         </div>
         {state.errors?.description && (
-          <p className="mt-1 text-sm text-destructive">{state.errors.description.join(", ")}</p>
+          <p className="text-destructive mt-1 text-sm">{state.errors.description.join(', ')}</p>
         )}
       </div>
 
       {/* Images */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div>
-          <label htmlFor="bannerWebp" className="block text-sm font-medium text-foreground">
+          <label htmlFor="bannerWebp" className="text-foreground block text-sm font-medium">
             Banner WebP URL
           </label>
           <input
@@ -209,15 +207,15 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.bannerWebp}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.bannerWebp && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.bannerWebp.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.bannerWebp.join(', ')}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="profilePng" className="block text-sm font-medium text-foreground">
+          <label htmlFor="profilePng" className="text-foreground block text-sm font-medium">
             Profile PNG URL
           </label>
           <input
@@ -226,15 +224,15 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.profilePng}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.profilePng && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.profilePng.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.profilePng.join(', ')}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="profileWebp" className="block text-sm font-medium text-foreground">
+          <label htmlFor="profileWebp" className="text-foreground block text-sm font-medium">
             Profile WebP URL
           </label>
           <input
@@ -243,18 +241,18 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.profileWebp}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.profileWebp && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.profileWebp.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.profileWebp.join(', ')}</p>
           )}
         </div>
       </div>
 
       {/* Links */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
-          <label htmlFor="website" className="block text-sm font-medium text-foreground">
+          <label htmlFor="website" className="text-foreground block text-sm font-medium">
             Website URL
           </label>
           <input
@@ -263,15 +261,15 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.website}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.website && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.website.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.website.join(', ')}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-foreground">
+          <label htmlFor="email" className="text-foreground block text-sm font-medium">
             Email
           </label>
           <input
@@ -280,15 +278,15 @@ export function AboutForm() {
             type="email"
             required
             defaultValue={data.email}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.email && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.email.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.email.join(', ')}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="github" className="block text-sm font-medium text-foreground">
+          <label htmlFor="github" className="text-foreground block text-sm font-medium">
             GitHub URL
           </label>
           <input
@@ -297,15 +295,15 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.github}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.github && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.github.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.github.join(', ')}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="linkedin" className="block text-sm font-medium text-foreground">
+          <label htmlFor="linkedin" className="text-foreground block text-sm font-medium">
             LinkedIn URL
           </label>
           <input
@@ -314,15 +312,15 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.linkedin}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.linkedin && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.linkedin.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.linkedin.join(', ')}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="xtwitter" className="block text-sm font-medium text-foreground">
+          <label htmlFor="xtwitter" className="text-foreground block text-sm font-medium">
             X/Twitter URL
           </label>
           <input
@@ -331,15 +329,15 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.xtwitter}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.xtwitter && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.xtwitter.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.xtwitter.join(', ')}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="instagram" className="block text-sm font-medium text-foreground">
+          <label htmlFor="instagram" className="text-foreground block text-sm font-medium">
             Instagram URL
           </label>
           <input
@@ -348,15 +346,15 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.instagram}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.instagram && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.instagram.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.instagram.join(', ')}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="youtube" className="block text-sm font-medium text-foreground">
+          <label htmlFor="youtube" className="text-foreground block text-sm font-medium">
             YouTube URL
           </label>
           <input
@@ -365,24 +363,38 @@ export function AboutForm() {
             type="url"
             required
             defaultValue={data.youtube}
-            className="mt-1 block w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
           {state.errors?.youtube && (
-            <p className="mt-1 text-sm text-destructive">{state.errors.youtube.join(", ")}</p>
+            <p className="text-destructive mt-1 text-sm">{state.errors.youtube.join(', ')}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="facebook" className="text-foreground block text-sm font-medium">
+            Facebook URL
+          </label>
+          <input
+            id="facebook"
+            name="facebook"
+            type="url"
+            defaultValue={data.facebook}
+            className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
+          />
+          {state.errors?.facebook && (
+            <p className="text-destructive mt-1 text-sm">{state.errors.facebook.join(', ')}</p>
           )}
         </div>
       </div>
 
       {/* Connect Messages */}
       <div>
-        <div className="flex items-center justify-between mb-4">
-          <label className="block text-sm font-medium text-foreground">
-            Connect Messages
-          </label>
+        <div className="mb-4 flex items-center justify-between">
+          <label className="text-foreground block text-sm font-medium">Connect Messages</label>
           <button
             type="button"
             onClick={addConnect}
-            className="inline-flex items-center gap-2 rounded-md bg-primary px-3 py-1 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+            className="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center gap-2 rounded-md px-3 py-1 text-sm font-medium"
           >
             <Plus className="h-4 w-4" />
             Add Message
@@ -397,14 +409,14 @@ export function AboutForm() {
                 value={msg}
                 onChange={(e) => updateConnect(index, e.target.value)}
                 rows={2}
-                className="flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+                className="border-input bg-background focus:border-ring focus:ring-ring flex-1 rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
                 placeholder="Enter connect message..."
               />
               {data.connect.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removeConnect(index)}
-                  className="self-start rounded-md bg-destructive p-2 text-destructive-foreground hover:bg-destructive/90"
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90 self-start rounded-md p-2"
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -413,12 +425,14 @@ export function AboutForm() {
           ))}
         </div>
         {state.errors?.connect && (
-          <p className="mt-1 text-sm text-destructive">{state.errors.connect.join(", ")}</p>
+          <p className="text-destructive mt-1 text-sm">{state.errors.connect.join(', ')}</p>
         )}
       </div>
 
       {state.message && (
-        <div className={`rounded-md p-3 ${state.message.includes("successfully") ? "bg-green-50 text-green-800 border border-green-200" : "bg-destructive/15 text-destructive"}`}>
+        <div
+          className={`rounded-md p-3 ${state.message.includes('successfully') ? 'border border-green-200 bg-green-50 text-green-800' : 'bg-destructive/15 text-destructive'}`}
+        >
           <p className="text-sm">{state.message}</p>
         </div>
       )}
@@ -426,7 +440,7 @@ export function AboutForm() {
       <div className="flex justify-end">
         <button
           type="submit"
-          className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:opacity-50"
+          className="bg-primary text-primary-foreground hover:bg-primary/90 focus:ring-ring inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium focus:ring-2 focus:ring-offset-2 focus:outline-none disabled:opacity-50"
         >
           <Loader2 className="h-4 w-4 animate-spin" style={{ display: 'none' }} />
           Save Changes

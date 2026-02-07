@@ -1,8 +1,8 @@
-"use server";
+'use server';
 
-import { z } from "zod";
-import { getSession } from "@/lib/session";
-import { revalidatePath } from "next/cache";
+import { z } from 'zod';
+import { getSession } from '@/lib/session';
+import { revalidatePath } from 'next/cache';
 
 const isValidUrl = (value: string) => {
   try {
@@ -13,31 +13,34 @@ const isValidUrl = (value: string) => {
   }
 };
 
-const urlField = (message: string) =>
-  z.string().refine(isValidUrl, { message });
+const urlField = (message: string) => z.string().refine(isValidUrl, { message });
 
-const isValidEmail = (value: string) =>
-  /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+const isValidEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-const emailField = (message: string) =>
-  z.string().refine(isValidEmail, { message });
+const emailField = (message: string) => z.string().refine(isValidEmail, { message });
 
 const aboutSchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  title: z.string().min(1, "Title is required"),
-  tagline: z.string().min(1, "Tagline is required"),
-  description: z.array(z.string().min(1, "Description paragraph cannot be empty")).min(1, "At least one description is required"),
-  bannerWebp: urlField("Invalid banner WebP URL"),
-  profilePng: urlField("Invalid profile PNG URL"),
-  profileWebp: urlField("Invalid profile WebP URL"),
-  website: urlField("Invalid website URL"),
-  email: emailField("Invalid email"),
-  github: urlField("Invalid GitHub URL"),
-  linkedin: urlField("Invalid LinkedIn URL"),
-  xtwitter: urlField("Invalid X/Twitter URL"),
-  instagram: urlField("Invalid Instagram URL"),
-  youtube: urlField("Invalid YouTube URL"),
-  connect: z.array(z.string().min(1, "Connect message cannot be empty")).min(1, "At least one connect message is required"),
+  name: z.string().min(1, 'Name is required'),
+  title: z.string().min(1, 'Title is required'),
+  tagline: z.string().min(1, 'Tagline is required'),
+  description: z
+    .array(z.string().min(1, 'Description paragraph cannot be empty'))
+    .min(1, 'At least one description is required'),
+  bannerWebp: urlField('Invalid banner WebP URL'),
+  profilePng: urlField('Invalid profile PNG URL'),
+  profileWebp: urlField('Invalid profile WebP URL'),
+  website: urlField('Invalid website URL'),
+  email: emailField('Invalid email'),
+  github: urlField('Invalid GitHub URL'),
+  linkedin: urlField('Invalid LinkedIn URL'),
+  xtwitter: urlField('Invalid X/Twitter URL'),
+  instagram: urlField('Invalid Instagram URL'),
+  youtube: urlField('Invalid YouTube URL'),
+  // facebook is optional
+  facebook: z.string().optional().refine(isValidUrl, { message: 'Invalid Facebook URL' }),
+  connect: z
+    .array(z.string().min(1, 'Connect message cannot be empty'))
+    .min(1, 'At least one connect message is required'),
 });
 
 export type AboutFormData = z.infer<typeof aboutSchema>;
@@ -46,18 +49,18 @@ export async function getAboutData(): Promise<AboutFormData | null> {
   const session = await getSession();
   if (!session) return null;
 
-  const API_URL = process.env.API_URL || "http://localhost:3000";
+  const API_URL = process.env.API_URL || 'http://localhost:3000';
 
   try {
     const response = await fetch(`${API_URL}/about`, {
       headers: {
         Authorization: `Bearer ${session}`,
       },
-      cache: "no-store",
+      cache: 'no-store',
     });
 
     if (!response.ok) {
-      console.error("Failed to fetch about data:", response.statusText);
+      console.error('Failed to fetch about data:', response.statusText);
       return null;
     }
 
@@ -79,10 +82,11 @@ export async function getAboutData(): Promise<AboutFormData | null> {
       xtwitter: data.links.xtwitter,
       instagram: data.links.instagram,
       youtube: data.links.youtube,
+      facebook: data.links?.facebook,
       connect: data.connect,
     };
   } catch (error) {
-    console.error("Error fetching about data:", error);
+    console.error('Error fetching about data:', error);
     return null;
   }
 }
@@ -94,30 +98,31 @@ export type UpdateAboutState = {
 
 export async function updateAbout(
   prevState: UpdateAboutState,
-  formData: FormData
+  formData: FormData,
 ): Promise<UpdateAboutState> {
   const session = await getSession();
   if (!session) {
-    return { message: "Unauthorized" };
+    return { message: 'Unauthorized' };
   }
 
   // Parse form data
   const rawData = {
-    name: formData.get("name"),
-    title: formData.get("title"),
-    tagline: formData.get("tagline"),
-    description: formData.getAll("description").filter(Boolean),
-    bannerWebp: formData.get("bannerWebp"),
-    profilePng: formData.get("profilePng"),
-    profileWebp: formData.get("profileWebp"),
-    website: formData.get("website"),
-    email: formData.get("email"),
-    github: formData.get("github"),
-    linkedin: formData.get("linkedin"),
-    xtwitter: formData.get("xtwitter"),
-    instagram: formData.get("instagram"),
-    youtube: formData.get("youtube"),
-    connect: formData.getAll("connect").filter(Boolean),
+    name: formData.get('name'),
+    title: formData.get('title'),
+    tagline: formData.get('tagline'),
+    description: formData.getAll('description').filter(Boolean),
+    bannerWebp: formData.get('bannerWebp'),
+    profilePng: formData.get('profilePng'),
+    profileWebp: formData.get('profileWebp'),
+    website: formData.get('website'),
+    email: formData.get('email'),
+    github: formData.get('github'),
+    linkedin: formData.get('linkedin'),
+    xtwitter: formData.get('xtwitter'),
+    instagram: formData.get('instagram'),
+    youtube: formData.get('youtube'),
+    facebook: formData.get('facebook'),
+    connect: formData.getAll('connect').filter(Boolean),
   };
 
   const validatedFields = aboutSchema.safeParse(rawData);
@@ -125,14 +130,14 @@ export async function updateAbout(
   if (!validatedFields.success) {
     const errorTree = z.treeifyError(validatedFields.error);
     const fieldErrors: Partial<Record<keyof AboutFormData, string[]>> = {};
-    
+
     for (const [key, value] of Object.entries(errorTree)) {
-      if (value && typeof value === "object" && "_errors" in value) {
+      if (value && typeof value === 'object' && '_errors' in value) {
         const errorNode = value as { _errors: string[] };
         fieldErrors[key as keyof AboutFormData] = errorNode._errors;
       }
     }
-    
+
     return { errors: fieldErrors };
   }
 
@@ -157,17 +162,18 @@ export async function updateAbout(
       xtwitter: data.xtwitter,
       instagram: data.instagram,
       youtube: data.youtube,
+      facebook: data.facebook,
     },
     connect: data.connect,
   };
 
-  const API_URL = process.env.API_URL || "http://localhost:3000";
+  const API_URL = process.env.API_URL || 'http://localhost:3000';
 
   try {
     const response = await fetch(`${API_URL}/about`, {
-      method: "PATCH",
+      method: 'PATCH',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${session}`,
       },
       body: JSON.stringify(apiData),
@@ -175,15 +181,15 @@ export async function updateAbout(
 
     if (!response.ok) {
       if (response.status === 401) {
-        return { message: "Unauthorized" };
+        return { message: 'Unauthorized' };
       }
-      return { message: "Failed to update about information" };
+      return { message: 'Failed to update about information' };
     }
 
-    revalidatePath("/about");
-    return { message: "About information updated successfully" };
+    revalidatePath('/about');
+    return { message: 'About information updated successfully' };
   } catch (error) {
-    console.error("Error updating about:", error);
-    return { message: "Network error. Please try again." };
+    console.error('Error updating about:', error);
+    return { message: 'Network error. Please try again.' };
   }
 }
