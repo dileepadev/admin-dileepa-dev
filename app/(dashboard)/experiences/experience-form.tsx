@@ -8,7 +8,7 @@ import {
   ExperienceState,
 } from '@/app/actions/experiences';
 import { Loader2, Plus, Trash2, Save, X } from 'lucide-react';
-import Image from 'next/image';
+import { ImageUploadField } from '@/components/ui/image-upload-field';
 
 interface ExperienceFormProps {
   initialData?: ExperienceFormData;
@@ -26,8 +26,6 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
   const action = initialData ? updateExperience.bind(null, initialData._id!) : createExperience;
 
   const [state, formAction, isPending] = useActionState(action, initialState);
-  const [lightPreview, setLightPreview] = useState(initialData?.logo?.light || '');
-  const [darkPreview, setDarkPreview] = useState(initialData?.logo?.dark || '');
 
   // Local state for array fields which need dynamic UI
   const [technologies, setTechnologies] = useState<string[]>(initialData?.technologies || ['']);
@@ -146,63 +144,23 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="space-y-2">
-          <label htmlFor="logo.light" className="text-sm font-medium">
-            Logo (Light Mode) URL
-          </label>
-          <input
-            id="logo.light"
-            name="logo.light"
-            defaultValue={initialData?.logo?.light}
-            onChange={(e) => setLightPreview(e.target.value)}
-            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            required
-          />
-          {lightPreview && (
-            <div className="relative mt-2 h-16 w-16 overflow-hidden rounded-md border">
-              <Image
-                src={lightPreview}
-                alt="Light logo preview"
-                fill
-                unoptimized
-                className="object-contain p-2"
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
-            </div>
-          )}
-          {state.errors?.['logo.light'] && (
-            <p className="text-sm text-red-500">{state.errors['logo.light'][0]}</p>
-          )}
-        </div>
+        <ImageUploadField
+          label="Logo (Light Mode) URL"
+          name="logo.light"
+          defaultValue={initialData?.logo?.light}
+          required
+          folder="experiences"
+          error={state.errors?.['logo.light']?.[0]}
+        />
 
-        <div className="space-y-2">
-          <label htmlFor="logo.dark" className="text-sm font-medium">
-            Logo (Dark Mode) URL
-          </label>
-          <input
-            id="logo.dark"
-            name="logo.dark"
-            defaultValue={initialData?.logo?.dark}
-            onChange={(e) => setDarkPreview(e.target.value)}
-            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            required
-          />
-          {darkPreview && (
-            <div className="relative mt-2 h-16 w-16 overflow-hidden rounded-md border">
-              <Image
-                src={darkPreview}
-                alt="Dark logo preview"
-                fill
-                unoptimized
-                className="object-contain p-2"
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
-            </div>
-          )}
-          {state.errors?.['logo.dark'] && (
-            <p className="text-sm text-red-500">{state.errors['logo.dark'][0]}</p>
-          )}
-        </div>
+        <ImageUploadField
+          label="Logo (Dark Mode) URL"
+          name="logo.dark"
+          defaultValue={initialData?.logo?.dark}
+          required
+          folder="experiences"
+          error={state.errors?.['logo.dark']?.[0]}
+        />
       </div>
 
       <div className="space-y-4">

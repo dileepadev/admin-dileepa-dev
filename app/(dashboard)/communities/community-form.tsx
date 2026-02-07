@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState } from 'react';
 import {
   createCommunity,
   updateCommunity,
@@ -8,7 +8,7 @@ import {
   ActionState,
 } from '@/app/actions/communities';
 import { Loader2, Save, X } from 'lucide-react';
-import Image from 'next/image';
+import { ImageUploadField } from '@/components/ui/image-upload-field';
 
 interface CommunityFormProps {
   initialData?: CommunityFormData;
@@ -31,9 +31,6 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
     },
     { success: false, message: '', errors: {} },
   );
-
-  const [lightPreview, setLightPreview] = useState(initialData?.logo?.light || '');
-  const [darkPreview, setDarkPreview] = useState(initialData?.logo?.dark || '');
 
   return (
     <div className="bg-card border-border rounded-lg border p-6">
@@ -143,62 +140,24 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <label htmlFor="logo.light" className="text-sm font-medium">
-                Light Mode Logo URL
-              </label>
-              <input
-                id="logo.light"
+              <ImageUploadField
                 name="logo.light"
-                type="url"
+                label="Light Mode Logo"
                 defaultValue={initialData?.logo?.light}
-                onChange={(e) => setLightPreview(e.target.value)}
-                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="https://example.com/logo-light.svg"
-                required
+                folder="communities"
               />
-              {lightPreview && (
-                <div className="relative mt-2 h-16 w-16 overflow-hidden rounded-md border">
-                  <Image
-                    src={lightPreview}
-                    alt="Light logo preview"
-                    fill
-                    unoptimized
-                    className="object-contain p-2"
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                  />
-                </div>
-              )}
               {state.errors?.['logo.light'] && (
                 <p className="text-sm text-red-500">{state.errors['logo.light'][0]}</p>
               )}
             </div>
 
             <div className="space-y-2">
-              <label htmlFor="logo.dark" className="text-sm font-medium">
-                Dark Mode Logo URL
-              </label>
-              <input
-                id="logo.dark"
+              <ImageUploadField
                 name="logo.dark"
-                type="url"
+                label="Dark Mode Logo"
                 defaultValue={initialData?.logo?.dark}
-                onChange={(e) => setDarkPreview(e.target.value)}
-                className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-                placeholder="https://example.com/logo-dark.svg"
-                required
+                folder="communities"
               />
-              {darkPreview && (
-                <div className="relative mt-2 h-16 w-16 overflow-hidden rounded-md border">
-                  <Image
-                    src={darkPreview}
-                    alt="Dark logo preview"
-                    fill
-                    unoptimized
-                    className="object-contain p-2"
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                  />
-                </div>
-              )}
               {state.errors?.['logo.dark'] && (
                 <p className="text-sm text-red-500">{state.errors['logo.dark'][0]}</p>
               )}

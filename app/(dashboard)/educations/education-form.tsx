@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useEffect, useState } from 'react';
+import { useActionState, useEffect } from 'react';
 import {
   createEducation,
   updateEducation,
@@ -8,7 +8,7 @@ import {
   EducationState,
 } from '@/app/actions/educations';
 import { Loader2, Save, X } from 'lucide-react';
-import Image from 'next/image';
+import { ImageUploadField } from '@/components/ui/image-upload-field';
 
 interface EducationFormProps {
   initialData?: EducationFormData;
@@ -22,9 +22,6 @@ const initialState: EducationState = {
 };
 
 export function EducationForm({ initialData, onSuccess, onCancel }: EducationFormProps) {
-  const [lightPreview, setLightPreview] = useState(initialData?.logo?.light || '');
-  const [darkPreview, setDarkPreview] = useState(initialData?.logo?.dark || '');
-
   // Bind the ID if updating
   const action = initialData ? updateEducation.bind(null, initialData._id!) : createEducation;
 
@@ -131,64 +128,26 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <label htmlFor="logo.light" className="text-sm font-medium">
-            Logo (Light Mode) URL
-          </label>
-          <input
-            id="logo.light"
+          <ImageUploadField
             name="logo.light"
+            label="Logo (Light Mode) URL"
             defaultValue={initialData?.logo?.light}
-            onChange={(e) => setLightPreview(e.target.value)}
-            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            required
+            folder="education"
           />
           {state.errors?.['logo.light'] && (
             <p className="text-sm text-red-500">{state.errors['logo.light'][0]}</p>
           )}
-          {lightPreview && (
-            <div className="bg-muted border-border relative mt-2 flex h-16 w-16 items-center justify-center overflow-hidden rounded border">
-              <Image
-                src={lightPreview}
-                alt="Light logo preview"
-                fill
-                unoptimized
-                className="object-contain p-1"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-            </div>
-          )}
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="logo.dark" className="text-sm font-medium">
-            Logo (Dark Mode) URL
-          </label>
-          <input
-            id="logo.dark"
+          <ImageUploadField
             name="logo.dark"
+            label="Logo (Dark Mode) URL"
             defaultValue={initialData?.logo?.dark}
-            onChange={(e) => setDarkPreview(e.target.value)}
-            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            required
+            folder="education"
           />
           {state.errors?.['logo.dark'] && (
             <p className="text-sm text-red-500">{state.errors['logo.dark'][0]}</p>
-          )}
-          {darkPreview && (
-            <div className="bg-muted border-border relative mt-2 flex h-16 w-16 items-center justify-center overflow-hidden rounded border">
-              <Image
-                src={darkPreview}
-                alt="Dark logo preview"
-                fill
-                unoptimized
-                className="object-contain p-1"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = 'none';
-                }}
-              />
-            </div>
           )}
         </div>
       </div>

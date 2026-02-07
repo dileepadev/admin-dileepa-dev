@@ -1,9 +1,9 @@
 'use client';
 
-import { useActionState, useEffect, useState } from 'react';
+import { useActionState, useEffect } from 'react';
 import { createVideo, updateVideo, VideoFormData, VideoState } from '@/app/actions/videos';
 import { Loader2, Save, X } from 'lucide-react';
-import Image from 'next/image';
+import { ImageUploadField } from '@/components/ui/image-upload-field';
 
 interface VideoFormProps {
   initialData?: VideoFormData;
@@ -21,7 +21,6 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
   const action = initialData ? updateVideo.bind(null, initialData._id!) : createVideo;
 
   const [state, formAction, isPending] = useActionState(action, initialState);
-  const [thumbnailPreview, setThumbnailPreview] = useState(initialData?.thumbnail || '');
 
   useEffect(() => {
     if (state.success) {
@@ -91,31 +90,12 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
         </div>
 
         <div className="space-y-2 md:col-span-2">
-          <label htmlFor="thumbnail" className="text-sm font-medium">
-            Thumbnail URL
-          </label>
-          <input
-            id="thumbnail"
+          <ImageUploadField
             name="thumbnail"
-            type="url"
+            label="Thumbnail URL"
             defaultValue={initialData?.thumbnail}
-            onChange={(e) => setThumbnailPreview(e.target.value)}
-            placeholder="https://example.com/thumbnail.jpg"
-            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-            required
+            folder="videos"
           />
-          {thumbnailPreview && (
-            <div className="bg-muted relative mt-2 aspect-video w-full max-w-sm overflow-hidden rounded-md border">
-              <Image
-                src={thumbnailPreview}
-                alt="Thumbnail preview"
-                fill
-                unoptimized
-                className="object-cover"
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
-            </div>
-          )}
           {state.errors?.thumbnail && (
             <p className="text-sm text-red-500">{state.errors.thumbnail[0]}</p>
           )}
