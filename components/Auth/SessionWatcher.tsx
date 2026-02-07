@@ -78,8 +78,8 @@ export default function SessionWatcher() {
       const res = await originalFetch(...(args as Parameters<typeof fetch>));
 
       // Avoid recursion if sign-out itself returns 401
-      const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request).url;
-      const isSignOut = url.includes('/api/auth/sign-out');
+      const url = typeof args[0] === 'string' ? args[0] : (args[0] as Request)?.url;
+      const isSignOut = url?.includes('/api/auth/sign-out') ?? false;
 
       if (res?.status === 401 && !isSignOut) {
         // token invalid/expired, ensure we logout

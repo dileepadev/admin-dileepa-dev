@@ -1,18 +1,18 @@
-"use server";
+'use server';
 
-import { z, ZodIssue } from "zod";
-import { revalidatePath } from "next/cache";
-import { cookies } from "next/headers";
+import { z, ZodIssue } from 'zod';
+import { revalidatePath } from 'next/cache';
+import { cookies } from 'next/headers';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
 const logoSchema = z.object({
-  light: z.string().url("Light logo must be a valid URL"),
-  dark: z.string().url("Dark logo must be a valid URL"),
+  light: z.string().url('Light logo must be a valid URL'),
+  dark: z.string().url('Dark logo must be a valid URL'),
 });
 
 const toolSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, 'Name is required'),
   logo: logoSchema,
 });
 
@@ -25,70 +25,100 @@ export type ActionState = {
 };
 
 export async function getTools(): Promise<ToolFormData[]> {
-  try {
+  function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function fetchWithRetry(attempt = 0): Promise<Response> {
     const cookieStore = await cookies();
-    const token = cookieStore.get("session")?.value;
+    const token = cookieStore.get('session')?.value;
 
     if (!token) {
-      throw new Error("No authentication token found");
+      throw new Error('No authentication token found');
     }
 
-    const response = await fetch(`${API_BASE_URL}/tools`, {
+    const res = await fetch(`${API_BASE_URL}/tools`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      cache: "no-store",
+      cache: 'no-store',
     });
 
+    if (res.status === 429 && attempt < 3) {
+      const retryAfter = res.headers.get('Retry-After');
+      const delay = retryAfter ? parseInt(retryAfter, 10) * 1000 : Math.pow(2, attempt) * 1000;
+      console.warn(`Rate limited fetching tools. Retry #${attempt + 1} after ${delay}ms`);
+      await sleep(delay);
+      return fetchWithRetry(attempt + 1);
+    }
+
+    return res;
+  }
+
+  try {
+    const response = await fetchWithRetry();
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch tools: ${response.statusText}`);
+      if (response.status === 401) {
+        throw new Error('Unauthorized when fetching tools');
+      }
+      if (response.status === 429) {
+        throw new Error('Rate limited when fetching tools (429)');
+      }
+      throw new Error(`Failed to fetch tools: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Error fetching tools:", error);
-    throw new Error("Failed to fetch tools");
+    console.error('Error fetching tools:', error);
+    throw new Error(`Failed to fetch tools: ${(error as Error).message}`);
   }
 }
 
 export async function createTool(formData: FormData): Promise<ActionState> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("session")?.value;
+    const token = cookieStore.get('session')?.value;
 
     if (!token) {
-      return { success: false, message: "No authentication token found" };
+      return { success: false, message: 'No authentication token found' };
     }
 
     const rawData = {
-      name: formData.get("name") as string,
+      name: formData.get('name') as string,
       logo: {
-        light: formData.get("logo.light") as string,
-        dark: formData.get("logo.dark") as string,
+        light: formData.get('logo.light') as string,
+        dark: formData.get('logo.dark') as string,
       },
     };
 
     const validation = toolSchema.safeParse(rawData);
     if (!validation.success) {
       const fieldErrors = validation.error.flatten().fieldErrors;
-      const logoErrors = validation.error.issues.filter((error: ZodIssue) => error.path.includes('logo'));
-      
+      const logoErrors = validation.error.issues.filter((error: ZodIssue) =>
+        error.path.includes('logo'),
+      );
+
       return {
         success: false,
-        message: "Validation failed",
+        message: 'Validation failed',
         errors: {
           ...fieldErrors,
-          "logo.light": logoErrors.filter((e: ZodIssue) => e.path.includes('light')).map((e: ZodIssue) => e.message),
-          "logo.dark": logoErrors.filter((e: ZodIssue) => e.path.includes('dark')).map((e: ZodIssue) => e.message),
+          'logo.light': logoErrors
+            .filter((e: ZodIssue) => e.path.includes('light'))
+            .map((e: ZodIssue) => e.message),
+          'logo.dark': logoErrors
+            .filter((e: ZodIssue) => e.path.includes('dark'))
+            .map((e: ZodIssue) => e.message),
         },
       };
     }
 
     const response = await fetch(`${API_BASE_URL}/tools`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(validation.data),
@@ -102,51 +132,57 @@ export async function createTool(formData: FormData): Promise<ActionState> {
       };
     }
 
-    revalidatePath("/dashboard/tools");
-    return { success: true, message: "Tool created successfully" };
+    revalidatePath('/dashboard/tools');
+    return { success: true, message: 'Tool created successfully' };
   } catch (error) {
-    console.error("Error creating tool:", error);
-    return { success: false, message: "Failed to create tool" };
+    console.error('Error creating tool:', error);
+    return { success: false, message: 'Failed to create tool' };
   }
 }
 
 export async function updateTool(id: string, formData: FormData): Promise<ActionState> {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("session")?.value;
+    const token = cookieStore.get('session')?.value;
 
     if (!token) {
-      return { success: false, message: "No authentication token found" };
+      return { success: false, message: 'No authentication token found' };
     }
 
     const rawData = {
-      name: formData.get("name") as string,
+      name: formData.get('name') as string,
       logo: {
-        light: formData.get("logo.light") as string,
-        dark: formData.get("logo.dark") as string,
+        light: formData.get('logo.light') as string,
+        dark: formData.get('logo.dark') as string,
       },
     };
 
     const validation = toolSchema.safeParse(rawData);
     if (!validation.success) {
       const fieldErrors = validation.error.flatten().fieldErrors;
-      const logoErrors = validation.error.issues.filter((error: ZodIssue) => error.path.includes('logo'));
-      
+      const logoErrors = validation.error.issues.filter((error: ZodIssue) =>
+        error.path.includes('logo'),
+      );
+
       return {
         success: false,
-        message: "Validation failed",
+        message: 'Validation failed',
         errors: {
           ...fieldErrors,
-          "logo.light": logoErrors.filter((e: ZodIssue) => e.path.includes('light')).map((e: ZodIssue) => e.message),
-          "logo.dark": logoErrors.filter((e: ZodIssue) => e.path.includes('dark')).map((e: ZodIssue) => e.message),
+          'logo.light': logoErrors
+            .filter((e: ZodIssue) => e.path.includes('light'))
+            .map((e: ZodIssue) => e.message),
+          'logo.dark': logoErrors
+            .filter((e: ZodIssue) => e.path.includes('dark'))
+            .map((e: ZodIssue) => e.message),
         },
       };
     }
 
     const response = await fetch(`${API_BASE_URL}/tools/${id}`, {
-      method: "PATCH",
+      method: 'PATCH',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(validation.data),
@@ -160,25 +196,25 @@ export async function updateTool(id: string, formData: FormData): Promise<Action
       };
     }
 
-    revalidatePath("/dashboard/tools");
-    return { success: true, message: "Tool updated successfully" };
+    revalidatePath('/dashboard/tools');
+    return { success: true, message: 'Tool updated successfully' };
   } catch (error) {
-    console.error("Error updating tool:", error);
-    return { success: false, message: "Failed to update tool" };
+    console.error('Error updating tool:', error);
+    return { success: false, message: 'Failed to update tool' };
   }
 }
 
 export async function deleteTool(id: string) {
   try {
     const cookieStore = await cookies();
-    const token = cookieStore.get("session")?.value;
+    const token = cookieStore.get('session')?.value;
 
     if (!token) {
-      return { success: false, message: "No authentication token found" };
+      return { success: false, message: 'No authentication token found' };
     }
 
     const response = await fetch(`${API_BASE_URL}/tools/${id}`, {
-      method: "DELETE",
+      method: 'DELETE',
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -192,10 +228,10 @@ export async function deleteTool(id: string) {
       };
     }
 
-    revalidatePath("/dashboard/tools");
-    return { success: true, message: "Tool deleted successfully" };
+    revalidatePath('/dashboard/tools');
+    return { success: true, message: 'Tool deleted successfully' };
   } catch (error) {
-    console.error("Error deleting tool:", error);
-    return { success: false, message: "Failed to delete tool" };
+    console.error('Error deleting tool:', error);
+    return { success: false, message: 'Failed to delete tool' };
   }
 }

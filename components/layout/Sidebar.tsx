@@ -45,9 +45,9 @@ export function Sidebar({ className }: { className?: string }) {
   }, []);
 
   return (
-    <div className={cn('bg-bg-elevated flex h-full w-64 flex-col border-r', className)}>
+    <div className={cn('bg-bg-elevated flex min-h-screen w-64 flex-col border-r', className)}>
       <div className="border-border flex h-14 items-center border-b px-6">
-        <span className="text-text-primary font-semibold tracking-tight">Admin Dashboard</span>
+        <span className="text-text-primary font-semibold tracking-tight">admin.dileepa.dev</span>
       </div>
       <div className="flex-1 overflow-auto py-4">
         <nav className="grid gap-1 px-2">

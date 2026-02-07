@@ -30,7 +30,11 @@ export type ActionState = {
 };
 
 export async function getCommunities(): Promise<CommunityFormData[]> {
-  try {
+  function sleep(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async function fetchWithRetry(attempt = 0): Promise<Response> {
     const cookieStore = await cookies();
     const token = cookieStore.get('session')?.value;
 
@@ -38,22 +42,44 @@ export async function getCommunities(): Promise<CommunityFormData[]> {
       throw new Error('No authentication token found');
     }
 
-    const response = await fetch(`${API_BASE_URL}/communities`, {
+    const res = await fetch(`${API_BASE_URL}/communities`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
       cache: 'no-store',
     });
 
+    // If rate-limited, attempt exponential backoff (honor Retry-After if present)
+    if (res.status === 429 && attempt < 3) {
+      const retryAfter = res.headers.get('Retry-After');
+      const delay = retryAfter ? parseInt(retryAfter, 10) * 1000 : Math.pow(2, attempt) * 1000;
+      console.warn(`Rate limited fetching communities. Retry #${attempt + 1} after ${delay}ms`);
+      await sleep(delay);
+      return fetchWithRetry(attempt + 1);
+    }
+
+    return res;
+  }
+
+  try {
+    const response = await fetchWithRetry();
+
     if (!response.ok) {
-      throw new Error(`Failed to fetch communities: ${response.statusText}`);
+      // Provide more informative error messages for common cases
+      if (response.status === 401) {
+        throw new Error('Unauthorized when fetching communities');
+      }
+      if (response.status === 429) {
+        throw new Error('Rate limited when fetching communities (429)');
+      }
+      throw new Error(`Failed to fetch communities: ${response.status} ${response.statusText}`);
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
     console.error('Error fetching communities:', error);
-    throw new Error('Failed to fetch communities');
+    throw new Error(`Failed to fetch communities: ${(error as Error).message}`);
   }
 }
 
