@@ -7,9 +7,9 @@ function readCookie(name: string) {
   return match ? decodeURIComponent(match[2]) : undefined;
 }
 
-async function doLogout() {
+async function doSignOut() {
   try {
-    await fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' });
+    await fetch('/api/auth/sign-out', { method: 'POST', credentials: 'same-origin' });
   } catch {
     // ignore
   }
@@ -17,8 +17,8 @@ async function doLogout() {
   try {
     localStorage.setItem('signed_out', Date.now().toString());
   } catch {}
-  // redirect to login
-  window.location.href = '/login';
+  // redirect to sign-in
+  window.location.href = '/sign-in';
 }
 
 export default function SessionWatcher() {
@@ -31,7 +31,7 @@ export default function SessionWatcher() {
       if (broadcast) {
         // clear the cookie so we don't keep triggering
         document.cookie = 'signed_out_broadcast=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-        doLogout();
+        doSignOut();
         return;
       }
 
@@ -42,7 +42,7 @@ export default function SessionWatcher() {
       const msUntil = expMs - now;
       if (msUntil <= 0) {
         // already expired
-        doLogout();
+        doSignOut();
         return;
       }
       // clear previous
@@ -51,7 +51,7 @@ export default function SessionWatcher() {
       }
       // schedule logout
       timeoutRef.current = window.setTimeout(() => {
-        doLogout();
+        doSignOut();
       }, msUntil + 1000);
     }
 
@@ -68,7 +68,7 @@ export default function SessionWatcher() {
       const res = await originalFetch(...(args as Parameters<typeof fetch>));
       if (res?.status === 401) {
         // token invalid/expired, ensure we logout
-        doLogout();
+        doSignOut();
       }
       return res;
     };
@@ -77,7 +77,7 @@ export default function SessionWatcher() {
     function onStorage(e: StorageEvent) {
       if (e.key === 'signed_out') {
         // another tab signed out
-        window.location.href = '/login';
+        window.location.href = '/sign-in';
       }
     }
 

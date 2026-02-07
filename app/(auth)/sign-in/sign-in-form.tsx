@@ -3,10 +3,10 @@
 import { Button } from '@/components/ui/buttons/Button';
 import { useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
-import { login, LoginState } from '@/app/actions/auth';
+import { signIn, SignInState } from '@/app/actions/auth';
 import { Loader2 } from 'lucide-react';
 
-const initialState: LoginState = {
+const initialState: SignInState = {
   message: '',
   errors: {},
 };
@@ -17,13 +17,13 @@ function SubmitButton() {
   return (
     <Button type="submit" disabled={pending} className="w-full">
       {pending ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
-      {pending ? 'Log in...' : 'Log in'}
+      {pending ? 'Sign in...' : 'Sign in'}
     </Button>
   );
 }
 
-export function LoginForm() {
-  const [state, formAction] = useActionState(login, initialState);
+export function SignInForm() {
+  const [state, formAction] = useActionState(signIn, initialState);
 
   return (
     <form action={formAction} className="space-y-6">

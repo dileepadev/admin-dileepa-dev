@@ -4,12 +4,12 @@ import { z } from 'zod';
 import { createSession, deleteSession, broadcastSignOut } from '@/lib/session';
 import { redirect } from 'next/navigation';
 
-const loginSchema = z.object({
+const signInSchema = z.object({
   email: z.string().email({ message: 'Invalid email address' }),
   password: z.string().min(1, { message: 'Password is required' }),
 });
 
-export type LoginState = {
+export type SignInState = {
   errors?: {
     email?: string[];
     password?: string[];
@@ -18,8 +18,8 @@ export type LoginState = {
   message?: string;
 };
 
-export async function login(prevState: LoginState, formData: FormData): Promise<LoginState> {
-  const validatedFields = loginSchema.safeParse({
+export async function signIn(prevState: SignInState, formData: FormData): Promise<SignInState> {
+  const validatedFields = signInSchema.safeParse({
     email: formData.get('email'),
     password: formData.get('password'),
   });
@@ -34,7 +34,7 @@ export async function login(prevState: LoginState, formData: FormData): Promise<
   const API_URL = process.env.API_URL || 'http://localhost:3000';
 
   try {
-    const response = await fetch(`${API_URL}/auth/login`, {
+    const response = await fetch(`${API_URL}/auth/sign-in`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -60,8 +60,8 @@ export async function login(prevState: LoginState, formData: FormData): Promise<
 
       // Build a helpful message that includes status when possible
       const defaultMessage = serverMessage
-        ? `Login failed: ${response.status} ${response.statusText} — ${serverMessage}`
-        : `Login failed: ${response.status} ${response.statusText}`;
+        ? `Sign in failed: ${response.status} ${response.statusText} — ${serverMessage}`
+        : `Sign in failed: ${response.status} ${response.statusText}`;
 
       if (response.status === 401) {
         return {
@@ -79,10 +79,10 @@ export async function login(prevState: LoginState, formData: FormData): Promise<
     if (data.access_token) {
       await createSession(data.access_token);
     } else {
-      return { message: 'Login failed: No token received.' };
+      return { message: 'Sign in failed: No token received.' };
     }
   } catch (error) {
-    console.error('Login error:', error);
+    console.error('Sign in error:', error);
     const errMsg = error instanceof Error ? error.message : String(error);
     return {
       message: `Network error: ${errMsg}`,
@@ -92,8 +92,8 @@ export async function login(prevState: LoginState, formData: FormData): Promise<
   redirect('/');
 }
 
-export async function logout() {
+export async function signOut() {
   await deleteSession();
   await broadcastSignOut();
-  redirect('/login');
+  redirect('/sign-in');
 }

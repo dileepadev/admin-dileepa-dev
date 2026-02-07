@@ -4,7 +4,7 @@ import * as React from 'react';
 import { usePathname } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
-import { logout } from '@/app/actions/auth';
+import { signOut } from '@/app/actions/auth';
 import { Button } from '@/components/ui/buttons/Button';
 import {
   LayoutDashboard,
@@ -94,7 +94,7 @@ export function Sidebar({ className }: { className?: string }) {
         <Button
           variant="ghost"
           className="text-destructive hover:bg-destructive/10 hover:text-destructive w-full justify-start"
-          onClick={() => logout()}
+          onClick={() => signOut()}
           leftIcon={<LogOut className="h-4 w-4" />}
         >
           Sign out
