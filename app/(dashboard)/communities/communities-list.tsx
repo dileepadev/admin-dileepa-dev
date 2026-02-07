@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { getCommunities, deleteCommunity, CommunityFormData } from '@/app/actions/communities';
 import { CommunityForm } from './community-form';
-import { Loader2, Plus, Pencil, Trash2, Calendar, CheckCircle } from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, Calendar, CheckCircle, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 
@@ -151,6 +151,17 @@ export function CommunitiesList() {
             </div>
 
             <div className="mt-4 flex w-full items-center justify-end gap-2">
+              {community.communityUrl && (
+                <a
+                  href={community.communityUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+                  title="Visit Community"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                </a>
+              )}
               <button
                 onClick={() => handleEdit(community)}
                 className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
