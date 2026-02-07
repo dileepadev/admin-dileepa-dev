@@ -1,11 +1,11 @@
-"use client";
+'use client';
 
-import * as React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useTheme } from "next-themes";
-import { cn } from "@/lib/utils";
-import { logout } from "@/app/actions/auth";
+import * as React from 'react';
+import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
+import { cn } from '@/lib/utils';
+import { logout } from '@/app/actions/auth';
+import { Button } from '@/components/ui/buttons/Button';
 import {
   LayoutDashboard,
   User,
@@ -19,18 +19,18 @@ import {
   LogOut,
   Sun,
   Moon,
-} from "lucide-react";
+} from 'lucide-react';
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: LayoutDashboard },
-  { name: "About", href: "/about", icon: User },
-  { name: "Experiences", href: "/experiences", icon: Briefcase },
-  { name: "Educations", href: "/educations", icon: GraduationCap },
-  { name: "Events", href: "/events", icon: Calendar },
-  { name: "Videos", href: "/videos", icon: Video },
-  { name: "Blogs", href: "/blogs", icon: FileText },
-  { name: "Communities", href: "/communities", icon: Users },
-  { name: "Tools", href: "/tools", icon: Wrench },
+  { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'About', href: '/about', icon: User },
+  { name: 'Experiences', href: '/experiences', icon: Briefcase },
+  { name: 'Educations', href: '/educations', icon: GraduationCap },
+  { name: 'Events', href: '/events', icon: Calendar },
+  { name: 'Videos', href: '/videos', icon: Video },
+  { name: 'Blogs', href: '/blogs', icon: FileText },
+  { name: 'Communities', href: '/communities', icon: Users },
+  { name: 'Tools', href: '/tools', icon: Wrench },
 ];
 
 export function Sidebar({ className }: { className?: string }) {
@@ -43,51 +43,61 @@ export function Sidebar({ className }: { className?: string }) {
   }, []);
 
   return (
-    <div className={cn("flex h-full w-64 flex-col border-r bg-card", className)}>
-      <div className="flex h-14 items-center border-b px-6">
-        <span className="font-semibold tracking-tight">Admin Dashboard</span>
+    <div className={cn('bg-bg-elevated flex h-full w-64 flex-col border-r', className)}>
+      <div className="border-border flex h-14 items-center border-b px-6">
+        <span className="text-text-primary font-semibold tracking-tight">Admin Dashboard</span>
       </div>
       <div className="flex-1 overflow-auto py-4">
         <nav className="grid gap-1 px-2">
           {navigation.map((item) => {
             const isActive = pathname === item.href;
             return (
-              <Link
+              <Button
                 key={item.name}
                 href={item.href}
+                variant={isActive ? 'secondary' : 'ghost'}
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground",
-                  isActive ? "bg-accent text-accent-foreground" : "text-muted-foreground",
+                  'w-full justify-start',
+                  isActive
+                    ? 'bg-accent/50 text-accent-foreground'
+                    : 'text-text-secondary hover:text-text-primary',
                 )}
+                leftIcon={<item.icon className="h-4 w-4" />}
               >
-                <item.icon className="h-4 w-4" />
                 {item.name}
-              </Link>
+              </Button>
             );
           })}
         </nav>
       </div>
-      <div className="border-t p-4 space-y-1">
-        <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+      <div className="border-border space-y-2 border-t p-4">
+        <Button
+          variant="ghost"
+          className="text-text-secondary hover:text-text-primary w-full justify-start"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          leftIcon={
+            mounted ? (
+              theme === 'dark' ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )
+            ) : (
+              <span className="h-4 w-4" />
+            )
+          }
         >
-          {mounted ? (
-             theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />
-          ) : (
-            <span className="h-4 w-4" /> // Placeholder to prevent layout shift
-          )}
-          <span>{mounted ? (theme === "dark" ? "Light Mode" : "Dark Mode") : "Toggle Theme"}</span>
-        </button>
-        <button
+          {mounted ? (theme === 'dark' ? 'Light Mode' : 'Dark Mode') : 'Toggle Theme'}
+        </Button>
+        <Button
+          variant="ghost"
+          className="text-destructive hover:bg-destructive/10 hover:text-destructive w-full justify-start"
           onClick={() => logout()}
-          className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-destructive hover:text-destructive-foreground"
+          leftIcon={<LogOut className="h-4 w-4" />}
         >
-          <LogOut className="h-4 w-4" />
           Sign out
-        </button>
+        </Button>
       </div>
     </div>
   );
 }
-
