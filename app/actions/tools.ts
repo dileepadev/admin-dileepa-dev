@@ -59,6 +59,10 @@ export async function getTools(): Promise<ToolFormData[]> {
     const response = await fetchWithRetry();
 
     if (!response.ok) {
+      if (response.status === 404) {
+        // No tools yet
+        return [];
+      }
       if (response.status === 401) {
         throw new Error('Unauthorized when fetching tools');
       }

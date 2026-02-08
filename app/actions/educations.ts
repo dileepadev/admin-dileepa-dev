@@ -54,6 +54,10 @@ export async function getEducations(): Promise<EducationFormData[]> {
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        // No educations found — return empty list quietly
+        return [];
+      }
       console.error('Failed to fetch educations:', response.statusText);
       return [];
     }

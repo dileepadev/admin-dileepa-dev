@@ -108,7 +108,7 @@ export function UploadPage() {
           {/* File Input with Drop Zone */}
           <div className="space-y-2">
             <label htmlFor="file" className="text-sm font-medium">
-              Image File
+              Image File <span className="ml-1 text-red-500">*</span>
             </label>
             <div
               className="border-input bg-background hover:border-ring relative flex cursor-pointer flex-col items-center justify-center rounded-md border-2 border-dashed p-8 text-center transition-colors"
@@ -150,6 +150,8 @@ export function UploadPage() {
                 accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
                 onChange={handleFileChange}
                 className="sr-only"
+                required
+                aria-required="true"
               />
             </div>
             {state.errors?.file && <p className="text-sm text-red-500">{state.errors.file[0]}</p>}

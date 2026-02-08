@@ -15,10 +15,10 @@ const communitySchema = z.object({
   name: z.string().min(1, 'Name is required'),
   role: z.string().min(1, 'Role is required'),
   period: z.string().min(1, 'Period is required'),
-  communityUrl: z.string().url('Must be a valid URL').optional().or(z.literal('')),
+  communityUrl: z.string().url('Must be a valid URL'),
   description: z.string().min(1, 'Description is required'),
   logo: logoSchema,
-  current: z.boolean().optional(),
+  current: z.boolean(),
 });
 
 export type CommunityFormData = z.infer<typeof communitySchema> & { _id?: string };
@@ -65,7 +65,11 @@ export async function getCommunities(): Promise<CommunityFormData[]> {
     const response = await fetchWithRetry();
 
     if (!response.ok) {
-      // Provide more informative error messages for common cases
+      // Handle common cases
+      if (response.status === 404) {
+        // No communities yet
+        return [];
+      }
       if (response.status === 401) {
         throw new Error('Unauthorized when fetching communities');
       }

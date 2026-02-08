@@ -30,6 +30,10 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
 
   return (
     <form action={formAction} className="bg-card border-border space-y-6 rounded-lg border p-6">
+      <p className="text-muted-foreground text-sm">
+        All fields are required. Fields marked with <span className="text-red-500">*</span> are
+        required.
+      </p>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">{initialData ? 'Edit Video' : 'Add New Video'}</h2>
         <button
@@ -44,12 +48,13 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <label htmlFor="title" className="text-sm font-medium">
-            Title
+            Title <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="title"
             name="title"
             defaultValue={initialData?.title}
+            aria-required="true"
             className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
@@ -58,7 +63,7 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
 
         <div className="space-y-2">
           <label htmlFor="date" className="text-sm font-medium">
-            Publication Date
+            Publication Date <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="date"
@@ -67,6 +72,7 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
             defaultValue={
               initialData?.date ? new Date(initialData.date).toISOString().slice(0, 10) : undefined
             }
+            aria-required="true"
             className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
@@ -75,13 +81,14 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
 
         <div className="space-y-2 md:col-span-2">
           <label htmlFor="link" className="text-sm font-medium">
-            Video Link
+            Video Link <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="link"
             name="link"
             type="url"
             defaultValue={initialData?.link}
+            aria-required="true"
             placeholder="https://www.youtube.com/watch?v=..."
             className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
@@ -95,6 +102,7 @@ export function VideoForm({ initialData, onSuccess, onCancel }: VideoFormProps) 
             label="Thumbnail URL"
             defaultValue={initialData?.thumbnail}
             folder="videos"
+            required
           />
           {state.errors?.thumbnail && (
             <p className="text-sm text-red-500">{state.errors.thumbnail[0]}</p>

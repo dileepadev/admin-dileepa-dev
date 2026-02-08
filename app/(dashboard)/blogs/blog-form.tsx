@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import { useActionState } from "react";
-import { createBlog, updateBlog, BlogFormData } from "@/app/actions/blogs";
-import { Loader2, Save, X } from "lucide-react";
+import { useActionState } from 'react';
+import { createBlog, updateBlog, BlogFormData } from '@/app/actions/blogs';
+import { Loader2, Save, X } from 'lucide-react';
 
 interface BlogFormProps {
   initialData?: BlogFormData;
@@ -12,7 +12,10 @@ interface BlogFormProps {
 
 export function BlogForm({ initialData, onSuccess, onCancel }: BlogFormProps) {
   const [state, formAction, isPending] = useActionState(
-    async (prevState: { success: boolean; message: string; errors?: Record<string, string[]> }, formData: FormData) => {
+    async (
+      prevState: { success: boolean; message: string; errors?: Record<string, string[]> },
+      formData: FormData,
+    ) => {
       const result = initialData?._id
         ? await updateBlog(initialData._id, formData)
         : await createBlog(formData);
@@ -23,18 +26,20 @@ export function BlogForm({ initialData, onSuccess, onCancel }: BlogFormProps) {
 
       return result;
     },
-    { success: false, message: "", errors: {} }
+    { success: false, message: '', errors: {} },
   );
 
   return (
-    <div className="bg-card rounded-lg border border-border p-6">
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">
-          {initialData ? "Edit Blog" : "Add New Blog"}
-        </h2>
+    <div className="bg-card border-border rounded-lg border p-6">
+      <p className="text-muted-foreground text-sm">
+        All fields are required. Fields marked with <span className="text-red-500">*</span> are
+        required.
+      </p>
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-xl font-semibold">{initialData ? 'Edit Blog' : 'Add New Blog'}</h2>
         <button
           onClick={onCancel}
-          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
+          className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
           type="button"
         >
           <X className="h-4 w-4" />
@@ -42,80 +47,82 @@ export function BlogForm({ initialData, onSuccess, onCancel }: BlogFormProps) {
       </div>
 
       <form action={formAction} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <label htmlFor="title" className="text-sm font-medium">
-              Title
+              Title <span className="ml-1 text-red-500">*</span>
             </label>
             <input
               id="title"
               name="title"
               defaultValue={initialData?.title}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              aria-required="true"
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="Enter blog title"
               required
             />
-            {state.errors?.title && (
-              <p className="text-red-500 text-sm">{state.errors.title[0]}</p>
-            )}
+            {state.errors?.title && <p className="text-sm text-red-500">{state.errors.title[0]}</p>}
           </div>
 
           <div className="space-y-2">
             <label htmlFor="date" className="text-sm font-medium">
-              Publication Date
+              Publication Date <span className="ml-1 text-red-500">*</span>
             </label>
             <input
               id="date"
               name="date"
               type="date"
-              defaultValue={initialData?.date ? new Date(initialData.date).toISOString().slice(0,10) : undefined}
-              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              defaultValue={
+                initialData?.date
+                  ? new Date(initialData.date).toISOString().slice(0, 10)
+                  : undefined
+              }
+              aria-required="true"
+              className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               required
             />
-            {state.errors?.date && (
-              <p className="text-red-500 text-sm">{state.errors.date[0]}</p>
-            )}
+            {state.errors?.date && <p className="text-sm text-red-500">{state.errors.date[0]}</p>}
           </div>
         </div>
 
         <div className="space-y-2">
           <label htmlFor="excerpt" className="text-sm font-medium">
-            Excerpt
+            Excerpt <span className="ml-1 text-red-500">*</span>
           </label>
           <textarea
             id="excerpt"
             name="excerpt"
             defaultValue={initialData?.excerpt}
-            className="flex min-h-20 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-required="true"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-20 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Enter a short excerpt of the blog post"
             required
           />
           {state.errors?.excerpt && (
-            <p className="text-red-500 text-sm">{state.errors.excerpt[0]}</p>
+            <p className="text-sm text-red-500">{state.errors.excerpt[0]}</p>
           )}
         </div>
 
         <div className="space-y-2">
           <label htmlFor="link" className="text-sm font-medium">
-            Blog Link
+            Blog Link <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="link"
             name="link"
             type="url"
             defaultValue={initialData?.link}
-            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            aria-required="true"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="https://blog.dileepa.dev/your-blog-post"
             required
           />
-          {state.errors?.link && (
-            <p className="text-red-500 text-sm">{state.errors.link[0]}</p>
-          )}
+          {state.errors?.link && <p className="text-sm text-red-500">{state.errors.link[0]}</p>}
         </div>
 
         {state.message && !state.success && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-3">
-            <p className="text-red-800 text-sm">{state.message}</p>
+          <div className="rounded-md border border-red-200 bg-red-50 p-3">
+            <p className="text-sm text-red-800">{state.message}</p>
           </div>
         )}
 
@@ -123,7 +130,7 @@ export function BlogForm({ initialData, onSuccess, onCancel }: BlogFormProps) {
           <button
             type="button"
             onClick={onCancel}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+            className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
             disabled={isPending}
           >
             Cancel
@@ -131,7 +138,7 @@ export function BlogForm({ initialData, onSuccess, onCancel }: BlogFormProps) {
           <button
             type="submit"
             disabled={isPending}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+            className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
           >
             {isPending ? (
               <>

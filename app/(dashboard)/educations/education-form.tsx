@@ -35,6 +35,10 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
 
   return (
     <form action={formAction} className="bg-card border-border space-y-6 rounded-lg border p-6">
+      <p className="text-muted-foreground text-sm">
+        All fields are required. Fields marked with <span className="text-red-500">*</span> are
+        required.
+      </p>
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-xl font-semibold">
           {initialData ? 'Edit Education' : 'Add New Education'}
@@ -51,12 +55,13 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
           <label htmlFor="course" className="text-sm font-medium">
-            Course/Degree
+            Course/Degree <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="course"
             name="course"
             defaultValue={initialData?.course}
+            aria-required="true"
             className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
@@ -65,12 +70,13 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
 
         <div className="space-y-2">
           <label htmlFor="institution" className="text-sm font-medium">
-            Institution
+            Institution <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="institution"
             name="institution"
             defaultValue={initialData?.institution}
+            aria-required="true"
             className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
@@ -81,12 +87,13 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
 
         <div className="space-y-2">
           <label htmlFor="period" className="text-sm font-medium">
-            Period
+            Period <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="period"
             name="period"
             defaultValue={initialData?.period}
+            aria-required="true"
             placeholder="e.g. 2019 - 2020"
             className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
@@ -96,12 +103,13 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
 
         <div className="space-y-2">
           <label htmlFor="url" className="text-sm font-medium">
-            Institution URL
+            Institution URL <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="url"
             name="url"
             defaultValue={initialData?.url}
+            aria-required="true"
             className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             required
           />
@@ -111,12 +119,13 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
 
       <div className="space-y-2">
         <label htmlFor="description" className="text-sm font-medium">
-          Description
+          Description <span className="ml-1 text-red-500">*</span>
         </label>
         <textarea
           id="description"
           name="description"
           defaultValue={initialData?.description}
+          aria-required="true"
           rows={4}
           className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-20 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           required
@@ -133,6 +142,7 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
             label="Logo (Light Mode) URL"
             defaultValue={initialData?.logo?.light}
             folder="education"
+            required
           />
           {state.errors?.['logo.light'] && (
             <p className="text-sm text-red-500">{state.errors['logo.light'][0]}</p>
@@ -145,6 +155,7 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
             label="Logo (Dark Mode) URL"
             defaultValue={initialData?.logo?.dark}
             folder="education"
+            required
           />
           {state.errors?.['logo.dark'] && (
             <p className="text-sm text-red-500">{state.errors['logo.dark'][0]}</p>

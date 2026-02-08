@@ -34,6 +34,10 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
 
   return (
     <div className="bg-card border-border rounded-lg border p-6">
+      <p className="text-muted-foreground text-sm">
+        All fields are required. Fields marked with <span className="text-red-500">*</span> are
+        required.
+      </p>
       <div className="mb-6 flex items-center justify-between">
         <h2 className="text-xl font-semibold">
           {initialData ? 'Edit Community' : 'Add New Community'}
@@ -51,12 +55,13 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <label htmlFor="name" className="text-sm font-medium">
-              Community Name
+              Community Name <span className="ml-1 text-red-500">*</span>
             </label>
             <input
               id="name"
               name="name"
               defaultValue={initialData?.name}
+              aria-required="true"
               className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="Enter community name"
               required
@@ -66,12 +71,13 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
 
           <div className="space-y-2">
             <label htmlFor="role" className="text-sm font-medium">
-              Role
+              Role <span className="ml-1 text-red-500">*</span>
             </label>
             <input
               id="role"
               name="role"
               defaultValue={initialData?.role}
+              aria-required="true"
               className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="e.g., Founding Member & President"
               required
@@ -83,12 +89,13 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="space-y-2">
             <label htmlFor="period" className="text-sm font-medium">
-              Period
+              Period <span className="ml-1 text-red-500">*</span>
             </label>
             <input
               id="period"
               name="period"
               defaultValue={initialData?.period}
+              aria-required="true"
               className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               placeholder="e.g., Oct 2022 - Dec 2023"
               required
@@ -120,14 +127,16 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
 
         <div className="space-y-2">
           <label htmlFor="communityUrl" className="text-sm font-medium">
-            Community URL
+            Community URL <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="communityUrl"
             name="communityUrl"
             defaultValue={initialData?.communityUrl}
+            aria-required="true"
             className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="e.g., https://example.com"
+            required
           />
           {state.errors?.communityUrl && (
             <p className="text-sm text-red-500">{state.errors.communityUrl[0]}</p>
@@ -136,12 +145,13 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
 
         <div className="space-y-2">
           <label htmlFor="description" className="text-sm font-medium">
-            Description
+            Description <span className="ml-1 text-red-500">*</span>
           </label>
           <textarea
             id="description"
             name="description"
             defaultValue={initialData?.description}
+            aria-required="true"
             className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex min-h-20 w-full rounded-md border px-3 py-2 text-sm focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="Describe your involvement in this community"
             required
@@ -161,6 +171,7 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
                 label="Light Mode Logo"
                 defaultValue={initialData?.logo?.light}
                 folder="communities"
+                required
               />
               {state.errors?.['logo.light'] && (
                 <p className="text-sm text-red-500">{state.errors['logo.light'][0]}</p>
@@ -173,6 +184,7 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
                 label="Dark Mode Logo"
                 defaultValue={initialData?.logo?.dark}
                 folder="communities"
+                required
               />
               {state.errors?.['logo.dark'] && (
                 <p className="text-sm text-red-500">{state.errors['logo.dark'][0]}</p>

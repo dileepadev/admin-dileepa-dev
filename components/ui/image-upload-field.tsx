@@ -45,6 +45,27 @@ export function ImageUploadField({
     setUploadError(null);
     if (onUploadingChange) onUploadingChange(true);
 
+    // Client-side validation for type and size
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
+    const maxSize = 10 * 1024 * 1024; // 10 MB
+
+    if (!allowedTypes.includes(file.type)) {
+      setUploadError(`Invalid file type: ${file.type}. Allowed: JPEG, PNG, WebP, GIF, SVG`);
+      setIsUploading(false);
+      if (onUploadingChange) onUploadingChange(false);
+      // Reset file input so the same file can be selected again if needed
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
+    if (file.size > maxSize) {
+      setUploadError('File too large. Maximum size is 10 MB');
+      setIsUploading(false);
+      if (onUploadingChange) onUploadingChange(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     try {
       const formData = new FormData();
       formData.append('file', file);
@@ -104,6 +125,7 @@ export function ImageUploadField({
             className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
             placeholder="https://..."
             required={required}
+            aria-required={required}
           />
         </div>
         <input

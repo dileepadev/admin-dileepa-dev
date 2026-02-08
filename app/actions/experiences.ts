@@ -57,6 +57,10 @@ export async function getExperiences(): Promise<ExperienceFormData[]> {
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        // No experiences found — return empty list without noisy error
+        return [];
+      }
       console.error('Failed to fetch experiences:', response.statusText);
       return [];
     }

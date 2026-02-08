@@ -52,6 +52,10 @@ export async function getBlogs(): Promise<BlogFormData[]> {
 
     if (!response.ok) {
       // Provide more informative error messages for common cases
+      if (response.status === 404) {
+        // No blogs yet
+        return [];
+      }
       if (response.status === 401) {
         throw new Error('Unauthorized when fetching blogs');
       }

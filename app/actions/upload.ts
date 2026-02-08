@@ -111,6 +111,10 @@ export async function getImages(): Promise<UploadResult[]> {
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        // No images uploaded yet
+        return [];
+      }
       throw new Error('Failed to fetch images');
     }
 

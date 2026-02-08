@@ -46,6 +46,10 @@ export async function getVideos(): Promise<VideoFormData[]> {
     });
 
     if (!response.ok) {
+      if (response.status === 404) {
+        // No videos found — return empty list quietly
+        return [];
+      }
       console.error('Failed to fetch videos:', response.statusText);
       return [];
     }

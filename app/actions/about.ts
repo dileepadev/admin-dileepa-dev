@@ -37,11 +37,8 @@ const aboutSchema = z.object({
   xtwitter: urlField('Invalid X/Twitter URL'),
   instagram: urlField('Invalid Instagram URL'),
   youtube: urlField('Invalid YouTube URL'),
-  // facebook is optional
-  facebook: z
-    .string()
-    .optional()
-    .refine((val) => !val || isValidUrl(val), { message: 'Invalid Facebook URL' }),
+  // facebook is required
+  facebook: urlField('Invalid Facebook URL'),
   connect: z
     .array(z.string().min(1, 'Connect message cannot be empty'))
     .min(1, 'At least one connect message is required'),
@@ -187,6 +184,50 @@ export async function updateAbout(
       if (response.status === 401) {
         return { message: 'Unauthorized' };
       }
+
+      // Handle server-side validation errors (400)
+      if (response.status === 400) {
+        try {
+          const errJson = await response.json();
+          const errors: Partial<Record<keyof AboutFormData, string[]>> = {};
+
+          if (errJson && Array.isArray(errJson.message)) {
+            for (const item of errJson.message) {
+              if (typeof item === 'string') {
+                // Generic message, add to top-level message
+                // We'll set the returned message below
+                continue;
+              }
+
+              if (item && typeof item === 'object' && item.property && item.constraints) {
+                // Map nested properties like 'links.website' or 'images.bannerWebp' to top-level keys
+                const propPath = String(item.property);
+                const segments = propPath.split('.');
+                let key = segments[segments.length - 1];
+                // If the last segment is a numeric array index (e.g., description.0), use the parent key
+                if (/^\d+$/.test(key) && segments.length >= 2) {
+                  key = segments[segments.length - 2];
+                }
+                const msgs = Object.values(item.constraints).map(String);
+                // @ts-expect-error - dynamic key assignment from API validation result
+                errors[key] = msgs;
+              }
+            }
+          }
+
+          return {
+            errors: Object.keys(errors).length ? errors : undefined,
+            message: errJson?.message
+              ? Array.isArray(errJson.message)
+                ? errJson.message.join(', ')
+                : String(errJson.message)
+              : 'Validation failed',
+          };
+        } catch {
+          // fall through to generic message
+        }
+      }
+
       return { message: 'Failed to update about information' };
     }
 

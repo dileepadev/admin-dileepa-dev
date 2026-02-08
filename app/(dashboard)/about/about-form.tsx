@@ -100,17 +100,22 @@ export function AboutForm() {
 
   return (
     <form action={formAction} className="space-y-8">
+      <p className="text-muted-foreground text-sm">
+        All fields are required. Fields marked with <span className="text-red-500">*</span> are
+        required.
+      </p>
       {/* Basic Information */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
           <label htmlFor="name" className="text-foreground block text-sm font-medium">
-            Name
+            Name <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="name"
             name="name"
             type="text"
             required
+            aria-required="true"
             defaultValue={data.name}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
@@ -121,13 +126,14 @@ export function AboutForm() {
 
         <div>
           <label htmlFor="title" className="text-foreground block text-sm font-medium">
-            Title
+            Title <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="title"
             name="title"
             type="text"
             required
+            aria-required="true"
             defaultValue={data.title}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
@@ -139,13 +145,14 @@ export function AboutForm() {
 
       <div>
         <label htmlFor="tagline" className="text-foreground block text-sm font-medium">
-          Tagline
+          Tagline <span className="ml-1 text-red-500">*</span>
         </label>
         <input
           id="tagline"
           name="tagline"
           type="text"
           required
+          aria-required="true"
           defaultValue={data.tagline}
           className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
         />
@@ -157,7 +164,9 @@ export function AboutForm() {
       {/* Description */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <label className="text-foreground block text-sm font-medium">Description</label>
+          <label className="text-foreground block text-sm font-medium">
+            Description <span className="ml-1 text-red-500">*</span>
+          </label>
           <button
             type="button"
             onClick={addDescription}
@@ -173,6 +182,7 @@ export function AboutForm() {
               <textarea
                 name="description"
                 required
+                aria-required="true"
                 value={desc}
                 onChange={(e) => updateDescription(index, e.target.value)}
                 rows={3}
@@ -204,6 +214,7 @@ export function AboutForm() {
             label="Banner WebP URL"
             defaultValue={data.bannerWebp}
             folder="about"
+            required
           />
           {state.errors?.bannerWebp && (
             <p className="text-destructive mt-1 text-sm">{state.errors.bannerWebp.join(', ')}</p>
@@ -216,6 +227,7 @@ export function AboutForm() {
             label="Profile PNG URL"
             defaultValue={data.profilePng}
             folder="about"
+            required
           />
           {state.errors?.profilePng && (
             <p className="text-destructive mt-1 text-sm">{state.errors.profilePng.join(', ')}</p>
@@ -228,6 +240,7 @@ export function AboutForm() {
             label="Profile WebP URL"
             defaultValue={data.profileWebp}
             folder="about"
+            required
           />
           {state.errors?.profileWebp && (
             <p className="text-destructive mt-1 text-sm">{state.errors.profileWebp.join(', ')}</p>
@@ -239,13 +252,14 @@ export function AboutForm() {
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         <div>
           <label htmlFor="website" className="text-foreground block text-sm font-medium">
-            Website URL
+            Website URL <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="website"
             name="website"
             type="url"
             required
+            aria-required="true"
             defaultValue={data.website}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
@@ -256,13 +270,14 @@ export function AboutForm() {
 
         <div>
           <label htmlFor="email" className="text-foreground block text-sm font-medium">
-            Email
+            Email <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="email"
             name="email"
             type="email"
             required
+            aria-required="true"
             defaultValue={data.email}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
@@ -273,13 +288,14 @@ export function AboutForm() {
 
         <div>
           <label htmlFor="github" className="text-foreground block text-sm font-medium">
-            GitHub URL
+            GitHub URL <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="github"
             name="github"
             type="url"
             required
+            aria-required="true"
             defaultValue={data.github}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
@@ -290,13 +306,14 @@ export function AboutForm() {
 
         <div>
           <label htmlFor="linkedin" className="text-foreground block text-sm font-medium">
-            LinkedIn URL
+            LinkedIn URL <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="linkedin"
             name="linkedin"
             type="url"
             required
+            aria-required="true"
             defaultValue={data.linkedin}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
@@ -307,13 +324,14 @@ export function AboutForm() {
 
         <div>
           <label htmlFor="xtwitter" className="text-foreground block text-sm font-medium">
-            X/Twitter URL
+            X/Twitter URL <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="xtwitter"
             name="xtwitter"
             type="url"
             required
+            aria-required="true"
             defaultValue={data.xtwitter}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
@@ -324,13 +342,14 @@ export function AboutForm() {
 
         <div>
           <label htmlFor="instagram" className="text-foreground block text-sm font-medium">
-            Instagram URL
+            Instagram URL <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="instagram"
             name="instagram"
             type="url"
             required
+            aria-required="true"
             defaultValue={data.instagram}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
@@ -341,13 +360,14 @@ export function AboutForm() {
 
         <div>
           <label htmlFor="youtube" className="text-foreground block text-sm font-medium">
-            YouTube URL
+            YouTube URL <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="youtube"
             name="youtube"
             type="url"
             required
+            aria-required="true"
             defaultValue={data.youtube}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
@@ -358,12 +378,14 @@ export function AboutForm() {
 
         <div>
           <label htmlFor="facebook" className="text-foreground block text-sm font-medium">
-            Facebook URL
+            Facebook URL <span className="ml-1 text-red-500">*</span>
           </label>
           <input
             id="facebook"
             name="facebook"
             type="url"
+            required
+            aria-required="true"
             defaultValue={data.facebook}
             className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
           />
@@ -376,7 +398,9 @@ export function AboutForm() {
       {/* Connect Messages */}
       <div>
         <div className="mb-4 flex items-center justify-between">
-          <label className="text-foreground block text-sm font-medium">Connect Messages</label>
+          <label className="text-foreground block text-sm font-medium">
+            Connect Messages <span className="ml-1 text-red-500">*</span>
+          </label>
           <button
             type="button"
             onClick={addConnect}
@@ -392,6 +416,7 @@ export function AboutForm() {
               <textarea
                 name="connect"
                 required
+                aria-required="true"
                 value={msg}
                 onChange={(e) => updateConnect(index, e.target.value)}
                 rows={2}
