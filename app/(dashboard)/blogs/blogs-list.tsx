@@ -1,13 +1,20 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from 'react';
+import { getBlogs, deleteBlog, BlogFormData } from '@/app/actions/blogs';
+import { BlogForm } from './blog-form';
 import {
-  getBlogs,
-  deleteBlog,
-  BlogFormData
-} from "@/app/actions/blogs";
-import { BlogForm } from "./blog-form";
-import { Loader2, Plus, Pencil, Trash2, Calendar, ExternalLink, ChevronUp, ChevronDown } from "lucide-react";
+  Loader2,
+  Plus,
+  Pencil,
+  Trash2,
+  Calendar,
+  ExternalLink,
+  ChevronUp,
+  ChevronDown,
+} from 'lucide-react';
+import { useToast } from '@/components/providers/toast-provider';
+import { useAlert } from '@/components/providers/alert-provider';
 
 export function BlogsList() {
   const [data, setData] = useState<BlogFormData[]>([]);
@@ -16,6 +23,9 @@ export function BlogsList() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<BlogFormData | undefined>(undefined);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+
+  const { push } = useToast();
+  const { show } = useAlert();
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -29,7 +39,7 @@ export function BlogsList() {
       });
       setData(blogs);
     } catch (error) {
-      console.error("Failed to load blogs", error);
+      console.error('Failed to load blogs', error);
     } finally {
       setLoading(false);
     }
@@ -50,20 +60,52 @@ export function BlogsList() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this blog post?")) return;
+    const blogToDelete = data.find((blog) => blog._id === id);
+    const confirmed = await show({
+      title: 'Delete Blog Post',
+      message: `Are you sure you want to delete "${blogToDelete?.title}"? This action cannot be undone.`,
+      variant: 'danger',
+    });
+
+    if (!confirmed) {
+      push({
+        title: 'Cancelled',
+        description: 'No changes made.',
+        type: 'info',
+        duration: 2500,
+      });
+      return;
+    }
 
     setDeletingId(id);
     try {
       const result = await deleteBlog(id);
       if (result.success) {
+        push({
+          title: 'Blog Deleted',
+          description: `Blog "${blogToDelete?.title}" has been deleted successfully.`,
+          type: 'success',
+          duration: 5000,
+        });
         await loadData();
       } else {
-        alert(result.message);
+        push({
+          title: 'Delete Failed',
+          description: result.message,
+          type: 'error',
+          duration: 5000,
+        });
       }
     } catch (error) {
-      console.error("Failed to delete blog", error);
+      console.error('Failed to delete blog', error);
+      push({
+        title: 'Delete Failed',
+        description: 'An unexpected error occurred while deleting the blog.',
+        type: 'error',
+        duration: 5000,
+      });
     } finally {
-        setDeletingId(null);
+      setDeletingId(null);
     }
   };
 
@@ -81,24 +123,20 @@ export function BlogsList() {
   if (loading && !data.length) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="animate-spin h-8 w-8" />
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
   }
 
   if (isEditing) {
     return (
-      <BlogForm
-        initialData={selectedBlog}
-        onSuccess={handleSuccess}
-        onCancel={handleCancel}
-      />
+      <BlogForm initialData={selectedBlog} onSuccess={handleSuccess} onCancel={handleCancel} />
     );
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex items-center justify-between">
         <h2 className="text-xl font-semibold">Blogs List</h2>
         <div className="flex items-center gap-2">
           <button
@@ -115,22 +153,24 @@ export function BlogsList() {
                 return copy;
               });
             }}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-3 py-2"
+            className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
             title={sortOrder === 'desc' ? 'Sort: Newest first' : 'Sort: Oldest first'}
           >
             {sortOrder === 'desc' ? (
               <>
-                <ChevronDown className="mr-2 h-4 w-4" />Newest
+                <ChevronDown className="mr-2 h-4 w-4" />
+                Newest
               </>
             ) : (
               <>
-                <ChevronUp className="mr-2 h-4 w-4" />Oldest
+                <ChevronUp className="mr-2 h-4 w-4" />
+                Oldest
               </>
             )}
           </button>
           <button
             onClick={handleCreate}
-            className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+            className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
           >
             <Plus className="mr-2 h-4 w-4" />
             Add Blog
@@ -142,19 +182,17 @@ export function BlogsList() {
         {data.map((blog) => (
           <div
             key={blog._id}
-            className="bg-card rounded-lg border border-border p-6 flex flex-col gap-4 shadow-sm"
+            className="bg-card border-border flex flex-col gap-4 rounded-lg border p-6 shadow-sm"
           >
             <div className="flex-1 space-y-2">
-              <h3 className="font-semibold text-lg">{blog.title}</h3>
+              <h3 className="text-lg font-semibold">{blog.title}</h3>
 
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4" />
-                <span>{blog.date ? new Date(blog.date).toISOString().slice(0,10) : ''}</span>
+                <span>{blog.date ? new Date(blog.date).toISOString().slice(0, 10) : ''}</span>
               </div>
 
-              <p className="text-sm text-muted-foreground line-clamp-2">
-                {blog.excerpt}
-              </p>
+              <p className="text-muted-foreground line-clamp-2 text-sm">{blog.excerpt}</p>
 
               <div className="flex items-center gap-2">
                 <a
@@ -169,10 +207,10 @@ export function BlogsList() {
               </div>
             </div>
 
-            <div className="flex items-center gap-2 w-full justify-end mt-4">
+            <div className="mt-4 flex w-full items-center justify-end gap-2">
               <button
                 onClick={() => handleEdit(blog)}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 w-9"
+                className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                 title="Edit"
               >
                 <Pencil className="h-4 w-4" />
@@ -180,13 +218,13 @@ export function BlogsList() {
               <button
                 onClick={() => handleDelete(blog._id!)}
                 disabled={deletingId === blog._id}
-                className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-destructive hover:text-destructive-foreground h-9 w-9 text-destructive"
+                className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-destructive hover:text-destructive-foreground text-destructive inline-flex h-9 w-9 items-center justify-center rounded-md border text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
                 title="Delete"
               >
                 {deletingId === blog._id ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                  <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                    <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-4 w-4" />
                 )}
               </button>
             </div>
@@ -194,7 +232,7 @@ export function BlogsList() {
         ))}
 
         {!loading && data.length === 0 && (
-          <div className="text-center p-8 bg-card rounded-lg border border-border">
+          <div className="bg-card border-border rounded-lg border p-8 text-center">
             <p className="text-muted-foreground">No blog posts found. Add one to get started.</p>
           </div>
         )}

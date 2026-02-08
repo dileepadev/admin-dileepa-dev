@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from 'react';
 import { createEvent, updateEvent, EventFormData, EventState } from '@/app/actions/events';
 import { Loader2, Save, X } from 'lucide-react';
+import { useToast } from '@/components/providers/toast-provider';
 
 interface EventFormProps {
   initialData?: EventFormData;
@@ -20,12 +21,25 @@ export function EventForm({ initialData, onSuccess, onCancel }: EventFormProps) 
   const action = initialData ? updateEvent.bind(null, initialData._id!) : createEvent;
 
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const { push: pushToast } = useToast();
 
   useEffect(() => {
     if (state.success) {
+      pushToast({
+        title: initialData ? 'Event Updated' : 'Event Created',
+        description:
+          state.message || `Event has been successfully ${initialData ? 'updated' : 'created'}.`,
+        type: 'success',
+      });
       onSuccess();
+    } else if (state.message && !state.success) {
+      pushToast({
+        title: 'Operation Failed',
+        description: state.message,
+        type: 'error',
+      });
     }
-  }, [state.success, onSuccess]);
+  }, [state.success, state.message, onSuccess, pushToast, initialData]);
 
   return (
     <form action={formAction} className="bg-card border-border space-y-6 rounded-lg border p-6">
@@ -133,12 +147,6 @@ export function EventForm({ initialData, onSuccess, onCancel }: EventFormProps) 
           <p className="text-sm text-red-500">{state.errors.description[0]}</p>
         )}
       </div>
-
-      {state.message && (
-        <p className={`text-sm ${state.success ? 'text-green-500' : 'text-red-500'}`}>
-          {state.message}
-        </p>
-      )}
 
       <div className="flex justify-end gap-4 pt-4">
         <button

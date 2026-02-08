@@ -59,12 +59,11 @@
   --color-border-light: var(--border);
   --color-border-medium: var(--border);
   --color-border-dark: var(--border);
-  
+
   --color-badge-default: var(--badge-bg-default);
   --color-badge-primary: var(--badge-bg-primary);
   /* Add other badge colors if needed by components directly, but Badge.tsx uses specific classes like bg-badge-default */
 }
-
 
 :root {
   /* Brand Colors (deep blue only) */
@@ -210,7 +209,7 @@
 }
 
 .dark {
-   /* Badge - dark theme */
+  /* Badge - dark theme */
   --badge-bg-default: var(--muted);
   --badge-text-default: var(--muted-foreground);
 
@@ -224,16 +223,86 @@
 }
 
 /* Utility classes for Badge styles */
-.bg-badge-default { background-color: var(--badge-bg-default); }
-.text-badge-default { color: var(--badge-text-default); }
-.bg-badge-primary { background-color: var(--badge-bg-primary); }
-.text-badge-primary { color: var(--badge-text-primary); }
-.bg-badge-success { background-color: var(--badge-bg-success); }
-.text-badge-success { color: var(--badge-text-success); }
-.bg-badge-warning { background-color: var(--badge-bg-warning); }
-.text-badge-warning { color: var(--badge-text-warning); }
-.bg-badge-error { background-color: var(--badge-bg-error); }
-.text-badge-error { color: var(--badge-text-error); }
+.bg-badge-default {
+  background-color: var(--badge-bg-default);
+}
+.text-badge-default {
+  color: var(--badge-text-default);
+}
+.bg-badge-primary {
+  background-color: var(--badge-bg-primary);
+}
+.text-badge-primary {
+  color: var(--badge-text-primary);
+}
+.bg-badge-success {
+  background-color: var(--badge-bg-success);
+}
+.text-badge-success {
+  color: var(--badge-text-success);
+}
+.bg-badge-warning {
+  background-color: var(--badge-bg-warning);
+}
+.text-badge-warning {
+  color: var(--badge-text-warning);
+}
+.bg-badge-error {
+  background-color: var(--badge-bg-error);
+}
+.text-badge-error {
+  color: var(--badge-text-error);
+}
+
+/* Toast utility classes */
+.toast-success {
+  background-color: rgba(16, 185, 129, 0.5);
+  border-color: var(--badge-text-success);
+  color: var(--badge-text-success);
+}
+.toast-error {
+  background-color: rgba(239, 68, 68, 0.5);
+  border-color: var(--badge-text-error);
+  color: var(--badge-text-error);
+}
+.toast-info {
+  background-color: rgba(71, 85, 105, 0.5);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+.toast-default {
+  background-color: var(--color-bg-elevated);
+  border-color: var(--color-border-light);
+  color: var(--color-text-primary);
+}
+
+/* Alert box utility classes */
+.alert-overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.alert-container {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-light);
+}
+.alert-title {
+  color: var(--color-text-primary);
+}
+.alert-message {
+  color: var(--color-text-muted);
+}
+.alert-cancel {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+.alert-confirm {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+.alert-confirm-danger {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
 
 @layer base {
   *,
@@ -251,10 +320,10 @@
   }
 
   body {
-    @apply bg-background text-foreground antialiased selection:bg-brand-primary selection:text-white dark:selection:bg-accent-blue dark:selection:text-on-accent;
+    @apply bg-background text-foreground selection:bg-brand-primary dark:selection:bg-accent-blue dark:selection:text-on-accent antialiased selection:text-white;
   }
 
   :focus-visible {
-    @apply outline-2 outline-brand-primary outline-offset-2;
+    @apply outline-brand-primary outline-2 outline-offset-2;
   }
 }

@@ -6,6 +6,8 @@ import { ExperienceForm } from './experience-form';
 import { Loader2, Plus, Pencil, Trash2, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import { useToast } from '@/components/providers/toast-provider';
+import { useAlert } from '@/components/providers/alert-provider';
 
 export function ExperiencesList() {
   const [data, setData] = useState<ExperienceFormData[]>([]);
@@ -17,6 +19,9 @@ export function ExperiencesList() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
+
+  const { push } = useToast();
+  const { show } = useAlert();
 
   const loadData = async () => {
     setLoading(true);
@@ -45,18 +50,50 @@ export function ExperiencesList() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this experience?')) return;
+    const experienceToDelete = data.find((experience) => experience._id === id);
+    const confirmed = await show({
+      title: 'Delete Experience',
+      message: `Are you sure you want to delete "${experienceToDelete?.title}"? This action cannot be undone.`,
+      variant: 'danger',
+    });
+
+    if (!confirmed) {
+      push({
+        title: 'Cancelled',
+        description: 'No changes made.',
+        type: 'info',
+        duration: 2500,
+      });
+      return;
+    }
 
     setDeletingId(id);
     try {
       const result = await deleteExperience(id);
       if (result.success) {
+        push({
+          title: 'Experience Deleted',
+          description: `Experience "${experienceToDelete?.title}" has been deleted successfully.`,
+          type: 'success',
+          duration: 5000,
+        });
         await loadData();
       } else {
-        alert(result.message);
+        push({
+          title: 'Delete Failed',
+          description: result.message,
+          type: 'error',
+          duration: 5000,
+        });
       }
     } catch (error) {
       console.error('Failed to delete experience', error);
+      push({
+        title: 'Delete Failed',
+        description: 'An unexpected error occurred while deleting the experience.',
+        type: 'error',
+        duration: 5000,
+      });
     } finally {
       setDeletingId(null);
     }

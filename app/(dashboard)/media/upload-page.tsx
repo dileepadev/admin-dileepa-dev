@@ -9,6 +9,8 @@ import {
   UploadResult,
 } from '@/app/actions/upload';
 import { Loader2, Upload, Image as ImageIcon, Trash2, Copy, Check, X } from 'lucide-react';
+import { useToast } from '@/components/providers/toast-provider';
+import { useAlert } from '@/components/providers/alert-provider';
 
 const initialState: UploadState = {
   message: '',
@@ -23,6 +25,8 @@ export function UploadPage() {
   const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { push: pushToast } = useToast();
+  const { show: showAlert } = useAlert();
 
   useEffect(() => {
     async function fetchImages() {
@@ -75,17 +79,46 @@ export function UploadPage() {
   };
 
   const handleDelete = async (publicId: string) => {
-    if (!confirm('Are you sure you want to delete this image?')) return;
+    const ok = await showAlert({
+      title: 'Delete Image',
+      message: 'Are you sure you want to delete this image? This action cannot be undone.',
+      variant: 'danger',
+    });
+
+    if (!ok) {
+      pushToast({
+        title: 'Cancelled',
+        description: 'No changes made.',
+        type: 'info',
+        duration: 2500,
+      });
+      return;
+    }
+
     setDeletingId(publicId);
     try {
       const result = await deleteImage(publicId);
       if (result.success) {
+        pushToast({
+          title: 'Image Deleted',
+          description: 'The image has been successfully deleted.',
+          type: 'success',
+        });
         setUploadHistory((prev) => prev.filter((item) => item.publicId !== publicId));
       } else {
-        alert(result.message);
+        pushToast({
+          title: 'Delete Failed',
+          description: result.message || 'Failed to delete image.',
+          type: 'error',
+        });
       }
     } catch (error) {
       console.error('Failed to delete image', error);
+      pushToast({
+        title: 'Delete Failed',
+        description: 'An unexpected error occurred while deleting the image.',
+        type: 'error',
+      });
     } finally {
       setDeletingId(null);
     }

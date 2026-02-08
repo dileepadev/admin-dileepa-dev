@@ -3,6 +3,7 @@
 import { useActionState } from 'react';
 import { createBlog, updateBlog, BlogFormData } from '@/app/actions/blogs';
 import { Loader2, Save, X } from 'lucide-react';
+import { useToast } from '@/components/providers/toast-provider';
 
 interface BlogFormProps {
   initialData?: BlogFormData;
@@ -11,6 +12,7 @@ interface BlogFormProps {
 }
 
 export function BlogForm({ initialData, onSuccess, onCancel }: BlogFormProps) {
+  const { push } = useToast();
   const [state, formAction, isPending] = useActionState(
     async (
       prevState: { success: boolean; message: string; errors?: Record<string, string[]> },
@@ -21,6 +23,12 @@ export function BlogForm({ initialData, onSuccess, onCancel }: BlogFormProps) {
         : await createBlog(formData);
 
       if (result.success) {
+        push({
+          title: initialData ? 'Blog Updated' : 'Blog Created',
+          description: `Blog "${formData.get('title')}" has been ${initialData ? 'updated' : 'created'} successfully.`,
+          type: 'success',
+          duration: 5000,
+        });
         onSuccess();
       }
 

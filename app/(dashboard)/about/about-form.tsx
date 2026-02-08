@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from 'react';
 import { updateAbout, getAboutData, AboutFormData, UpdateAboutState } from '@/app/actions/about';
 import { Loader2, Plus, Trash2 } from 'lucide-react';
 import { ImageUploadField } from '@/components/ui/image-upload-field';
+import { useToast } from '@/components/providers/toast-provider';
 
 const initialState: UpdateAboutState = {
   message: '',
@@ -11,6 +12,7 @@ const initialState: UpdateAboutState = {
 };
 
 export function AboutForm() {
+  const { push } = useToast();
   const [state, formAction] = useActionState(updateAbout, initialState);
   const [data, setData] = useState<AboutFormData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +25,17 @@ export function AboutForm() {
     }
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (state.message && state.message.includes('successfully')) {
+      push({
+        title: 'About Updated',
+        description: 'Your about information has been updated successfully.',
+        type: 'success',
+        duration: 5000,
+      });
+    }
+  }, [state.message, push]);
 
   const addDescription = () => {
     if (data) {
@@ -439,14 +452,6 @@ export function AboutForm() {
           <p className="text-destructive mt-1 text-sm">{state.errors.connect.join(', ')}</p>
         )}
       </div>
-
-      {state.message && (
-        <div
-          className={`rounded-md p-3 ${state.message.includes('successfully') ? 'border border-green-200 bg-green-50 text-green-800' : 'bg-destructive/15 text-destructive'}`}
-        >
-          <p className="text-sm">{state.message}</p>
-        </div>
-      )}
 
       <div className="flex justify-end">
         <button

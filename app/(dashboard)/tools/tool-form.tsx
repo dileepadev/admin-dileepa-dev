@@ -4,6 +4,7 @@ import { useActionState } from 'react';
 import { createTool, updateTool, ToolFormData, ActionState } from '@/app/actions/tools';
 import { Loader2, Save, X } from 'lucide-react';
 import { ImageUploadField } from '@/components/ui/image-upload-field';
+import { useToast } from '@/components/providers/toast-provider';
 
 interface ToolFormProps {
   initialData?: ToolFormData;
@@ -12,6 +13,8 @@ interface ToolFormProps {
 }
 
 export function ToolForm({ initialData, onSuccess, onCancel }: ToolFormProps) {
+  const { push: pushToast } = useToast();
+
   const [state, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const result = initialData?._id
@@ -19,7 +22,19 @@ export function ToolForm({ initialData, onSuccess, onCancel }: ToolFormProps) {
         : await createTool(formData);
 
       if (result.success) {
+        pushToast({
+          title: initialData ? 'Tool Updated' : 'Tool Created',
+          description:
+            result.message || `Tool has been successfully ${initialData ? 'updated' : 'created'}.`,
+          type: 'success',
+        });
         onSuccess();
+      } else if (result.message) {
+        pushToast({
+          title: 'Operation Failed',
+          description: result.message,
+          type: 'error',
+        });
       }
 
       return result;
@@ -90,18 +105,6 @@ export function ToolForm({ initialData, onSuccess, onCancel }: ToolFormProps) {
             )}
           </div>
         </div>
-
-        {state.message && (
-          <div
-            className={`rounded-md p-3 text-sm ${
-              state.success
-                ? 'bg-green-500/15 text-green-700 dark:text-green-400'
-                : 'bg-destructive/15 text-destructive'
-            }`}
-          >
-            {state.message}
-          </div>
-        )}
 
         <div className="flex justify-end gap-2">
           <button

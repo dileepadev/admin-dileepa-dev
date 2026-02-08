@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { ThemeProvider } from '@/components/providers/theme-provider';
+import { ToastProvider } from '@/components/providers/toast-provider';
+import { AlertProvider } from '@/components/providers/alert-provider';
 import SessionWatcher from '@/components/Auth/SessionWatcher';
 import './globals.css';
 
@@ -33,10 +35,14 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {/* SessionWatcher runs on the client and will auto-logout when the token expires */}
-          {/* Placing it here ensures it is active on all pages */}
-          <SessionWatcher />
-          {children}
+          <ToastProvider>
+            <AlertProvider>
+              {/* SessionWatcher runs on the client and will auto-logout when the token expires */}
+              {/* Placing it here ensures it is active on all pages */}
+              <SessionWatcher />
+              {children}
+            </AlertProvider>
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

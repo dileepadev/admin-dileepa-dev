@@ -13,6 +13,8 @@ import {
   ChevronUp,
   ChevronDown,
 } from 'lucide-react';
+import { useToast } from '@/components/providers/toast-provider';
+import { useAlert } from '@/components/providers/alert-provider';
 import Image from 'next/image';
 
 export function VideosList() {
@@ -22,6 +24,8 @@ export function VideosList() {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<VideoFormData | undefined>(undefined);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const { push: pushToast } = useToast();
+  const { show: showAlert } = useAlert();
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -55,18 +59,46 @@ export function VideosList() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this video?')) return;
+    const ok = await showAlert({
+      title: 'Delete Video',
+      message: 'Are you sure you want to delete this video? This action cannot be undone.',
+      variant: 'danger',
+    });
+
+    if (!ok) {
+      pushToast({
+        title: 'Cancelled',
+        description: 'No changes made.',
+        type: 'info',
+        duration: 2500,
+      });
+      return;
+    }
 
     setDeletingId(id);
     try {
       const result = await deleteVideo(id);
       if (result.success) {
+        pushToast({
+          title: 'Video Deleted',
+          description: 'The video has been successfully deleted.',
+          type: 'success',
+        });
         await loadData();
       } else {
-        alert(result.message);
+        pushToast({
+          title: 'Delete Failed',
+          description: result.message || 'Failed to delete video.',
+          type: 'error',
+        });
       }
     } catch (error) {
       console.error('Failed to delete video', error);
+      pushToast({
+        title: 'Delete Failed',
+        description: 'An unexpected error occurred while deleting the video.',
+        type: 'error',
+      });
     } finally {
       setDeletingId(null);
     }

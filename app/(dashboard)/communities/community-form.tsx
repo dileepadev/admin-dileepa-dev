@@ -9,6 +9,7 @@ import {
 } from '@/app/actions/communities';
 import { Loader2, Save, X } from 'lucide-react';
 import { ImageUploadField } from '@/components/ui/image-upload-field';
+import { useToast } from '@/components/providers/toast-provider';
 
 interface CommunityFormProps {
   initialData?: CommunityFormData;
@@ -17,6 +18,7 @@ interface CommunityFormProps {
 }
 
 export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFormProps) {
+  const { push } = useToast();
   const [state, formAction, isPending] = useActionState(
     async (prevState: ActionState, formData: FormData) => {
       const result = initialData?._id
@@ -24,6 +26,12 @@ export function CommunityForm({ initialData, onSuccess, onCancel }: CommunityFor
         : await createCommunity(formData);
 
       if (result.success) {
+        push({
+          title: initialData ? 'Community Updated' : 'Community Created',
+          description: `Community "${formData.get('name')}" has been ${initialData ? 'updated' : 'created'} successfully.`,
+          type: 'success',
+          duration: 5000,
+        });
         onSuccess();
       }
 

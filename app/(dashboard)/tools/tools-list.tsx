@@ -6,6 +6,8 @@ import { Edit, Trash2, Plus, PenTool, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { ToolForm } from './tool-form';
+import { useToast } from '@/components/providers/toast-provider';
+import { useAlert } from '@/components/providers/alert-provider';
 
 export function ToolsList() {
   const [tools, setTools] = useState<ToolFormData[]>([]);
@@ -15,6 +17,8 @@ export function ToolsList() {
   const [currentTool, setCurrentTool] = useState<ToolFormData | undefined>(undefined);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
+  const { push: pushToast } = useToast();
+  const { show: showAlert } = useAlert();
 
   const fetchTools = async () => {
     try {
@@ -38,17 +42,44 @@ export function ToolsList() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this tool?')) return;
+    const ok = await showAlert({
+      title: 'Delete Tool',
+      message: 'Are you sure you want to delete this tool? This action cannot be undone.',
+      variant: 'danger',
+    });
+
+    if (!ok) {
+      pushToast({
+        title: 'Cancelled',
+        description: 'No changes made.',
+        type: 'info',
+        duration: 2500,
+      });
+      return;
+    }
 
     try {
       const result = await deleteTool(id);
       if (result.success) {
+        pushToast({
+          title: 'Tool Deleted',
+          description: 'The tool has been successfully deleted.',
+          type: 'success',
+        });
         fetchTools();
       } else {
-        alert(result.message);
+        pushToast({
+          title: 'Delete Failed',
+          description: result.message || 'Failed to delete tool.',
+          type: 'error',
+        });
       }
     } catch {
-      alert('Failed to delete tool');
+      pushToast({
+        title: 'Delete Failed',
+        description: 'An unexpected error occurred while deleting the tool.',
+        type: 'error',
+      });
     }
   };
 

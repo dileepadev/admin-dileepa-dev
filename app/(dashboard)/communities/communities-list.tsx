@@ -6,6 +6,8 @@ import { CommunityForm } from './community-form';
 import { Loader2, Plus, Pencil, Trash2, Calendar, CheckCircle, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import { useToast } from '@/components/providers/toast-provider';
+import { useAlert } from '@/components/providers/alert-provider';
 
 export function CommunitiesList() {
   const [data, setData] = useState<CommunityFormData[]>([]);
@@ -17,6 +19,9 @@ export function CommunitiesList() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
+
+  const { push } = useToast();
+  const { show } = useAlert();
 
   const loadData = async () => {
     setLoading(true);
@@ -45,18 +50,50 @@ export function CommunitiesList() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this community?')) return;
+    const communityToDelete = data.find((community) => community._id === id);
+    const confirmed = await show({
+      title: 'Delete Community',
+      message: `Are you sure you want to delete "${communityToDelete?.name}"? This action cannot be undone.`,
+      variant: 'danger',
+    });
+
+    if (!confirmed) {
+      push({
+        title: 'Cancelled',
+        description: 'No changes made.',
+        type: 'info',
+        duration: 2500,
+      });
+      return;
+    }
 
     setDeletingId(id);
     try {
       const result = await deleteCommunity(id);
       if (result.success) {
+        push({
+          title: 'Community Deleted',
+          description: `Community "${communityToDelete?.name}" has been deleted successfully.`,
+          type: 'success',
+          duration: 5000,
+        });
         await loadData();
       } else {
-        alert(result.message);
+        push({
+          title: 'Delete Failed',
+          description: result.message,
+          type: 'error',
+          duration: 5000,
+        });
       }
     } catch (error) {
       console.error('Failed to delete community', error);
+      push({
+        title: 'Delete Failed',
+        description: 'An unexpected error occurred while deleting the community.',
+        type: 'error',
+        duration: 5000,
+      });
     } finally {
       setDeletingId(null);
     }

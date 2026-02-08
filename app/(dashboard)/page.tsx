@@ -1,4 +1,5 @@
 import { Card } from '@/components/ui/cards/Card';
+// import ToastDemo from '@/components/ui/ToastDemo';
 import { Section, SectionHeader } from '@/components/ui/Section';
 import { getEvents } from '@/app/actions/events';
 import { getVideos } from '@/app/actions/videos';
@@ -56,6 +57,8 @@ export default async function Home() {
         <p className="text-text-secondary">
           Welcome to the admin dashboard. Select an item from the sidebar to manage content.
         </p>
+
+        {/* <ToastDemo /> */}
       </Card>
     </Section>
   );

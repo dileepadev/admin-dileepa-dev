@@ -6,6 +6,8 @@ import { EducationForm } from './education-form';
 import { Loader2, Plus, Pencil, Trash2, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
 import { useTheme } from 'next-themes';
+import { useToast } from '@/components/providers/toast-provider';
+import { useAlert } from '@/components/providers/alert-provider';
 
 export function EducationsList() {
   const [data, setData] = useState<EducationFormData[]>([]);
@@ -17,6 +19,8 @@ export function EducationsList() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const { resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
+  const { push: pushToast } = useToast();
+  const { show: showAlert } = useAlert();
 
   const loadData = async () => {
     setLoading(true);
@@ -45,18 +49,46 @@ export function EducationsList() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this education?')) return;
+    const ok = await showAlert({
+      title: 'Delete Education',
+      message: 'Are you sure you want to delete this education? This action cannot be undone.',
+      variant: 'danger',
+    });
+
+    if (!ok) {
+      pushToast({
+        title: 'Cancelled',
+        description: 'No changes made.',
+        type: 'info',
+        duration: 2500,
+      });
+      return;
+    }
 
     setDeletingId(id);
     try {
       const result = await deleteEducation(id);
       if (result.success) {
+        pushToast({
+          title: 'Education Deleted',
+          description: 'The education has been successfully deleted.',
+          type: 'success',
+        });
         await loadData();
       } else {
-        alert(result.message);
+        pushToast({
+          title: 'Delete Failed',
+          description: result.message || 'Failed to delete education.',
+          type: 'error',
+        });
       }
     } catch (error) {
       console.error('Failed to delete education', error);
+      pushToast({
+        title: 'Delete Failed',
+        description: 'An unexpected error occurred while deleting the education.',
+        type: 'error',
+      });
     } finally {
       setDeletingId(null);
     }

@@ -9,6 +9,7 @@ import {
 } from '@/app/actions/experiences';
 import { Loader2, Plus, Trash2, Save, X } from 'lucide-react';
 import { ImageUploadField } from '@/components/ui/image-upload-field';
+import { useToast } from '@/components/providers/toast-provider';
 
 interface ExperienceFormProps {
   initialData?: ExperienceFormData;
@@ -22,6 +23,7 @@ const initialState: ExperienceState = {
 };
 
 export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceFormProps) {
+  const { push } = useToast();
   // Bind the ID if updating
   const action = initialData ? updateExperience.bind(null, initialData._id!) : createExperience;
 
@@ -33,9 +35,15 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
 
   useEffect(() => {
     if (state.success) {
+      push({
+        title: initialData ? 'Experience Updated' : 'Experience Created',
+        description: `Experience has been ${initialData ? 'updated' : 'created'} successfully.`,
+        type: 'success',
+        duration: 5000,
+      });
       onSuccess();
     }
-  }, [state.success, onSuccess]);
+  }, [state.success, onSuccess, push, initialData]);
 
   const addTechnology = () => {
     setTechnologies([...technologies, '']);

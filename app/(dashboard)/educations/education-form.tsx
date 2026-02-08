@@ -9,6 +9,7 @@ import {
 } from '@/app/actions/educations';
 import { Loader2, Save, X } from 'lucide-react';
 import { ImageUploadField } from '@/components/ui/image-upload-field';
+import { useToast } from '@/components/providers/toast-provider';
 
 interface EducationFormProps {
   initialData?: EducationFormData;
@@ -26,12 +27,26 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
   const action = initialData ? updateEducation.bind(null, initialData._id!) : createEducation;
 
   const [state, formAction, isPending] = useActionState(action, initialState);
+  const { push: pushToast } = useToast();
 
   useEffect(() => {
     if (state.success) {
+      pushToast({
+        title: initialData ? 'Education Updated' : 'Education Created',
+        description:
+          state.message ||
+          `Education has been successfully ${initialData ? 'updated' : 'created'}.`,
+        type: 'success',
+      });
       onSuccess();
+    } else if (state.message && !state.success) {
+      pushToast({
+        title: 'Operation Failed',
+        description: state.message,
+        type: 'error',
+      });
     }
-  }, [state.success, onSuccess]);
+  }, [state.success, state.message, onSuccess, pushToast, initialData]);
 
   return (
     <form action={formAction} className="bg-card border-border space-y-6 rounded-lg border p-6">
@@ -162,12 +177,6 @@ export function EducationForm({ initialData, onSuccess, onCancel }: EducationFor
           )}
         </div>
       </div>
-
-      {state.message && (
-        <p className={`text-sm ${state.success ? 'text-green-500' : 'text-red-500'}`}>
-          {state.message}
-        </p>
-      )}
 
       <div className="flex justify-end gap-4 pt-4">
         <button
