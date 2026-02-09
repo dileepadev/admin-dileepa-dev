@@ -126,7 +126,7 @@ export function EducationsList() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Education List</h2>
+        <h2 className="text-xl font-semibold">Education List - {data.length}</h2>
         <button
           onClick={handleCreate}
           className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
@@ -161,10 +161,16 @@ export function EducationsList() {
               </div>
             )}
             <div className="flex-1 space-y-1">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                 <h3 className="text-lg font-semibold">{education.course}</h3>
                 <span className="text-muted-foreground">@</span>
                 <span className="font-medium">{education.institution}</span>
+                <div
+                  className="bg-primary/10 text-primary border-primary/20 flex h-5 items-center justify-center rounded border px-1.5 text-[10px] font-bold tracking-wider uppercase"
+                  title="Priority Index"
+                >
+                  Index: {education.index}
+                </div>
               </div>
               <p className="text-muted-foreground text-sm">{education.period}</p>
               <p className="text-sm">{education.description}</p>

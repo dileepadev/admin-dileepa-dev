@@ -80,6 +80,20 @@ export function ExperienceForm({ initialData, onSuccess, onCancel }: ExperienceF
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <div className="space-y-2">
+          <label htmlFor="index" className="text-sm font-medium">
+            Priority Index
+          </label>
+          <input
+            id="index"
+            name="index"
+            type="number"
+            defaultValue={initialData?.index}
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          />
+          {state.errors?.index && <p className="text-sm text-red-500">{state.errors.index[0]}</p>}
+        </div>
+
+        <div className="space-y-2">
           <label htmlFor="title" className="text-sm font-medium">
             Title <span className="ml-1 text-red-500">*</span>
           </label>

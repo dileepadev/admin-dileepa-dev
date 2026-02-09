@@ -20,7 +20,6 @@ import { useAlert } from '@/components/providers/alert-provider';
 export function EventsList() {
   const [data, setData] = useState<EventFormData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isEditing, setIsEditing] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<EventFormData | undefined>(undefined);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -31,19 +30,13 @@ export function EventsList() {
     setLoading(true);
     try {
       const events = await getEvents();
-      // sort events by date according to sortOrder (initial load uses initial sortOrder)
-      events.sort((a, b) => {
-        const ta = new Date(a.date).getTime() || 0;
-        const tb = new Date(b.date).getTime() || 0;
-        return sortOrder === 'desc' ? tb - ta : ta - tb;
-      });
       setData(events);
     } catch (error) {
       console.error('Failed to load events', error);
     } finally {
       setLoading(false);
     }
-  }, [sortOrder]);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -52,21 +45,6 @@ export function EventsList() {
   const handleCreate = () => {
     setSelectedEvent(undefined);
     setIsEditing(true);
-  };
-
-  const toggleSort = () => {
-    const next = sortOrder === 'desc' ? 'asc' : 'desc';
-    setSortOrder(next);
-    // re-sort currently loaded data
-    setData((prev) => {
-      const copy = [...prev];
-      copy.sort((a, b) => {
-        const ta = new Date(a.date).getTime() || 0;
-        const tb = new Date(b.date).getTime() || 0;
-        return next === 'desc' ? tb - ta : ta - tb;
-      });
-      return copy;
-    });
   };
 
   const handleEdit = (event: EventFormData) => {
@@ -148,25 +126,8 @@ export function EventsList() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Events List</h2>
+        <h2 className="text-xl font-semibold">Events List - {data.length}</h2>
         <div className="flex items-center gap-2">
-          <button
-            onClick={toggleSort}
-            className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-            title={sortOrder === 'desc' ? 'Sort: Newest first' : 'Sort: Oldest first'}
-          >
-            {sortOrder === 'desc' ? (
-              <>
-                <ChevronDown className="mr-2 h-4 w-4" />
-                Newest
-              </>
-            ) : (
-              <>
-                <ChevronUp className="mr-2 h-4 w-4" />
-                Oldest
-              </>
-            )}
-          </button>
           <button
             onClick={handleCreate}
             className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
@@ -184,7 +145,15 @@ export function EventsList() {
             className="bg-card border-border flex flex-col items-start justify-between gap-4 rounded-lg border p-6 shadow-sm md:flex-row md:items-center"
           >
             <div className="flex-1 space-y-2">
-              <h3 className="text-lg font-semibold">{event.title}</h3>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <h3 className="text-lg font-semibold">{event.title}</h3>
+                <div
+                  className="bg-primary/10 text-primary border-primary/20 flex h-5 items-center justify-center rounded border px-1.5 text-[10px] font-bold tracking-wider uppercase"
+                  title="Priority Index"
+                >
+                  Index: {event.index}
+                </div>
+              </div>
 
               <div className="text-muted-foreground flex flex-wrap gap-4 text-sm">
                 <div className="flex items-center gap-1">

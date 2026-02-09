@@ -11,6 +11,7 @@ const blogSchema = z.object({
   date: z.string().min(1, 'Date is required'),
   excerpt: z.string().min(1, 'Excerpt is required'),
   link: z.string().url('Link must be a valid URL'),
+  index: z.coerce.number().min(0, 'Priority Index is required'),
 });
 
 export type BlogFormData = z.infer<typeof blogSchema> & { _id?: string };
@@ -83,6 +84,7 @@ export async function createBlog(formData: FormData) {
     }
 
     const rawData = {
+      index: formData.get('index'),
       title: formData.get('title') as string,
       date: formData.get('date') as string,
       excerpt: formData.get('excerpt') as string,
@@ -133,6 +135,7 @@ export async function updateBlog(id: string, formData: FormData) {
     }
 
     const rawData = {
+      index: formData.get('index'),
       title: formData.get('title') as string,
       date: formData.get('date') as string,
       excerpt: formData.get('excerpt') as string,

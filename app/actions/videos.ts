@@ -17,6 +17,7 @@ const urlField = (message: string) => z.string().refine(isValidUrl, { message })
 
 const videoSchema = z.object({
   _id: z.string().optional(),
+  index: z.coerce.number().min(0, 'Index must be 0 or greater'),
   title: z.string().min(1, 'Title is required'),
   date: z.string().min(1, 'Date is required'),
   link: urlField('Invalid video link URL'),
@@ -68,6 +69,7 @@ export async function createVideo(prevState: VideoState, formData: FormData): Pr
   }
 
   const rawData = {
+    index: formData.get('index'),
     title: formData.get('title'),
     date: formData.get('date'),
     link: formData.get('link'),
@@ -126,6 +128,7 @@ export async function updateVideo(
   }
 
   const rawData = {
+    index: formData.get('index'),
     title: formData.get('title'),
     date: formData.get('date'),
     link: formData.get('link'),

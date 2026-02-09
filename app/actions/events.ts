@@ -6,6 +6,7 @@ import { revalidatePath } from 'next/cache';
 
 const eventSchema = z.object({
   _id: z.string().optional(),
+  index: z.coerce.number().min(0, 'Index must be 0 or greater'),
   title: z.string().min(1, 'Title is required'),
   date: z.string().min(1, 'Date is required'),
   location: z.string().min(1, 'Location is required'),
@@ -58,6 +59,7 @@ export async function createEvent(prevState: EventState, formData: FormData): Pr
   }
 
   const rawData = {
+    index: formData.get('index'),
     title: formData.get('title'),
     date: formData.get('date'),
     location: formData.get('location'),
@@ -114,6 +116,7 @@ export async function updateEvent(
   }
 
   const rawData = {
+    index: formData.get('index'),
     title: formData.get('title'),
     date: formData.get('date'),
     location: formData.get('location'),

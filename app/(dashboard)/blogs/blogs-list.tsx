@@ -3,23 +3,13 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getBlogs, deleteBlog, BlogFormData } from '@/app/actions/blogs';
 import { BlogForm } from './blog-form';
-import {
-  Loader2,
-  Plus,
-  Pencil,
-  Trash2,
-  Calendar,
-  ExternalLink,
-  ChevronUp,
-  ChevronDown,
-} from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, Calendar, ExternalLink } from 'lucide-react';
 import { useToast } from '@/components/providers/toast-provider';
 import { useAlert } from '@/components/providers/alert-provider';
 
 export function BlogsList() {
   const [data, setData] = useState<BlogFormData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isEditing, setIsEditing] = useState(false);
   const [selectedBlog, setSelectedBlog] = useState<BlogFormData | undefined>(undefined);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -31,19 +21,13 @@ export function BlogsList() {
     setLoading(true);
     try {
       const blogs = await getBlogs();
-      // sort blogs by date according to sortOrder
-      blogs.sort((a, b) => {
-        const ta = new Date(a.date).getTime() || 0;
-        const tb = new Date(b.date).getTime() || 0;
-        return sortOrder === 'desc' ? tb - ta : ta - tb;
-      });
       setData(blogs);
     } catch (error) {
       console.error('Failed to load blogs', error);
     } finally {
       setLoading(false);
     }
-  }, [sortOrder]);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -137,37 +121,8 @@ export function BlogsList() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Blogs List</h2>
+        <h2 className="text-xl font-semibold">Blogs List - {data.length}</h2>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              const next = sortOrder === 'desc' ? 'asc' : 'desc';
-              setSortOrder(next);
-              setData((prev) => {
-                const copy = [...prev];
-                copy.sort((a, b) => {
-                  const ta = new Date(a.date).getTime() || 0;
-                  const tb = new Date(b.date).getTime() || 0;
-                  return next === 'desc' ? tb - ta : ta - tb;
-                });
-                return copy;
-              });
-            }}
-            className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-            title={sortOrder === 'desc' ? 'Sort: Newest first' : 'Sort: Oldest first'}
-          >
-            {sortOrder === 'desc' ? (
-              <>
-                <ChevronDown className="mr-2 h-4 w-4" />
-                Newest
-              </>
-            ) : (
-              <>
-                <ChevronUp className="mr-2 h-4 w-4" />
-                Oldest
-              </>
-            )}
-          </button>
           <button
             onClick={handleCreate}
             className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
@@ -185,7 +140,15 @@ export function BlogsList() {
             className="bg-card border-border flex flex-col gap-4 rounded-lg border p-6 shadow-sm"
           >
             <div className="flex-1 space-y-2">
-              <h3 className="text-lg font-semibold">{blog.title}</h3>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <h3 className="text-lg font-semibold">{blog.title}</h3>
+                <div
+                  className="bg-primary/10 text-primary border-primary/20 flex h-5 items-center justify-center rounded border px-1.5 text-[10px] font-bold tracking-wider uppercase"
+                  title="Priority Index"
+                >
+                  Index: {blog.index}
+                </div>
+              </div>
 
               <div className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4" />

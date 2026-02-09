@@ -12,6 +12,7 @@ const logoSchema = z.object({
 });
 
 const toolSchema = z.object({
+  index: z.coerce.number().min(0, 'Priority Index is required'),
   name: z.string().min(1, 'Name is required'),
   logo: logoSchema,
 });
@@ -90,6 +91,7 @@ export async function createTool(formData: FormData): Promise<ActionState> {
     }
 
     const rawData = {
+      index: formData.get('index'),
       name: formData.get('name') as string,
       logo: {
         light: formData.get('logo.light') as string,
@@ -154,6 +156,7 @@ export async function updateTool(id: string, formData: FormData): Promise<Action
     }
 
     const rawData = {
+      index: formData.get('index'),
       name: formData.get('name') as string,
       logo: {
         light: formData.get('logo.light') as string,

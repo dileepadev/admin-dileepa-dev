@@ -23,6 +23,7 @@ const logoSchema = z.object({
 
 const educationSchema = z.object({
   _id: z.string().optional(),
+  index: z.coerce.number().min(0, 'Index must be 0 or greater'),
   course: z.string().min(1, 'Course is required'),
   institution: z.string().min(1, 'Institution is required'),
   period: z.string().min(1, 'Period is required'),
@@ -79,6 +80,7 @@ export async function createEducation(
   }
 
   const rawData = {
+    index: formData.get('index'),
     course: formData.get('course'),
     institution: formData.get('institution'),
     period: formData.get('period'),
@@ -142,6 +144,7 @@ export async function updateEducation(
   }
 
   const rawData = {
+    index: formData.get('index'),
     course: formData.get('course'),
     institution: formData.get('institution'),
     period: formData.get('period'),

@@ -3,16 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { getVideos, deleteVideo, VideoFormData } from '@/app/actions/videos';
 import { VideoForm } from './video-form';
-import {
-  Loader2,
-  Plus,
-  Pencil,
-  Trash2,
-  Calendar,
-  Play,
-  ChevronUp,
-  ChevronDown,
-} from 'lucide-react';
+import { Loader2, Plus, Pencil, Trash2, Calendar, Play } from 'lucide-react';
 import { useToast } from '@/components/providers/toast-provider';
 import { useAlert } from '@/components/providers/alert-provider';
 import Image from 'next/image';
@@ -20,7 +11,6 @@ import Image from 'next/image';
 export function VideosList() {
   const [data, setData] = useState<VideoFormData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [isEditing, setIsEditing] = useState(false);
   const [selectedVideo, setSelectedVideo] = useState<VideoFormData | undefined>(undefined);
   const [deletingId, setDeletingId] = useState<string | null>(null);
@@ -31,18 +21,13 @@ export function VideosList() {
     setLoading(true);
     try {
       const videos = await getVideos();
-      videos.sort((a, b) => {
-        const ta = new Date(a.date).getTime() || 0;
-        const tb = new Date(b.date).getTime() || 0;
-        return sortOrder === 'desc' ? tb - ta : ta - tb;
-      });
       setData(videos);
     } catch (error) {
       console.error('Failed to load videos', error);
     } finally {
       setLoading(false);
     }
-  }, [sortOrder]);
+  }, []);
 
   useEffect(() => {
     loadData();
@@ -132,37 +117,8 @@ export function VideosList() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-xl font-semibold">Videos List</h2>
+        <h2 className="text-xl font-semibold">Videos List - {data.length}</h2>
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => {
-              const next = sortOrder === 'desc' ? 'asc' : 'desc';
-              setSortOrder(next);
-              setData((prev) => {
-                const copy = [...prev];
-                copy.sort((a, b) => {
-                  const ta = new Date(a.date).getTime() || 0;
-                  const tb = new Date(b.date).getTime() || 0;
-                  return next === 'desc' ? tb - ta : ta - tb;
-                });
-                return copy;
-              });
-            }}
-            className="ring-offset-background focus-visible:ring-ring border-input bg-background hover:bg-accent hover:text-accent-foreground inline-flex h-10 items-center justify-center rounded-md border px-3 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-            title={sortOrder === 'desc' ? 'Sort: Newest first' : 'Sort: Oldest first'}
-          >
-            {sortOrder === 'desc' ? (
-              <>
-                <ChevronDown className="mr-2 h-4 w-4" />
-                Newest
-              </>
-            ) : (
-              <>
-                <ChevronUp className="mr-2 h-4 w-4" />
-                Oldest
-              </>
-            )}
-          </button>
           <button
             onClick={handleCreate}
             className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
@@ -194,7 +150,15 @@ export function VideosList() {
               </div>
             )}
             <div className="flex-1 space-y-2">
-              <h3 className="text-lg font-semibold">{video.title}</h3>
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                <h3 className="text-lg font-semibold">{video.title}</h3>
+                <div
+                  className="bg-primary/10 text-primary border-primary/20 flex h-5 items-center justify-center rounded border px-1.5 text-[10px] font-bold tracking-wider uppercase"
+                  title="Priority Index"
+                >
+                  Index: {video.index}
+                </div>
+              </div>
 
               <div className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4" />

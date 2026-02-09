@@ -23,6 +23,7 @@ const logoSchema = z.object({
 
 const experienceSchema = z.object({
   _id: z.string().optional(),
+  index: z.coerce.number().min(0, 'Index must be 0 or greater'),
   title: z.string().min(1, 'Title is required'),
   company: z.string().min(1, 'Company is required'),
   url: urlField('Invalid Company URL'),
@@ -82,6 +83,7 @@ export async function createExperience(
   }
 
   const rawData = {
+    index: formData.get('index'),
     title: formData.get('title'),
     company: formData.get('company'),
     url: formData.get('url'),
@@ -148,6 +150,7 @@ export async function updateExperience(
   }
 
   const rawData = {
+    index: formData.get('index'),
     title: formData.get('title'),
     company: formData.get('company'),
     url: formData.get('url'),

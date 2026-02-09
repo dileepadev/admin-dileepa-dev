@@ -116,14 +116,16 @@ export function ToolsList() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-end">
-        <button
-          onClick={() => {
-            setCurrentTool(undefined);
-            setIsEditing(true);
-          }}
-          className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
-        >
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold">Tools List - {tools.length}</h2>
+        <div className="flex justify-end">
+          <button
+            onClick={() => {
+              setCurrentTool(undefined);
+              setIsEditing(true);
+            }}
+            className="ring-offset-background focus-visible:ring-ring bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-10 items-center justify-center rounded-md px-4 py-2 text-sm font-medium transition-colors focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50"
+          >
           <Plus className="mr-2 h-4 w-4" />
           Add Tool
         </button>
@@ -177,7 +179,15 @@ export function ToolsList() {
                         ) : (
                           <PenTool className="text-muted-foreground h-16 w-16" />
                         )}
-                        {tool.name}
+                        <div className="flex flex-col gap-1">
+                          <span className="font-semibold">{tool.name}</span>
+                          <div
+                            className="bg-primary/10 text-primary border-primary/20 flex h-4 w-fit items-center justify-center rounded border px-1 text-[10px] font-bold tracking-wider uppercase"
+                            title="Priority Index"
+                          >
+                            Index: {tool.index}
+                          </div>
+                        </div>
                       </div>
                     </td>
                     <td className="p-4 text-right align-middle">

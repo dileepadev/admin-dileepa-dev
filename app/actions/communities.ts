@@ -12,6 +12,7 @@ const logoSchema = z.object({
 });
 
 const communitySchema = z.object({
+  index: z.coerce.number().min(0, 'Index must be 0 or greater'),
   name: z.string().min(1, 'Name is required'),
   role: z.string().min(1, 'Role is required'),
   period: z.string().min(1, 'Period is required'),
@@ -97,6 +98,7 @@ export async function createCommunity(formData: FormData): Promise<ActionState> 
     }
 
     const rawData = {
+      index: formData.get('index') as string,
       name: formData.get('name') as string,
       role: formData.get('role') as string,
       period: formData.get('period') as string,
@@ -166,6 +168,7 @@ export async function updateCommunity(id: string, formData: FormData): Promise<A
     }
 
     const rawData = {
+      index: formData.get('index') as string,
       name: formData.get('name') as string,
       role: formData.get('role') as string,
       period: formData.get('period') as string,
