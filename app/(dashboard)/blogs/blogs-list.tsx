@@ -150,6 +150,16 @@ export function BlogsList() {
                 </div>
               </div>
 
+              {blog.bannerUrl && (
+                <div className="mb-3">
+                  <img
+                    src={blog.bannerUrl}
+                    alt={`${blog.title} banner`}
+                    className="w-full max-w-xs rounded-md border object-cover"
+                  />
+                </div>
+              )}
+
               <div className="text-muted-foreground flex items-center gap-2 text-sm">
                 <Calendar className="h-4 w-4" />
                 <span>{blog.date ? new Date(blog.date).toISOString().slice(0, 10) : ''}</span>

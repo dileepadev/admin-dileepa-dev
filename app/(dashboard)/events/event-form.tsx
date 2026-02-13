@@ -136,7 +136,7 @@ export function EventForm({ initialData, onSuccess, onCancel }: EventFormProps) 
           >
             <option value="">Select format</option>
             <option value="In-Person">In-Person</option>
-            <option value="Virtual">Virtual</option>
+            <option value="Online">Online</option>
             <option value="Hybrid">Hybrid</option>
           </select>
           {state.errors?.format && <p className="text-sm text-red-500">{state.errors.format[0]}</p>}

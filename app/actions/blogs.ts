@@ -12,6 +12,7 @@ const blogSchema = z.object({
   excerpt: z.string().min(1, 'Excerpt is required'),
   link: z.string().url('Link must be a valid URL'),
   index: z.coerce.number().min(0, 'Priority Index is required'),
+  bannerUrl: z.string().url('Banner must be a valid URL'),
 });
 
 export type BlogFormData = z.infer<typeof blogSchema> & { _id?: string };
@@ -89,6 +90,7 @@ export async function createBlog(formData: FormData) {
       date: formData.get('date') as string,
       excerpt: formData.get('excerpt') as string,
       link: formData.get('link') as string,
+      bannerUrl: formData.get('bannerUrl') as string,
     };
 
     const validation = blogSchema.safeParse(rawData);
@@ -114,6 +116,7 @@ export async function createBlog(formData: FormData) {
       return {
         success: false,
         message: errorData.message || `Failed to create blog: ${response.statusText}`,
+        errors: errorData.errors || undefined,
       };
     }
 
@@ -140,6 +143,7 @@ export async function updateBlog(id: string, formData: FormData) {
       date: formData.get('date') as string,
       excerpt: formData.get('excerpt') as string,
       link: formData.get('link') as string,
+      bannerUrl: formData.get('bannerUrl') as string,
     };
 
     const validation = blogSchema.safeParse(rawData);
@@ -165,6 +169,7 @@ export async function updateBlog(id: string, formData: FormData) {
       return {
         success: false,
         message: errorData.message || `Failed to update blog: ${response.statusText}`,
+        errors: errorData.errors || undefined,
       };
     }
 

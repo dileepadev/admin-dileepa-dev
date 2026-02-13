@@ -142,6 +142,34 @@ export function BlogForm({ initialData, onSuccess, onCancel }: BlogFormProps) {
           {state.errors?.link && <p className="text-sm text-red-500">{state.errors.link[0]}</p>}
         </div>
 
+        <div className="space-y-2">
+          <label htmlFor="bannerUrl" className="text-sm font-medium">
+            Banner URL <span className="ml-1 text-red-500">*</span>
+          </label>
+          <input
+            id="bannerUrl"
+            name="bannerUrl"
+            type="url"
+            defaultValue={initialData?.bannerUrl}
+            required
+            aria-required="true"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            placeholder="https://cdn.example.com/path/to/banner.png"
+          />
+          {initialData?.bannerUrl && (
+            <div className="mt-2">
+              <img
+                src={initialData.bannerUrl}
+                alt="banner preview"
+                className="w-full max-w-xs rounded-md border object-cover"
+              />
+            </div>
+          )}
+          {state.errors?.bannerUrl && (
+            <p className="text-sm text-red-500">{state.errors.bannerUrl[0]}</p>
+          )}
+        </div>
+
         {state.message && !state.success && (
           <div className="rounded-md border border-red-200 bg-red-50 p-3">
             <p className="text-sm text-red-800">{state.message}</p>
