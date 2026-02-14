@@ -6,23 +6,10 @@ import { useTheme } from 'next-themes';
 import { cn } from '@/lib/utils';
 import { signOut } from '@/app/actions/auth';
 import { Button } from '@/components/ui/buttons/Button';
-import {
-  LayoutDashboard,
-  User,
-  Briefcase,
-  GraduationCap,
-  Calendar,
-  Video,
-  FileText,
-  Users,
-  Wrench,
-  ImageUp,
-  LogOut,
-  Sun,
-  Moon,
-} from 'lucide-react';
+import { LogOut, Sun, Moon } from 'lucide-react';
 
 import { navigation } from './navigation';
+import { version } from '../../package.json';
 
 export function Sidebar({ className }: { className?: string }) {
   const pathname = usePathname();
@@ -88,6 +75,9 @@ export function Sidebar({ className }: { className?: string }) {
         >
           Sign out
         </Button>
+        <div className="text-text-secondary text-s5 px-1 pt-2 pl-6">
+          Version <span className="text font-mono">v{version}</span>
+        </div>
       </div>
     </div>
   );
