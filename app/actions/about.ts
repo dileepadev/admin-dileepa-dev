@@ -27,6 +27,7 @@ const aboutSchema = z.object({
   description: z
     .array(z.string().min(1, 'Description paragraph cannot be empty'))
     .min(1, 'At least one description is required'),
+  status: z.string().min(1, 'Status is required'),
   bannerWebp: urlField('Invalid banner WebP URL'),
   profilePng: urlField('Invalid profile PNG URL'),
   profileWebp: urlField('Invalid profile WebP URL'),
@@ -73,6 +74,7 @@ export async function getAboutData(): Promise<AboutFormData | null> {
       title: data.title,
       tagline: data.tagline,
       description: data.description,
+      status: data.status,
       bannerWebp: data.images.bannerWebp,
       profilePng: data.images.profilePng,
       profileWebp: data.images.profileWebp,
@@ -112,6 +114,7 @@ export async function updateAbout(
     title: formData.get('title'),
     tagline: formData.get('tagline'),
     description: formData.getAll('description').filter(Boolean),
+    status: formData.get('status'),
     bannerWebp: formData.get('bannerWebp'),
     profilePng: formData.get('profilePng'),
     profileWebp: formData.get('profileWebp'),
@@ -150,6 +153,7 @@ export async function updateAbout(
     title: data.title,
     tagline: data.tagline,
     description: data.description,
+    status: data.status,
     images: {
       bannerWebp: data.bannerWebp,
       profilePng: data.profilePng,

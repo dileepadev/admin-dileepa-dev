@@ -219,6 +219,25 @@ export function AboutForm() {
         )}
       </div>
 
+      {/* Status */}
+      <div>
+        <label htmlFor="status" className="text-foreground block text-sm font-medium">
+          Status <span className="ml-1 text-red-500">*</span>
+        </label>
+        <input
+          id="status"
+          name="status"
+          type="text"
+          required
+          aria-required="true"
+          defaultValue={data.status}
+          className="border-input bg-background focus:border-ring focus:ring-ring mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:ring-1 focus:outline-none"
+        />
+        {state.errors?.status && (
+          <p className="text-destructive mt-1 text-sm">{state.errors.status.join(', ')}</p>
+        )}
+      </div>
+
       {/* Images */}
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         <div>
