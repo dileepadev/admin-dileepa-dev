@@ -13,6 +13,7 @@ import {
   Monitor,
   ChevronUp,
   ChevronDown,
+  ExternalLink,
 } from 'lucide-react';
 import { useToast } from '@/components/providers/toast-provider';
 import { useAlert } from '@/components/providers/alert-provider';
@@ -168,6 +169,19 @@ export function EventsList() {
                   <Monitor className="h-4 w-4" />
                   <span>{event.format}</span>
                 </div>
+                {event.url && (
+                  <div className="flex items-center gap-1">
+                    <ExternalLink className="h-4 w-4" />
+                    <a
+                      href={event.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-primary hover:underline"
+                    >
+                      Event Link
+                    </a>
+                  </div>
+                )}
               </div>
 
               <p className="text-sm">{event.description}</p>

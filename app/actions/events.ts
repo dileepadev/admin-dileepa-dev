@@ -12,6 +12,7 @@ const eventSchema = z.object({
   location: z.string().min(1, 'Location is required'),
   format: z.string().min(1, 'Format is required'),
   description: z.string().min(1, 'Description is required'),
+  url: z.string().url('Invalid URL format'),
 });
 
 export type EventFormData = z.infer<typeof eventSchema>;
@@ -65,6 +66,7 @@ export async function createEvent(prevState: EventState, formData: FormData): Pr
     location: formData.get('location'),
     format: formData.get('format'),
     description: formData.get('description'),
+    url: formData.get('url'),
   };
 
   const validatedFields = eventSchema.omit({ _id: true }).safeParse(rawData);
@@ -122,6 +124,7 @@ export async function updateEvent(
     location: formData.get('location'),
     format: formData.get('format'),
     description: formData.get('description'),
+    url: formData.get('url'),
   };
 
   const validatedFields = eventSchema.omit({ _id: true }).safeParse(rawData);

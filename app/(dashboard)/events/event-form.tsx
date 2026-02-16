@@ -141,6 +141,22 @@ export function EventForm({ initialData, onSuccess, onCancel }: EventFormProps) 
           </select>
           {state.errors?.format && <p className="text-sm text-red-500">{state.errors.format[0]}</p>}
         </div>
+
+        <div className="space-y-2">
+          <label htmlFor="url" className="text-sm font-medium">
+            Event URL <span className="ml-1 text-red-500">*</span>
+          </label>
+          <input
+            id="url"
+            name="url"
+            type="url"
+            defaultValue={initialData?.url}
+            aria-required="true"
+            className="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+            required
+          />
+          {state.errors?.url && <p className="text-sm text-red-500">{state.errors.url[0]}</p>}
+        </div>
       </div>
 
       <div className="space-y-2">
