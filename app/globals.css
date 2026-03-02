@@ -1,0 +1,329 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+
+  /* Brand Colors */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-light: var(--brand-primary-light);
+  --color-brand-dark: var(--brand-primary-dark);
+
+  --color-accent-blue: var(--accent-blue);
+  --color-on-accent: var(--text-on-accent);
+
+  /* Aliases for dileepa-dev components */
+  --color-bg-primary: var(--background);
+  --color-bg-secondary: var(--secondary);
+  --color-bg-tertiary: var(--muted);
+  --color-bg-elevated: var(--card);
+
+  --color-text-primary: var(--foreground);
+  --color-text-secondary: var(--muted-foreground);
+  --color-text-tertiary: var(--muted-foreground);
+  --color-text-muted: var(--muted-foreground);
+  --color-text-inverse: var(--primary-foreground);
+
+  --color-border-light: var(--border);
+  --color-border-medium: var(--border);
+  --color-border-dark: var(--border);
+
+  --color-badge-default: var(--badge-bg-default);
+  --color-badge-primary: var(--badge-bg-primary);
+  /* Add other badge colors if needed by components directly, but Badge.tsx uses specific classes like bg-badge-default */
+}
+
+:root {
+  /* Brand Colors (deep blue only) */
+  --brand-primary: #030a14;
+  --brand-primary-light: #030a14;
+  --brand-primary-dark: #010204;
+
+  /* Accent Colors (silver — matches primary palette) */
+  --accent-blue: #475569;
+  --accent-blue-light: rgba(71, 85, 105, 0.12);
+  --accent-blue-dark: #334155;
+  --text-on-accent: #ffffff;
+
+  /* Background Colors */
+  --background: #ffffff;
+  --foreground: #0f172a;
+
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+
+  --primary: #030a14;
+  --primary-foreground: #ffffff;
+
+  --secondary: #f8fafc;
+  --secondary-foreground: #475569;
+
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+
+  --accent: rgba(71, 85, 105, 0.12);
+  --accent-foreground: #475569;
+
+  --destructive: #ef4444;
+  --destructive-foreground: #fafafa;
+
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #030a14;
+
+  --radius: 0.5rem;
+}
+
+.dark {
+  --brand-primary: #030a14;
+  --brand-primary-light: #030a14;
+  --brand-primary-dark: #010204;
+
+  /* Accent - Silver on dark backgrounds */
+  --accent-blue: #cbd5e1;
+  --accent-blue-light: rgba(203, 213, 225, 0.15);
+  --accent-blue-dark: #94a3b8;
+  --text-on-accent: #0f172a;
+
+  /* Deep-blue backgrounds */
+  --background: #010204;
+  --foreground: #f8fafc;
+
+  --card: #030a14;
+  --card-foreground: #f8fafc;
+
+  --popover: #030a14;
+  --popover-foreground: #f8fafc;
+
+  --primary: #ffffff;
+  --primary-foreground: #030a14;
+
+  --secondary: #030a14;
+  --secondary-foreground: #e2e8f0;
+
+  --muted: #06121a;
+  --muted-foreground: #94a3b8;
+
+  --accent: rgba(203, 213, 225, 0.15);
+  --accent-foreground: #cbd5e1;
+
+  --destructive: #f03131;
+  --destructive-foreground: #ffffff;
+
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #cbd5e1;
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-foreground);
+}
+
+/* Utility Classes */
+.glass {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+.dark .glass {
+  background: rgba(3, 10, 20, 0.8);
+}
+
+/* Badge Utilities */
+:root {
+  /* Badge - light theme */
+  --badge-bg-default: var(--muted);
+  --badge-text-default: var(--muted-foreground);
+
+  --badge-bg-primary: var(--accent);
+  --badge-text-primary: var(--primary); /* Using primary (brand) color, or accent-foreground */
+
+  --badge-bg-secondary: var(--accent);
+  --badge-text-secondary: var(--accent-foreground);
+
+  --badge-bg-success: rgba(16, 185, 129, 0.12);
+  --badge-text-success: #10b981;
+
+  --badge-bg-warning: rgba(245, 158, 11, 0.12);
+  --badge-text-warning: #f59e0b;
+
+  --badge-bg-error: rgba(239, 68, 68, 0.12);
+  --badge-text-error: #ef4444;
+
+  --badge-bg-active: rgba(16, 185, 129, 0.12);
+  --badge-text-active: #10b981;
+
+  --badge-bg-inactive: rgba(148, 163, 184, 0.08);
+  --badge-text-inactive: #94a3b8;
+}
+
+.dark {
+  /* Badge - dark theme */
+  --badge-bg-default: var(--muted);
+  --badge-text-default: var(--muted-foreground);
+
+  --badge-bg-primary: var(--accent);
+  --badge-text-primary: var(--foreground);
+
+  --badge-bg-secondary: var(--accent);
+  --badge-text-secondary: var(--accent-foreground);
+
+  /* ... keep same color values for status badges ... */
+}
+
+/* Utility classes for Badge styles */
+.bg-badge-default {
+  background-color: var(--badge-bg-default);
+}
+.text-badge-default {
+  color: var(--badge-text-default);
+}
+.bg-badge-primary {
+  background-color: var(--badge-bg-primary);
+}
+.text-badge-primary {
+  color: var(--badge-text-primary);
+}
+.bg-badge-success {
+  background-color: var(--badge-bg-success);
+}
+.text-badge-success {
+  color: var(--badge-text-success);
+}
+.bg-badge-warning {
+  background-color: var(--badge-bg-warning);
+}
+.text-badge-warning {
+  color: var(--badge-text-warning);
+}
+.bg-badge-error {
+  background-color: var(--badge-bg-error);
+}
+.text-badge-error {
+  color: var(--badge-text-error);
+}
+
+/* Toast utility classes */
+.toast-success {
+  background-color: rgba(16, 185, 129, 0.5);
+  border-color: var(--badge-text-success);
+  color: var(--badge-text-success);
+}
+.toast-error {
+  background-color: rgba(239, 68, 68, 0.5);
+  border-color: var(--badge-text-error);
+  color: var(--badge-text-error);
+}
+.toast-info {
+  background-color: rgba(71, 85, 105, 0.5);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+.toast-default {
+  background-color: var(--color-bg-elevated);
+  border-color: var(--color-border-light);
+  color: var(--color-text-primary);
+}
+
+/* Alert box utility classes */
+.alert-overlay {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.alert-container {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-light);
+}
+.alert-title {
+  color: var(--color-text-primary);
+}
+.alert-message {
+  color: var(--color-text-muted);
+}
+.alert-cancel {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-primary);
+}
+.alert-confirm {
+  background-color: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+.alert-confirm-danger {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before {
+    @apply border-border outline-ring/50;
+  }
+
+  button,
+  a,
+  [role='button'],
+  input[type='submit'],
+  input[type='button'] {
+    @apply cursor-pointer;
+  }
+
+  body {
+    @apply bg-background text-foreground selection:bg-brand-primary dark:selection:bg-accent-blue dark:selection:text-on-accent antialiased selection:text-white;
+  }
+
+  :focus-visible {
+    @apply outline-brand-primary outline-2 outline-offset-2;
+  }
+}
