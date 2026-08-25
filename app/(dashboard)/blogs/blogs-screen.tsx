@@ -2,7 +2,7 @@
 
 import { deleteBlog, publishBlog, saveBlog } from '@/app/actions/blogs';
 import { ResourceManager } from '@/components/resource/ResourceManager';
-import type { BlogPost } from '@/lib/types';
+import type { ApiLink, BlogPost } from '@/lib/types';
 
 /**
  * The screen, as a client component.
@@ -11,9 +11,16 @@ import type { BlogPost } from '@/lib/types';
  * the server-to-client boundary. So the fetch stays on the server in
  * `page.tsx` and everything that describes the screen lives here.
  */
-export function BlogsScreen({ records }: { records: BlogPost[] }) {
+export function BlogsScreen({
+  records,
+  endpoints,
+}: {
+  records: BlogPost[];
+  endpoints?: ApiLink | null;
+}) {
   return (
     <ResourceManager<BlogPost>
+      endpoints={endpoints}
       label="Blog post"
       labelPlural="Blogs"
       intro="Metadata for every post on dileepa.dev/blog."
@@ -27,10 +34,12 @@ export function BlogsScreen({ records }: { records: BlogPost[] }) {
         { header: 'Title', cell: (row) => row.title },
         {
           header: 'Published',
+          nowrap: true,
           cell: (row) => <span className="font-mono">{row.publishedDate?.slice(0, 10)}</span>,
         },
         {
           header: 'Read',
+          nowrap: true,
           cell: (row) => <span className="font-mono">{row.readingTimeMinutes} min</span>,
         },
       ]}
@@ -55,25 +64,32 @@ export function BlogsScreen({ records }: { records: BlogPost[] }) {
               { kind: 'text', name: 'series.name', label: 'Series' },
               { kind: 'number', name: 'series.order', label: 'Part number' },
               { kind: 'number', name: 'readingTimeMinutes', label: 'Reading time (minutes)' },
+            ],
+          },
+          {
+            legend: 'Visibility',
+            note: '“Draft” comes from the front matter and is rewritten on every push; “featured” is yours and the sync never touches it. They are together because they answer the same question — who can see this, and where.',
+            fields: [
               {
                 kind: 'checkbox',
                 name: 'draft',
                 label: 'Draft',
-                hint: 'This is the front matter’s word, and it is what decides visibility. A draft is hidden from every public caller.',
+                hint: 'The front matter’s word, and what decides visibility. A draft is hidden from every public caller.',
               },
+              { kind: 'checkbox', name: 'featured', label: 'Feature this post' },
             ],
           },
           {
-            legend: 'Yours to set',
-            note: 'The sync does not touch these.',
+            legend: 'SEO',
+            note: 'Yours to set. The sync does not touch these.',
             fields: [
-              { kind: 'checkbox', name: 'featured', label: 'Feature this post' },
-              { kind: 'text', name: 'seo.metaTitle', label: 'Meta title' },
+              { kind: 'text', name: 'seo.metaTitle', label: 'Meta title', wide: true },
               {
                 kind: 'textarea',
                 name: 'seo.metaDescription',
                 label: 'Meta description',
                 wide: true,
+                rows: 3,
               },
               {
                 kind: 'url',

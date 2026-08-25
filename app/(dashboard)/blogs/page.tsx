@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getApiLink } from '@/app/actions/api-links';
 import { getBlogs } from '@/app/actions/blogs';
 import { Card, Section } from '@/components/ui';
 import { BlogsScreen } from './blogs-screen';
@@ -6,7 +7,10 @@ import { BlogsScreen } from './blogs-screen';
 export const metadata: Metadata = { title: 'Blogs' };
 
 export default async function BlogsPage() {
-  const records = await getBlogs();
+  // The catalogue is fetched alongside the records rather than after them:
+  // it is a second independent read, and serialising it would put a whole
+  // round trip between the page and the screen for a panel that is closed.
+  const [records, endpoints] = await Promise.all([getBlogs(), getApiLink('blogs')]);
 
   return (
     <Section>
@@ -24,7 +28,7 @@ export default async function BlogsPage() {
         </p>
       </Card>
 
-      <BlogsScreen records={records} />
+      <BlogsScreen records={records} endpoints={endpoints} />
     </Section>
   );
 }
