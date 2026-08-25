@@ -9,7 +9,7 @@ import {
   RECORDING_PLATFORMS,
   humanise,
 } from '@/lib/constants';
-import type { EventRecord } from '@/lib/types';
+import type { ApiLink, EventRecord } from '@/lib/types';
 import { Badge } from '@/components/ui';
 
 /**
@@ -19,9 +19,16 @@ import { Badge } from '@/components/ui';
  * the server-to-client boundary. So the fetch stays on the server in
  * `page.tsx` and everything that describes the screen lives here.
  */
-export function EventsScreen({ records }: { records: EventRecord[] }) {
+export function EventsScreen({
+  records,
+  endpoints,
+}: {
+  records: EventRecord[];
+  endpoints?: ApiLink | null;
+}) {
   return (
     <ResourceManager<EventRecord>
+      endpoints={endpoints}
       label="Event"
       labelPlural="Events"
       intro="Talks, workshops and webinars. Status follows the start date on its own; photos attached here appear in the site's event gallery."
@@ -44,11 +51,13 @@ export function EventsScreen({ records }: { records: EventRecord[] }) {
         { header: 'Event', cell: (row) => row.title },
         {
           header: 'When',
+          nowrap: true,
           cell: (row) => <span className="font-mono">{row.startAt?.slice(0, 10)}</span>,
         },
-        { header: 'Type', cell: (row) => <Badge>{humanise(row.type)}</Badge> },
+        { header: 'Type', nowrap: true, cell: (row) => <Badge>{humanise(row.type)}</Badge> },
         {
           header: 'Status',
+          nowrap: true,
           cell: (row) => (
             <Badge variant={row.status === 'cancelled' ? 'error' : 'default'}>
               {humanise(row.status)}
@@ -57,6 +66,7 @@ export function EventsScreen({ records }: { records: EventRecord[] }) {
         },
         {
           header: 'Photos',
+          nowrap: true,
           cell: (row) => <span className="font-mono">{row.photos?.length ?? 0}</span>,
         },
       ]}
@@ -80,6 +90,7 @@ export function EventsScreen({ records }: { records: EventRecord[] }) {
                 name: 'summary',
                 label: 'Summary',
                 wide: true,
+                rows: 3,
                 hint: 'One line. This is what the list and the homepage show.',
               },
               {
@@ -87,6 +98,7 @@ export function EventsScreen({ records }: { records: EventRecord[] }) {
                 name: 'description',
                 label: 'Description',
                 wide: true,
+                rows: 8,
                 hint: 'Blank lines separate paragraphs on the detail page.',
               },
               { kind: 'select', name: 'type', label: 'Type', options: EVENT_TYPES },
@@ -125,11 +137,11 @@ export function EventsScreen({ records }: { records: EventRecord[] }) {
             fields: [
               { kind: 'text', name: 'host.name', label: 'Host name' },
               { kind: 'text', name: 'host.organizer', label: 'Organiser' },
-              { kind: 'url', name: 'host.organizerUrl', label: 'Organiser website' },
+              { kind: 'url', name: 'host.organizerUrl', label: 'Organiser website', wide: true },
             ],
           },
           {
-            legend: 'Slides and cover',
+            legend: 'Slides',
             fields: [
               { kind: 'url', name: 'slides.url', label: 'Slides URL' },
               {
@@ -138,6 +150,12 @@ export function EventsScreen({ records }: { records: EventRecord[] }) {
                 label: 'Slides host',
                 placeholder: 'SpeakerDeck',
               },
+            ],
+          },
+          {
+            legend: 'Cover',
+            note: 'The image on the event’s own page. Alt text is not optional — it is what a screen reader has to work with.',
+            fields: [
               { kind: 'image', name: 'cover.url', label: 'Cover image', folder: 'events' },
               { kind: 'text', name: 'cover.alt', label: 'Cover alt text' },
             ],
@@ -161,7 +179,7 @@ export function EventsScreen({ records }: { records: EventRecord[] }) {
               { kind: 'text', name: 'role', label: 'Role' },
               { kind: 'url', name: 'profileUrl', label: 'Profile URL' },
               { kind: 'url', name: 'avatarUrl', label: 'Avatar URL' },
-              { kind: 'checkbox', name: 'isHost', label: 'Hosted the event' },
+              { kind: 'checkbox', name: 'isHost', label: 'Hosted the event', wide: true },
             ],
           },
           {
@@ -192,8 +210,8 @@ export function EventsScreen({ records }: { records: EventRecord[] }) {
             note: 'Registration, an announcement post, a repo, a recap.',
             fields: [
               { kind: 'text', name: 'label', label: 'Label' },
-              { kind: 'url', name: 'url', label: 'URL' },
               { kind: 'select', name: 'kind', label: 'Kind', options: LINK_KINDS },
+              { kind: 'url', name: 'url', label: 'URL', wide: true },
             ],
           },
         ],
