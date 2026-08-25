@@ -5,7 +5,10 @@ import { Container } from '@/components/ui';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh">
-      <aside className="border-border-hairline bg-bg-surface sticky top-0 hidden h-dvh w-64 flex-none overflow-y-auto border-r-[0.5px] lg:block">
+      {/* `--border-strong` rather than `--border`: this is the edge of a thing,
+          the way the site's nav pill is, not one of the structural rules that
+          separate rows inside a table. Design system §6. */}
+      <aside className="border-border-strong bg-bg-surface sticky top-0 hidden h-dvh w-64 flex-none overflow-y-auto border-r lg:block">
         <Sidebar />
       </aside>
 

@@ -4,8 +4,26 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Lockup } from '@/components/ui';
 import { navigation } from './navigation';
-import { cn } from '@/lib/utils';
 
+/**
+ * The admin's navigation, and the site's navbar behaviour.
+ *
+ * `dileepa-dev`'s nav is the reference this follows — AGENTS.md, "This app
+ * follows dileepa-dev". Three things carry across and all three are in
+ * `.side-nav` in `app/globals.css` rather than in utilities here:
+ *
+ * - **The accent is spent once.** The current item is `--brand`; nothing else
+ *   in the list is. That is the same rule as the site's `[aria-current]`.
+ * - **Weight never changes with state.** The active row on the site used to
+ *   also change weight, which shifted the rows either side by a pixel as you
+ *   scrolled. Only colour and surface move.
+ * - **One transition, one duration.** `--dur` and `--ease`, the same pair the
+ *   site's links, cards and theme toggle use.
+ *
+ * The classes live in CSS because that is where the site's do, and because
+ * "the same interaction" is a thing that has to keep being true after the next
+ * edit — a rule can hold that, a copied string of utilities cannot.
+ */
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
 
@@ -15,15 +33,15 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <div className="flex h-full flex-col gap-8 p-6">
-      <Lockup />
+    <div className="flex h-full flex-col gap-6 p-5">
+      <div className="px-3 py-1">
+        <Lockup />
+      </div>
 
-      <nav aria-label="Sections" className="flex flex-1 flex-col gap-6">
+      <nav aria-label="Sections" className="side-nav flex-1">
         {navigation.map((group) => (
-          <div key={group.title}>
-            <p className="text-fg-muted mb-2 font-mono text-xs tracking-[0.16em] uppercase">
-              {group.title}
-            </p>
+          <div key={group.title} className="side-nav-group">
+            <p className="side-nav-title">{group.title}</p>
             <ul>
               {group.items.map((item) => {
                 const active = isActive(item.href);
@@ -33,13 +51,8 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                       href={item.href}
                       onClick={onNavigate}
                       aria-current={active ? 'page' : undefined}
-                      className={cn(
-                        'text-small flex items-center gap-3 rounded px-3 py-2 no-underline',
-                        'transition-colors duration-[160ms]',
-                        active ? 'bg-bg-raised text-fg font-medium' : 'text-fg-muted hover:text-fg',
-                      )}
                     >
-                      <item.icon className="h-4 w-4 flex-none" aria-hidden="true" />
+                      <item.icon aria-hidden="true" />
                       {item.name}
                     </Link>
                   </li>

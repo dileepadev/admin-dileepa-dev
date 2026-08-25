@@ -8,5 +8,7 @@ import { cn } from '@/lib/utils';
  * with tables and two-column forms, not a page to read.
  */
 export function Container({ children, className }: { children: ReactNode; className?: string }) {
-  return <div className={cn('mx-auto w-full max-w-5xl px-6', className)}>{children}</div>;
+  return (
+    <div className={cn('mx-auto w-full max-w-5xl px-4 sm:px-6 lg:px-8', className)}>{children}</div>
+  );
 }
