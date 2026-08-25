@@ -41,12 +41,16 @@ export interface About {
   name: string;
   title: string;
   tagline: string;
+  /** The supporting line under the tagline in the site's hero. */
+  taglineDescription?: string;
   location: string;
   description: string[];
   status: string;
   images: {
     profilePng?: string;
     profileWebp?: string;
+    /** New in v2.0.0. WebP and PNG are unchanged and still preferred first. */
+    profileJpg?: string;
     bannerWebp?: string;
   };
   links: Record<string, string>;
@@ -224,4 +228,46 @@ export interface UploadRecord {
   height: number | null;
   size: number | null;
   format: string | null;
+}
+
+// --- The API's own endpoints ------------------------------------------------
+
+/**
+ * `GET /api-links` — what each screen's endpoint is, and what it expects.
+ *
+ * Derived by the API from its own route table, so it cannot describe a surface
+ * that is not the one being served. Admin-only: the public site neither reads
+ * it nor could, having no credentials.
+ */
+export type EndpointAuth = 'public' | 'admin' | 'api_key' | 'admin_or_api_key';
+
+export type ParameterLocation = 'path' | 'query' | 'header' | 'body';
+
+export interface EndpointParameter {
+  name: string;
+  location: ParameterLocation;
+  type: string;
+  required: boolean;
+  description?: string | null;
+}
+
+export interface Endpoint {
+  method: string;
+  /** The routed path, placeholders intact: `/communities/{identifier}`. */
+  path: string;
+  url: string;
+  summary: string;
+  auth: EndpointAuth;
+  parameters: EndpointParameter[];
+}
+
+/** Every endpoint under one OpenAPI tag — which is one screen's worth. */
+export interface ApiLink {
+  key: string;
+  label: string;
+  description: string;
+  basePath: string;
+  url: string;
+  docsUrl?: string | null;
+  endpoints: Endpoint[];
 }

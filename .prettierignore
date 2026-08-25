@@ -1,0 +1,9 @@
+# The vendored canonical token sheet. AGENTS.md: "This is a copy, and a copy can
+# drift. When the canonical file changes, re-copy it; never patch this one in
+# place." Prettier's quote style differs from the source's, so formatting it
+# rewrites 5 lines and every later re-copy then shows a spurious diff.
+app/brand-tokens.css
+
+# Generated or vendored output.
+.next/
+node_modules/
