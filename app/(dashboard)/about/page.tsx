@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getApiLink } from '@/app/actions/api-links';
 import { getAbout, saveAbout } from '@/app/actions/profile';
 import { SingletonManager } from '@/components/resource/ResourceManager';
 import { EmptyState, Section } from '@/components/ui';
@@ -8,7 +9,7 @@ import { aboutSchema } from './schema';
 export const metadata: Metadata = { title: 'About' };
 
 export default async function AboutPage() {
-  const about = await getAbout();
+  const [about, endpoints] = await Promise.all([getAbout(), getApiLink('about')]);
 
   return (
     <Section>
@@ -16,10 +17,11 @@ export default async function AboutPage() {
         <SingletonManager
           label="About"
           title="About"
-          intro="The homepage hero and the About section read from this record. The first paragraph is the section heading; the rest are its body."
+          intro="The homepage hero and the About section both read from this record — one request, no second call for the line under the tagline."
           record={about}
           schema={aboutSchema(SOCIAL_FIELDS)}
           save={saveAbout}
+          endpoints={endpoints}
         />
       ) : (
         <EmptyState
