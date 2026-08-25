@@ -3,6 +3,7 @@
 import { useActionState, useState } from 'react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import {
+  ApiEndpoints,
   Button,
   Card,
   DataTable,
@@ -14,6 +15,7 @@ import {
 import { useAlert } from '@/components/providers/alert-provider';
 import { useToast } from '@/components/providers/toast-provider';
 import type { ActionState } from '@/lib/crud';
+import type { ApiLink } from '@/lib/types';
 import { ResourceForm } from './ResourceForm';
 import type { Column, FormSchema } from './fields';
 
@@ -24,6 +26,10 @@ import type { Column, FormSchema } from './fields';
  * put a repeatable group with six rows of fields inside a scrolling box inside
  * a scrolling page, and the record being edited is the only thing that matters
  * while it is being edited.
+ *
+ * `endpoints` is the API's description of this resource — which routes the
+ * screen is using and what they expect. It is optional and failure-tolerant:
+ * when the catalogue is unreachable the panel is simply absent.
  */
 
 interface Record_ {
@@ -43,6 +49,7 @@ export function ResourceManager<T extends Record_>({
   remove,
   setPublished,
   describe,
+  endpoints,
 }: {
   /** Singular, sentence case: "Event". */
   label: string;
@@ -58,8 +65,10 @@ export function ResourceManager<T extends Record_>({
   setPublished?: (id: string, published: boolean) => Promise<ActionState>;
   /** Names one record in a confirmation, so "delete this" says which. */
   describe: (row: T) => string;
+  endpoints?: ApiLink | null;
 }) {
   const [editing, setEditing] = useState<T | Partial<T> | null>(null);
+  const [removing, setRemoving] = useState<string | null>(null);
   const toast = useToast();
   const alert = useAlert();
 
@@ -88,7 +97,9 @@ export function ResourceManager<T extends Record_>({
     });
     if (!confirmed) return;
 
+    setRemoving(row.id);
     const result = await remove(row.id);
+    setRemoving(null);
     toast.push({
       title: result.message,
       type: result.success ? 'success' : 'error',
@@ -107,11 +118,17 @@ export function ResourceManager<T extends Record_>({
   }
 
   if (editing) {
+    const heading = editingId ? `Edit ${label.toLowerCase()}` : `New ${label.toLowerCase()}`;
+
     return (
       <>
         <SectionHeading
           label={labelPlural}
-          title={editingId ? `Edit ${label.toLowerCase()}` : `New ${label.toLowerCase()}`}
+          title={heading}
+          // Which record, not just which kind of record. On a screen reached
+          // from a table of twenty rows, "Edit community" alone does not say
+          // which of the twenty you are in.
+          intro={editingId ? describe(editing as T) : undefined}
           actions={
             <Button type="button" variant="secondary" onClick={() => setEditing(null)}>
               Cancel
@@ -119,11 +136,13 @@ export function ResourceManager<T extends Record_>({
           }
         />
 
-        <form action={action} className="grid gap-8 pb-16">
+        <ApiEndpoints link={endpoints ?? null} />
+
+        <form action={action} className="grid gap-6 pb-4">
           <FormMessage message={state.message} success={state.success} />
           <ResourceForm schema={schema} record={editing} errors={state.errors} />
-          <div className="border-border-hairline flex gap-3 border-t-[0.5px] pt-6">
-            <Button type="submit" disabled={pending}>
+          <div className="form-actions">
+            <Button type="submit" busy={pending}>
               {pending ? 'Saving…' : `Save ${label.toLowerCase()}`}
             </Button>
             <Button type="button" variant="secondary" onClick={() => setEditing(null)}>
@@ -141,8 +160,14 @@ export function ResourceManager<T extends Record_>({
       ? [
           {
             header: 'On the site',
+            nowrap: true,
             cell: (row: T) => (
-              <button type="button" onClick={() => void onTogglePublished(row)}>
+              <button
+                type="button"
+                onClick={() => void onTogglePublished(row)}
+                aria-label={`${row.published ? 'Hide' : 'Show'} ${describe(row)} on the site`}
+                className="ease-brand cursor-pointer rounded transition-opacity duration-[160ms] hover:opacity-80 focus-visible:outline-none"
+              >
                 <PublishedBadge published={Boolean(row.published)} />
               </button>
             ),
@@ -151,9 +176,9 @@ export function ResourceManager<T extends Record_>({
       : []),
     {
       header: '',
-      className: 'text-right',
+      actions: true,
       cell: (row: T) => (
-        <div className="flex justify-end gap-2">
+        <div className="flex items-center justify-end gap-2">
           <Button
             type="button"
             variant="secondary"
@@ -166,12 +191,13 @@ export function ResourceManager<T extends Record_>({
           </Button>
           <Button
             type="button"
-            variant="secondary"
+            variant="danger"
             size="compact"
+            busy={removing === row.id}
             onClick={() => void onDelete(row)}
             aria-label={`Delete ${describe(row)}`}
           >
-            <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />
+            {removing !== row.id && <Trash2 className="h-3.5 w-3.5" aria-hidden="true" />}
             Delete
           </Button>
         </div>
@@ -185,6 +211,7 @@ export function ResourceManager<T extends Record_>({
         label={labelPlural}
         title={labelPlural}
         intro={intro}
+        count={records.length}
         actions={
           <Button type="button" onClick={() => setEditing(blank)}>
             <Plus className="h-3.5 w-3.5" aria-hidden="true" />
@@ -192,6 +219,8 @@ export function ResourceManager<T extends Record_>({
           </Button>
         }
       />
+
+      <ApiEndpoints link={endpoints ?? null} />
 
       {records.length === 0 ? (
         <EmptyState
@@ -204,7 +233,12 @@ export function ResourceManager<T extends Record_>({
           }
         />
       ) : (
-        <DataTable columns={allColumns} rows={records} rowKey={(row) => row.id} />
+        <DataTable
+          columns={allColumns}
+          rows={records}
+          rowKey={(row) => row.id}
+          caption={labelPlural}
+        />
       )}
     </>
   );
@@ -218,6 +252,7 @@ export function SingletonManager({
   record,
   schema,
   save,
+  endpoints,
 }: {
   label: string;
   title: string;
@@ -225,6 +260,7 @@ export function SingletonManager({
   record: unknown;
   schema: FormSchema;
   save: (prevState: ActionState, formData: FormData) => Promise<ActionState>;
+  endpoints?: ApiLink | null;
 }) {
   const toast = useToast();
   const [state, action, pending] = useActionState(
@@ -241,11 +277,12 @@ export function SingletonManager({
   return (
     <>
       <SectionHeading label={label} title={title} intro={intro} />
-      <form action={action} className="grid gap-8 pb-16">
+      <ApiEndpoints link={endpoints ?? null} />
+      <form action={action} className="grid gap-6 pb-4">
         <FormMessage message={state.message} success={state.success} />
         <ResourceForm schema={schema} record={record} errors={state.errors} />
-        <div className="border-border-hairline border-t-[0.5px] pt-6">
-          <Button type="submit" disabled={pending}>
+        <div className="form-actions">
+          <Button type="submit" busy={pending}>
             {pending ? 'Saving…' : 'Save changes'}
           </Button>
         </div>

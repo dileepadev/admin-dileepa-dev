@@ -1,6 +1,6 @@
 'use client';
 
-import { Checkbox, Field, Input, Select, Textarea } from '@/components/ui';
+import { Checkbox, Field, Input, PasswordInput, Select, Textarea } from '@/components/ui';
 import { ImageField } from '@/components/ui/ImageField';
 import { RepeatableGroup } from '@/components/ui/RepeatableGroup';
 import { humanise } from '@/lib/constants';
@@ -33,6 +33,8 @@ export function Control({
         name={name}
         label={field.label}
         hint={field.hint}
+        errors={fieldErrors}
+        className={cn(field.wide && 'wide')}
         defaultChecked={Boolean(at(record, field.name))}
       />
     );
@@ -45,8 +47,10 @@ export function Control({
         label={field.label}
         defaultValue={value}
         folder={field.folder}
+        required={field.required}
         hint={field.hint}
         errors={fieldErrors}
+        className={cn(field.wide && 'wide')}
       />
     );
   }
@@ -55,7 +59,7 @@ export function Control({
     // Two URLs, one per theme. A logo that works on both foundations is
     // normal, so the dark field is optional and falls back to the light one.
     return (
-      <div className={cn('grid gap-4 sm:grid-cols-2', field.wide && 'sm:col-span-2')}>
+      <div className="form-grid wide col-span-full">
         <ImageField
           name={`${name}.light`}
           label={`${field.label} — light theme`}
@@ -80,6 +84,7 @@ export function Control({
         defaultValue={value}
         placeholder={field.placeholder}
         required={field.required}
+        rows={field.rows}
         invalid={Boolean(fieldErrors?.length)}
       />
     ) : field.kind === 'select' ? (
@@ -91,6 +96,14 @@ export function Control({
           value: option,
           label: humanise(option),
         }))}
+      />
+    ) : field.kind === 'password' ? (
+      <PasswordInput
+        name={name}
+        autoComplete="new-password"
+        placeholder={field.placeholder}
+        required={field.required}
+        invalid={Boolean(fieldErrors?.length)}
       />
     ) : (
       <Input
@@ -122,13 +135,29 @@ export function Control({
       required={field.required}
       hint={field.hint}
       errors={fieldErrors}
-      className={cn(field.wide && 'sm:col-span-2')}
+      className={cn(field.wide && 'wide')}
     >
       {control}
     </Field>
   );
 }
 
+/**
+ * A form, from its description.
+ *
+ * Each section is a **card**, not a rule. They used to be `<fieldset>`s
+ * separated by a top border, which drew a line across the page between every
+ * pair of groups and left the fields themselves floating on the page
+ * background — so a form with six sections read as six horizontal rules with
+ * controls scattered between them, and on the community form, which has three
+ * short sections, the rules outnumbered the fields.
+ *
+ * A card is what the rest of the platform uses to say "this is one object",
+ * and a section of a form is one object. The legend sits inside it, the note
+ * under the legend, and the fields in a two-column grid whose row gap is
+ * larger than its column gap — because a label needs to be nearer its own
+ * control than to the field above it, and one uniform `gap` cannot say that.
+ */
 export function ResourceForm({
   schema,
   record,
@@ -139,13 +168,17 @@ export function ResourceForm({
   errors?: Record<string, string[]>;
 }) {
   return (
-    <div className="grid gap-8">
+    <div className="form">
       {schema.sections.map((section) => (
-        <fieldset key={section.legend} className="border-border-hairline border-t-[0.5px] pt-6">
+        <fieldset className="form-section" key={section.legend}>
           <legend className="sr-only">{section.legend}</legend>
-          <p className="text-fg text-small font-mono">{section.legend}</p>
-          {section.note && <p className="text-fg-muted mt-1 text-xs">{section.note}</p>}
-          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <div className="form-section-head">
+            <div className="min-w-0">
+              <p className="form-section-title">{section.legend}</p>
+              {section.note && <p className="form-section-note">{section.note}</p>}
+            </div>
+          </div>
+          <div className="form-grid">
             {section.fields.map((field) => (
               <Control key={field.name} field={field} record={record} errors={errors} />
             ))}

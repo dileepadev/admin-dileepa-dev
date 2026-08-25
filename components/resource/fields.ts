@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import type { TableColumn } from '@/components/ui/DataTable';
 
 /**
  * A form, described rather than written.
@@ -23,6 +23,8 @@ export type FieldKind =
   | 'lines'
   | 'select'
   | 'checkbox'
+  /** Masked, with a reveal toggle. */
+  | 'password'
   /** A Cloudinary URL, with an upload button beside it. */
   | 'image'
   /** Two Cloudinary URLs, one per theme. */
@@ -40,6 +42,8 @@ export interface Field {
   options?: readonly string[];
   /** Span both columns of the two-column grid. */
   wide?: boolean;
+  /** `textarea` and `lines` only. Defaults to the CSS minimum of ~5 rows. */
+  rows?: number;
   /** The Cloudinary folder an upload lands in. `image` and `logo` only. */
   folder?: string;
 }
@@ -97,8 +101,11 @@ export function defaultValue(record: unknown, field: Field): string {
   return String(raw);
 }
 
-export interface Column<T> {
-  header: string;
-  cell: (row: T) => ReactNode;
-  className?: string;
-}
+/**
+ * A table column, described by a screen.
+ *
+ * The same type `DataTable` renders, aliased here so a screen imports one
+ * module rather than two — and so there is one definition of what a column is
+ * rather than two that drift.
+ */
+export type Column<T> = TableColumn<T>;
