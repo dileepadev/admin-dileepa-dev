@@ -1,6 +1,7 @@
 'use server';
 
 import { API_URL, ApiError, resource } from '@/lib/api';
+import { IMAGE_FORMATS, IMAGE_MIME_TYPES, MAX_IMAGE_BYTES } from '@/lib/constants';
 import { getSession } from '@/lib/session';
 import type { UploadRecord } from '@/lib/types';
 
@@ -30,8 +31,7 @@ export interface UploadState {
   data?: UploadResult;
 }
 
-const ALLOWED = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
-const MAX_BYTES = 10 * 1024 * 1024;
+const ALLOWED: readonly string[] = IMAGE_MIME_TYPES;
 
 export async function uploadImage(
   prevState: UploadState,
@@ -50,13 +50,13 @@ export async function uploadImage(
   if (!ALLOWED.includes(file.type)) {
     return {
       errors: {
-        file: [`${file.type || 'That file'} is not an image. Send a JPEG, PNG, WebP, GIF or SVG.`],
+        file: [`${file.type || 'That file'} is not an image. Send a ${IMAGE_FORMATS} file.`],
       },
       message: 'That file type is not accepted.',
     };
   }
 
-  if (file.size > MAX_BYTES) {
+  if (file.size > MAX_IMAGE_BYTES) {
     return {
       errors: {
         file: [`That image is ${Math.round(file.size / 1024)} KB. The limit is 10 MB.`],

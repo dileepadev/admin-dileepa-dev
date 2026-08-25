@@ -70,7 +70,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   return (
     <div
       role="status"
-      className={`border-border-hairline bg-bg-surface text-fg pointer-events-auto w-full max-w-sm rounded border-[0.5px] px-4 py-3 ${
+      className={`border-border-hairline bg-bg-surface text-fg pointer-events-auto w-full max-w-sm rounded border px-4 py-3 ${
         toast.type === 'error' ? 'border-error/50' : ''
       }`}
     >
@@ -83,7 +83,7 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
         </div>
         <button
           onClick={onClose}
-          className="text-fg-muted hover:text-fg text-small -mt-1 inline-flex rounded p-1"
+          className="text-fg-muted hover:text-fg text-small -mt-1 inline-flex cursor-pointer rounded p-1 transition-colors duration-[160ms]"
           aria-label="Dismiss"
         >
           ×

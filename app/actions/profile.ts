@@ -37,14 +37,22 @@ const aboutSchema = z.object({
   name: z.string().min(1, 'A name is required.'),
   title: z.string().min(1, 'A title is required — it renders beside the portrait.'),
   tagline: z.string().min(1, 'The tagline is the homepage heading, so it cannot be empty.'),
+  // Optional, and deliberately so: a record written before the field existed
+  // falls back to the second About paragraph on the site, which is what it
+  // showed before. Requiring it here would make every existing record invalid
+  // on the first save after this shipped.
+  taglineDescription: z.string(),
   location: z.string(),
   // The first paragraph is the About section's heading on the site; the rest
   // are its body. One field, so a heading and a body cannot drift apart.
   description: z.array(z.string()).min(1, 'Write at least the opening paragraph.'),
   status: z.string(),
+  // Three portrait formats and a banner. All optional: the site takes the
+  // first portrait that is set, so a record with only a JPG is complete.
   images: z.object({
     profilePng: z.string(),
     profileWebp: z.string(),
+    profileJpg: z.string(),
     bannerWebp: z.string(),
   }),
   links: z.record(z.string(), z.string()),
@@ -64,12 +72,14 @@ function readAbout(data: FormData) {
     name: text(data, 'name'),
     title: text(data, 'title'),
     tagline: text(data, 'tagline'),
+    taglineDescription: text(data, 'taglineDescription'),
     location: text(data, 'location'),
     description: lines(data, 'description'),
     status: text(data, 'status'),
     images: {
       profilePng: text(data, 'images.profilePng'),
       profileWebp: text(data, 'images.profileWebp'),
+      profileJpg: text(data, 'images.profileJpg'),
       bannerWebp: text(data, 'images.bannerWebp'),
     },
     links: Object.fromEntries(SOCIAL_FIELDS.map((key) => [key, text(data, `links.${key}`)])),
