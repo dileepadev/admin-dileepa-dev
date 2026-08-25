@@ -2,7 +2,7 @@
 
 import { deleteEducation, publishEducation, saveEducation } from '@/app/actions/profile';
 import { ResourceManager } from '@/components/resource/ResourceManager';
-import type { Education } from '@/lib/types';
+import type { ApiLink, Education } from '@/lib/types';
 
 /**
  * The screen, as a client component.
@@ -11,9 +11,16 @@ import type { Education } from '@/lib/types';
  * the server-to-client boundary. So the fetch stays on the server in
  * `page.tsx` and everything that describes the screen lives here.
  */
-export function EducationsScreen({ records }: { records: Education[] }) {
+export function EducationsScreen({
+  records,
+  endpoints,
+}: {
+  records: Education[];
+  endpoints?: ApiLink | null;
+}) {
   return (
     <ResourceManager<Education>
+      endpoints={endpoints}
       label="Education"
       labelPlural="Educations"
       intro="Where you studied and what you came out with."
@@ -26,7 +33,11 @@ export function EducationsScreen({ records }: { records: Education[] }) {
       columns={[
         { header: 'Course', cell: (row) => row.course },
         { header: 'Institution', cell: (row) => row.institution },
-        { header: 'Period', cell: (row) => <span className="font-mono">{row.period}</span> },
+        {
+          header: 'Period',
+          nowrap: true,
+          cell: (row) => <span className="font-mono">{row.period}</span>,
+        },
       ]}
       schema={{
         sections: [
@@ -60,7 +71,9 @@ export function EducationsScreen({ records }: { records: Education[] }) {
           },
           {
             legend: 'Visibility',
-            fields: [{ kind: 'checkbox', name: 'published', label: 'Show on the site' }],
+            fields: [
+              { kind: 'checkbox', name: 'published', label: 'Show on the site', wide: true },
+            ],
           },
         ],
       }}

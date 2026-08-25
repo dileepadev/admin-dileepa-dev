@@ -2,7 +2,7 @@
 
 import { deleteExperience, publishExperience, saveExperience } from '@/app/actions/profile';
 import { ResourceManager } from '@/components/resource/ResourceManager';
-import type { Experience } from '@/lib/types';
+import type { ApiLink, Experience } from '@/lib/types';
 
 /**
  * The screen, as a client component.
@@ -11,9 +11,16 @@ import type { Experience } from '@/lib/types';
  * the server-to-client boundary. So the fetch stays on the server in
  * `page.tsx` and everything that describes the screen lives here.
  */
-export function ExperiencesScreen({ records }: { records: Experience[] }) {
+export function ExperiencesScreen({
+  records,
+  endpoints,
+}: {
+  records: Experience[];
+  endpoints?: ApiLink | null;
+}) {
   return (
     <ResourceManager<Experience>
+      endpoints={endpoints}
       label="Experience"
       labelPlural="Experiences"
       intro="Roles, newest first. The period is free text because it reads better that way — “Apr 2025 — Present”."
@@ -26,7 +33,11 @@ export function ExperiencesScreen({ records }: { records: Experience[] }) {
       columns={[
         { header: 'Role', cell: (row) => row.title },
         { header: 'Company', cell: (row) => row.company },
-        { header: 'Period', cell: (row) => <span className="font-mono">{row.period}</span> },
+        {
+          header: 'Period',
+          nowrap: true,
+          cell: (row) => <span className="font-mono">{row.period}</span>,
+        },
       ]}
       schema={{
         sections: [
@@ -74,6 +85,7 @@ export function ExperiencesScreen({ records }: { records: Experience[] }) {
                 name: 'published',
                 label: 'Show on the site',
                 hint: 'Unchecked keeps the record but hides it from every public caller.',
+                wide: true,
               },
             ],
           },

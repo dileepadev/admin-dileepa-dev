@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { getApiLink } from '@/app/actions/api-links';
 import { getTools } from '@/app/actions/profile';
 import { Section } from '@/components/ui';
 import { ToolsScreen } from './tools-screen';
@@ -6,11 +7,14 @@ import { ToolsScreen } from './tools-screen';
 export const metadata: Metadata = { title: 'Tools' };
 
 export default async function ToolsPage() {
-  const records = await getTools();
+  // The catalogue is fetched alongside the records rather than after them:
+  // it is a second independent read, and serialising it would put a whole
+  // round trip between the page and the screen for a panel that is closed.
+  const [records, endpoints] = await Promise.all([getTools(), getApiLink('tools')]);
 
   return (
     <Section>
-      <ToolsScreen records={records} />
+      <ToolsScreen records={records} endpoints={endpoints} />
     </Section>
   );
 }
