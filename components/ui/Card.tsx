@@ -1,0 +1,16 @@
+import type { ReactNode } from 'react';
+import { cn } from '@/lib/utils';
+
+/** `--bg-surface`, hairline border, `--radius-lg`, `--space-6`. Design system §6. */
+export function Card({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <div
+      className={cn(
+        'border-border-hairline bg-bg-surface rounded-lg border-[0.5px] p-6',
+        className,
+      )}
+    >
+      {children}
+    </div>
+  );
+}

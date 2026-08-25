@@ -1,17 +1,28 @@
 'use client';
 
-import React from 'react';
+import { useEffect, useRef } from 'react';
+import { Button } from './Button';
 
-export type AlertOptions = {
+export interface AlertOptions {
   title?: string;
   message?: string;
   confirmText?: string;
   cancelText?: string;
   variant?: 'default' | 'danger';
-};
+}
 
+/**
+ * The confirmation dialog.
+ *
+ * A destructive confirmation names the thing being destroyed and what happens
+ * — "Delete this event?" with the title in the message, not "Are you sure?".
+ * The confirm button names the action.
+ *
+ * Focus moves to Cancel on open, deliberately: for a destructive dialog the
+ * safe option should be the one a stray Enter lands on.
+ */
 export default function AlertBox({
-  title,
+  title = 'Are you sure?',
   message,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
@@ -19,29 +30,41 @@ export default function AlertBox({
   onConfirm,
   onCancel,
 }: AlertOptions & { onConfirm: () => void; onCancel: () => void }) {
-  const isDanger = variant === 'danger';
+  const cancelRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    cancelRef.current?.focus();
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onCancel();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onCancel]);
 
   return (
-    <div className="fixed inset-0 z-60 flex items-center justify-center">
-      <div className="alert-overlay absolute inset-0" onClick={onCancel} />
-      <div className="alert-container relative w-full max-w-lg rounded-lg p-6 shadow-lg">
-        {title && <h3 className="alert-title text-lg font-medium">{title}</h3>}
-        {message && <p className="alert-message mt-2 text-sm">{message}</p>}
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="alert-title"
+      className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4"
+    >
+      <div className="border-border-hairline bg-bg-surface w-full max-w-md rounded-lg border-[0.5px] p-6">
+        <h2 id="alert-title" className="text-fg text-h3 font-medium">
+          {title}
+        </h2>
+        {message && <p className="text-fg-muted text-small mt-3">{message}</p>}
 
         <div className="mt-6 flex justify-end gap-3">
-          <button
-            onClick={onCancel}
-            className="alert-cancel hover:bg-bg-muted rounded-md border px-3 py-2 text-sm"
-          >
+          <Button ref={cancelRef} type="button" variant="secondary" onClick={onCancel}>
             {cancelText}
-          </button>
-
-          <button
+          </Button>
+          <Button
+            type="button"
+            variant={variant === 'danger' ? 'danger' : 'primary'}
             onClick={onConfirm}
-            className={`rounded-md px-3 py-2 text-sm font-medium ${isDanger ? 'alert-confirm-danger' : 'alert-confirm'}`}
           >
             {confirmText}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

@@ -1,60 +1,36 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-interface SectionProps {
-  id?: string;
-  children: ReactNode;
-  className?: string;
-  background?: 'primary' | 'secondary' | 'tertiary';
+export function Section({ children, className }: { children: ReactNode; className?: string }) {
+  return <section className={cn('py-10', className)}>{children}</section>;
 }
 
-const backgroundClasses = {
-  primary: 'bg-bg-primary',
-  secondary: 'bg-bg-secondary',
-  tertiary: 'bg-bg-tertiary',
-};
-
-export function Section({ id, children, className, background = 'primary' }: SectionProps) {
-  return (
-    <section
-      id={id}
-      className={cn('py-16 md:py-24 lg:py-32', backgroundClasses[background], className)}
-    >
-      {children}
-    </section>
-  );
-}
-
-interface SectionHeaderProps {
-  title: string;
-  subtitle?: string;
-  description?: string;
-  align?: 'left' | 'center' | 'right';
-  className?: string;
-}
-
-export function SectionHeader({
+/**
+ * A mono `--brand` label, an H1, and an intro in `--fg-muted`.
+ *
+ * The label carries the accent and the heading stays `--fg`, exactly as on the
+ * public site — design system §6. `actions` is where a screen's primary button
+ * goes, so every screen puts it in the same place.
+ */
+export function SectionHeading({
+  label,
   title,
-  subtitle,
-  description,
-  align = 'center',
-  className,
-}: SectionHeaderProps) {
-  const alignClasses = {
-    left: 'text-left',
-    center: 'text-center mx-auto',
-    right: 'text-right ml-auto',
-  };
-
+  intro,
+  actions,
+}: {
+  label: string;
+  title: string;
+  intro?: string;
+  actions?: ReactNode;
+}) {
   return (
-    <div className={cn('mb-12 max-w-3xl md:mb-16', alignClasses[align], className)}>
-      {subtitle && (
-        <span className="text-accent-blue mb-2 inline-block text-lg font-semibold tracking-wider uppercase">
-          {subtitle}
-        </span>
-      )}
-      <h2 className="mb-4 text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl">{title}</h2>
-      {description && <p className="text-text-secondary text-lg md:text-xl">{description}</p>}
+    <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <div>
+        <p className="text-brand text-small font-mono leading-none">{label}</p>
+        <h1 className="text-fg text-h1 mt-3 font-bold tracking-[-0.02em]">{title}</h1>
+        {intro && <p className="text-fg-muted text-small mt-3 max-w-[68ch]">{intro}</p>}
+      </div>
+      {actions && <div className="flex flex-wrap gap-3">{actions}</div>}
     </div>
   );
 }
