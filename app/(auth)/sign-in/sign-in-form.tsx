@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import { signIn, type SignInState } from '@/app/actions/auth';
-import { Button, Field, FormMessage, Input } from '@/components/ui';
+import { Button, Field, FormMessage, Input, PasswordInput } from '@/components/ui';
 
 const initialState: SignInState = {};
 
@@ -24,9 +24,8 @@ export function SignInForm() {
       </Field>
 
       <Field name="password" label="Password" required errors={state.errors?.password}>
-        <Input
+        <PasswordInput
           name="password"
-          type="password"
           autoComplete="current-password"
           required
           invalid={Boolean(state.errors?.password?.length)}
@@ -34,7 +33,7 @@ export function SignInForm() {
       </Field>
 
       <div className="mt-2">
-        <Button type="submit" disabled={pending} className="w-full">
+        <Button type="submit" busy={pending} className="w-full">
           {pending ? 'Signing in…' : 'Sign in'}
         </Button>
       </div>
