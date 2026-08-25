@@ -1,19 +1,41 @@
 'use client';
 
-import { useActionState, useState } from 'react';
-import { Copy, Trash2 } from 'lucide-react';
-import { deleteImage, uploadImage } from '@/app/actions/upload';
+import { useActionState, useRef, useState } from 'react';
+import { Check, Copy, Paperclip, Trash2 } from 'lucide-react';
+import { deleteImage, uploadImage, type UploadState } from '@/app/actions/upload';
 import { useAlert } from '@/components/providers/alert-provider';
 import { useToast } from '@/components/providers/toast-provider';
 import { Button, Card, EmptyState, Field, FormMessage, Input } from '@/components/ui';
+import { IMAGE_ACCEPT, IMAGE_FORMATS } from '@/lib/constants';
 import type { UploadRecord } from '@/lib/types';
 
 export function MediaLibrary({ images }: { images: UploadRecord[] }) {
   const toast = useToast();
   const alert = useAlert();
   const [copied, setCopied] = useState<string | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [fileName, setFileName] = useState<string>('');
 
-  const [state, action, pending] = useActionState(uploadImage, {});
+  // Wrapped rather than passed straight to `useActionState`, so the outcome
+  // reaches a toast as well as the form. The message under the form is there
+  // when you are looking at the form; the toast is there when you are not,
+  // which after picking a file is where most people are.
+  const [state, action, pending] = useActionState(
+    async (previous: UploadState, formData: FormData) => {
+      const result = await uploadImage(previous, formData);
+      toast.push({
+        title: result.success ? 'Image uploaded.' : 'The upload failed.',
+        description: result.success
+          ? result.data?.publicId
+          : (result.errors?.file?.join(' ') ?? result.message),
+        type: result.success ? 'success' : 'error',
+        duration: result.success ? 4000 : 8000,
+      });
+      if (result.success) setFileName('');
+      return result;
+    },
+    {},
+  );
 
   async function onDelete(image: UploadRecord) {
     const confirmed = await alert.show({
@@ -46,14 +68,48 @@ export function MediaLibrary({ images }: { images: UploadRecord[] }) {
         <form action={action} className="grid gap-4">
           <FormMessage message={state.message} success={state.success} />
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Field name="file" label="Image" required errors={state.errors?.file}>
-              <Input
+          <div className="form-grid">
+            <Field
+              name="file"
+              label="Image"
+              required
+              errors={state.errors?.file}
+              hint={`${IMAGE_FORMATS}, up to 10 MB.`}
+            >
+              {/* Hidden native file picker — triggered by the button below so
+                  the browser's "Choose File No file chosen" text never shows. */}
+              <input
+                ref={fileRef}
+                id="file"
                 name="file"
                 type="file"
-                accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+                accept={IMAGE_ACCEPT}
                 required
+                className="hidden"
+                onChange={(e) => setFileName(e.target.files?.[0]?.name ?? '')}
               />
+              {/* Styled trigger row: a read-only text display + pick button */}
+              <div className="flex gap-2">
+                <div
+                  className="border-border-input text-fg-muted text-body flex min-w-0 flex-1 cursor-pointer items-center truncate rounded border px-3"
+                  style={{ height: 'var(--control-h)' }}
+                  onClick={() => fileRef.current?.click()}
+                  role="button"
+                  tabIndex={-1}
+                  aria-hidden="true"
+                >
+                  <span className="truncate">{fileName || 'No file chosen'}</span>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  className="flex-none"
+                  onClick={() => fileRef.current?.click()}
+                >
+                  <Paperclip className="h-3.5 w-3.5" aria-hidden="true" />
+                  Choose file
+                </Button>
+              </div>
             </Field>
             <Field
               name="folder"
@@ -64,8 +120,18 @@ export function MediaLibrary({ images }: { images: UploadRecord[] }) {
             </Field>
           </div>
 
+          {pending && (
+            <span
+              className="progress progress--indeterminate"
+              role="progressbar"
+              aria-label="Uploading image"
+            >
+              <span />
+            </span>
+          )}
+
           <div>
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" busy={pending}>
               {pending ? 'Uploading…' : 'Upload image'}
             </Button>
           </div>
@@ -81,35 +147,42 @@ export function MediaLibrary({ images }: { images: UploadRecord[] }) {
         <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {images.map((image) => (
             <li key={image.publicId}>
-              <Card className="p-4">
-                {/* A plain `<img>`: next/image would want every Cloudinary
-                    transform declared, and this is a file browser, not a page. */}
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={image.url}
-                  alt=""
-                  className="border-border-hairline bg-bg-raised h-32 w-full rounded border-[0.5px] object-contain"
-                />
-                <p className="text-fg text-small mt-3 truncate" title={image.publicId}>
-                  {image.fileName ?? image.publicId}
-                </p>
-                <p className="text-fg-muted font-mono text-xs">
-                  {image.width && image.height ? `${image.width}×${image.height}` : '—'}
-                  {image.size ? ` · ${Math.round(image.size / 1024)} KB` : ''}
-                </p>
-                <div className="mt-4 flex gap-2">
+              <Card className="flex h-full flex-col justify-between p-4">
+                <div>
+                  <div className="border-border-hairline bg-bg-raised flex h-36 w-full items-center justify-center overflow-hidden rounded border">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={image.url} alt="" className="max-h-full max-w-full object-contain" />
+                  </div>
+                  <p
+                    className="text-fg text-small mt-3 truncate font-medium"
+                    title={image.fileName ?? image.publicId}
+                  >
+                    {image.fileName ?? image.publicId}
+                  </p>
+                  <p className="text-fg-muted mt-1 font-mono text-xs">
+                    {image.width && image.height ? `${image.width}×${image.height}` : '—'}
+                    {image.size ? ` · ${Math.round(image.size / 1024)} KB` : ''}
+                  </p>
+                </div>
+
+                <div className="border-border-hairline/60 mt-4 flex items-center gap-2 border-t pt-3">
                   <Button
                     type="button"
                     variant="secondary"
                     size="compact"
                     onClick={() => void copy(image.url)}
+                    className="flex-1"
                   >
-                    <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                    {copied === image.url ? (
+                      <Check className="text-brand h-3.5 w-3.5" aria-hidden="true" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                    )}
                     {copied === image.url ? 'Copied' : 'Copy URL'}
                   </Button>
                   <Button
                     type="button"
-                    variant="secondary"
+                    variant="danger"
                     size="compact"
                     onClick={() => void onDelete(image)}
                   >
