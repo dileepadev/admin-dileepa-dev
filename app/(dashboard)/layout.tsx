@@ -1,18 +1,18 @@
-import { Sidebar } from "@/components/layout/Sidebar";
-import { Header } from "@/components/layout/Header";
+import { Header } from '@/components/layout/Header';
+import { Sidebar } from '@/components/layout/Sidebar';
+import { Container } from '@/components/ui';
 
-export default function DashboardLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen">
-      <Sidebar className="hidden lg:block" />
-      <div className="flex flex-1 flex-col">
+    <div className="flex min-h-dvh">
+      <aside className="border-border-hairline bg-bg-surface sticky top-0 hidden h-dvh w-64 flex-none overflow-y-auto border-r-[0.5px] lg:block">
+        <Sidebar />
+      </aside>
+
+      <div className="min-w-0 flex-1">
         <Header />
-        <main className="flex-1 overflow-y-auto bg-background p-6">
-          {children}
+        <main>
+          <Container>{children}</Container>
         </main>
       </div>
     </div>

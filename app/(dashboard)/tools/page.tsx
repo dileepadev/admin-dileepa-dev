@@ -1,10 +1,16 @@
-import { ToolsList } from "./tools-list";
+import type { Metadata } from 'next';
+import { getTools } from '@/app/actions/profile';
+import { Section } from '@/components/ui';
+import { ToolsScreen } from './tools-screen';
 
-export default function ToolsPage() {
+export const metadata: Metadata = { title: 'Tools' };
+
+export default async function ToolsPage() {
+  const records = await getTools();
+
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight">Manage Tools</h1>
-      <ToolsList />
-    </div>
+    <Section>
+      <ToolsScreen records={records} />
+    </Section>
   );
 }

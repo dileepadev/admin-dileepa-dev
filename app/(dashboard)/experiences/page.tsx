@@ -1,16 +1,16 @@
-import { ExperiencesList } from "./experiences-list";
+import type { Metadata } from 'next';
+import { getExperiences } from '@/app/actions/profile';
+import { Section } from '@/components/ui';
+import { ExperiencesScreen } from './experiences-screen';
 
-export default function ExperiencesPage() {
+export const metadata: Metadata = { title: 'Experiences' };
+
+export default async function ExperiencesPage() {
+  const records = await getExperiences();
+
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Manage Experiences</h1>
-        <p className="text-muted-foreground">
-          Update your professional experience, work history, and roles.
-        </p>
-      </div>
-
-      <ExperiencesList />
-    </div>
+    <Section>
+      <ExperiencesScreen records={records} />
+    </Section>
   );
 }

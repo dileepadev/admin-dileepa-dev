@@ -1,10 +1,16 @@
-import { VideosList } from "./videos-list";
+import type { Metadata } from 'next';
+import { getVideos } from '@/app/actions/profile';
+import { Section } from '@/components/ui';
+import { VideosScreen } from './videos-screen';
 
-export default function VideosPage() {
+export const metadata: Metadata = { title: 'Videos' };
+
+export default async function VideosPage() {
+  const records = await getVideos();
+
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight">Manage Videos</h1>
-      <VideosList />
-    </div>
+    <Section>
+      <VideosScreen records={records} />
+    </Section>
   );
 }
