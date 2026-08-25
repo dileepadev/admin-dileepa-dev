@@ -4,40 +4,61 @@ import { cn } from '@/lib/utils';
 
 type Variant = 'primary' | 'secondary' | 'danger';
 
-const base =
-  'inline-flex items-center justify-center gap-2 rounded border-[0.5px] px-6 py-3 ' +
-  'font-sans text-small font-medium leading-none no-underline ' +
-  'transition-colors duration-[160ms] ease-brand ' +
-  'disabled:cursor-not-allowed disabled:opacity-60';
-
+/**
+ * The site's button.
+ *
+ * `.btn` and its variants live in `app/globals.css`, reproduced from
+ * `dileepa-dev` rather than approximated in utilities — same height, same
+ * hover, same focus ring, same disabled state. A copied string of Tailwind
+ * classes cannot stay identical to another repository's CSS; a rule written
+ * from the same tokens can.
+ *
+ * `danger` is the one variant the site does not have. It uses `--error` as its
+ * colour, never a new hue.
+ */
 const variants: Record<Variant, string> = {
-  // Primary darkens its fill on hover — never a glow. Design system §6.
-  primary: 'border-transparent bg-brand-fill text-on-brand hover:brightness-90',
-  secondary: 'border-border-hairline bg-transparent text-fg hover:bg-bg-surface',
-  // Destructive uses --error as the fill, never a new hue.
-  danger: 'border-transparent bg-error text-white hover:brightness-90',
+  primary: 'btn--primary',
+  secondary: 'btn--secondary',
+  danger: 'btn--danger',
 };
 
-/** A compact variant for the action column of a table row. */
-const compact = 'px-3 py-2';
+/** Set while an action is in flight, so a button says "working" in place. */
+function Busy({ children }: { children: ReactNode }) {
+  return (
+    <>
+      <span className="spinner" aria-hidden="true" />
+      {children}
+    </>
+  );
+}
 
 export function Button({
   children,
   variant = 'primary',
   size = 'default',
+  busy = false,
+  disabled,
   className,
   ...props
 }: ComponentProps<'button'> & {
   children: ReactNode;
   variant?: Variant;
   size?: 'default' | 'compact';
+  /** In flight: shows the spinner, announces it, and refuses a second click. */
+  busy?: boolean;
 }) {
   return (
     <button
-      className={cn(base, variants[variant], size === 'compact' && compact, className)}
+      className={cn('btn', variants[variant], size === 'compact' && 'btn--compact', className)}
+      // `aria-busy` as well as `disabled`, because the two say different
+      // things: disabled is "you cannot do this", busy is "this is happening".
+      // A save button mid-save is the second one, and a screen reader that
+      // only hears the first has no idea the form was submitted.
+      aria-busy={busy || undefined}
+      disabled={disabled ?? busy}
       {...props}
     >
-      {children}
+      {busy ? <Busy>{children}</Busy> : children}
     </button>
   );
 }
@@ -58,7 +79,7 @@ export function LinkButton({
   return (
     <Link
       href={href}
-      className={cn(base, variants[variant], size === 'compact' && compact, className)}
+      className={cn('btn', variants[variant], size === 'compact' && 'btn--compact', className)}
     >
       {children}
     </Link>

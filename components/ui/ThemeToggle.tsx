@@ -19,7 +19,11 @@ export function ThemeToggle() {
       type="button"
       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
       aria-label="Switch between light and dark theme"
-      className="border-border-hairline text-fg-muted hover:bg-bg-raised hover:text-fg inline-flex h-9 w-9 items-center justify-center rounded border-[0.5px] transition-colors duration-[160ms]"
+      // The same hover every other bordered surface on the site takes: the
+      // surface lifts one step and the border warms to the accent. It used to
+      // swap its border for `--bg-raised`, which in the light theme is #fff —
+      // so the hover was invisible on a white header.
+      className="border-border-strong text-fg-muted hover:bg-surface-hover hover:text-fg hover:border-brand ease-brand inline-flex h-9 w-9 items-center justify-center rounded border transition-colors duration-[160ms]"
     >
       <Sun className="hidden h-4 w-4 dark:block" aria-hidden="true" />
       <Moon className="block h-4 w-4 dark:hidden" aria-hidden="true" />

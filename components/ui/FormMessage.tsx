@@ -13,7 +13,7 @@ export function FormMessage({ message, success }: { message?: string; success?: 
     <p
       role="status"
       className={cn(
-        'text-small rounded border-[0.5px] px-4 py-3',
+        'text-small rounded border px-4 py-3',
         success
           ? 'border-brand/40 text-brand bg-transparent'
           : 'border-error/40 text-error bg-transparent',

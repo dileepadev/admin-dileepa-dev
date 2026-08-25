@@ -34,16 +34,16 @@ export function Field({
 
   return (
     <label className={cn('field', className)} htmlFor={name}>
-      <span>
-        {label}
+      <span className="flex items-center gap-1 font-medium">
+        <span>{label}</span>
         {required && (
-          <span className="req" aria-hidden="true">
+          <span className="req text-brand" aria-hidden="true">
             *
           </span>
         )}
       </span>
       {children}
-      {hint && <span className="text-fg-muted text-xs">{hint}</span>}
+      {hint && <span className="hint leading-normal">{hint}</span>}
       {errors?.length ? (
         <span className="field-error" id={errorId}>
           {errors.join(' ')}
@@ -66,11 +66,15 @@ export function Fieldset({
   className?: string;
 }) {
   return (
-    <fieldset className={cn('border-border-hairline border-t-[0.5px] pt-6', className)}>
+    <fieldset className={cn('form-section', className)}>
       <legend className="sr-only">{legend}</legend>
-      <p className="text-fg text-small font-mono">{legend}</p>
-      {note && <p className="text-fg-muted mt-1 mb-4 text-xs">{note}</p>}
-      <div className={cn('grid gap-4 sm:grid-cols-2', note ? '' : 'mt-4')}>{children}</div>
+      <div className="form-section-head">
+        <div className="min-w-0">
+          <p className="form-section-title">{legend}</p>
+          {note && <p className="form-section-note">{note}</p>}
+        </div>
+      </div>
+      <div className="form-grid">{children}</div>
     </fieldset>
   );
 }
@@ -120,28 +124,35 @@ export function Checkbox({
   name,
   defaultChecked,
   hint,
+  errors,
+  className,
 }: {
   label: string;
   name: string;
   defaultChecked?: boolean;
   hint?: string;
+  errors?: string[];
+  className?: string;
 }) {
   return (
-    <div className="field">
-      <span className="flex items-center gap-3">
+    <div className={cn('checkbox-field', className)}>
+      <label htmlFor={name} className="flex cursor-pointer items-start gap-3 select-none">
         <input type="hidden" name={name} value="off" />
         <input
           type="checkbox"
           id={name}
           name={name}
           defaultChecked={defaultChecked}
-          className="accent-brand h-4 w-4 flex-none"
+          className="accent-brand-fill mt-0.5 h-4 w-4 shrink-0 cursor-pointer rounded"
         />
-        <label htmlFor={name} className="text-fg text-small">
-          {label}
-        </label>
-      </span>
-      {hint && <span className="text-fg-muted text-xs">{hint}</span>}
+        <div className="min-w-0 flex-1">
+          <span className="text-fg text-small block leading-snug font-medium">{label}</span>
+          {hint && (
+            <span className="text-fg-muted text-label mt-1 block leading-normal">{hint}</span>
+          )}
+        </div>
+      </label>
+      {errors?.length ? <span className="field-error mt-1">{errors.join(' ')}</span> : null}
     </div>
   );
 }
