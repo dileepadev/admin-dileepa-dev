@@ -23,7 +23,7 @@ export function VideosScreen({
       endpoints={endpoints}
       label="Video"
       labelPlural="Videos"
-      intro="Short walkthroughs and recorded talks. The site lists the title and date and links out — it does not render thumbnails."
+      intro="Short walkthroughs and recorded talks. The site lists the title, a short description and the date, and links out — it does not render thumbnails."
       records={records}
       describe={(row) => row.title}
       save={saveVideo}
@@ -32,6 +32,17 @@ export function VideosScreen({
       blank={{ published: true }}
       columns={[
         { header: 'Title', cell: (row) => row.title },
+        {
+          header: 'Description',
+          cell: (row) =>
+            row.description ? (
+              // Truncated: this column is a reminder of what is there, and a
+              // three-line cell in every row makes the table unreadable.
+              <span className="text-fg-muted line-clamp-1">{row.description}</span>
+            ) : (
+              <span className="text-fg-muted">—</span>
+            ),
+        },
         {
           header: 'Date',
           nowrap: true,
@@ -42,9 +53,17 @@ export function VideosScreen({
         sections: [
           {
             legend: 'Video',
-            note: 'The site lists the title and the date and links out. Nothing here is rendered as an image.',
+            note: 'The site lists the title, the description and the date, and links out. Nothing here is rendered as an image.',
             fields: [
               { kind: 'text', name: 'title', label: 'Title', required: true, wide: true },
+              {
+                kind: 'textarea',
+                name: 'description',
+                label: 'Description',
+                wide: true,
+                rows: 3,
+                hint: 'A sentence or two, shown under the title on the site. Optional — leave it empty and the title stands alone, as it did before this field existed.',
+              },
               { kind: 'date', name: 'date', label: 'Published', required: true },
               { kind: 'url', name: 'link', label: 'Watch URL', required: true },
             ],

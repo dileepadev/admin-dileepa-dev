@@ -295,12 +295,17 @@ const videoOptions = {
     date: z.string().min(1, 'A date is required, as YYYY-MM-DD.'),
     link: z.string().url('That is not a URL. Include https://.'),
     thumbnail: z.string(),
+    description: z.string(),
     published: z.boolean(),
   }),
   read: (data: FormData) => ({
     title: text(data, 'title'),
     date: text(data, 'date'),
     link: text(data, 'link'),
+    // Optional, and empty is a legitimate value: every video that predates the
+    // field has none, and a required description would block editing any of
+    // them for an unrelated reason.
+    description: optional(data, 'description') ?? '',
     // The site no longer renders video thumbnails, but the field stays on the
     // model — dropping stored data to change a layout is not a trade worth
     // making. See `dileepa-dev/app/videos/page.tsx`.

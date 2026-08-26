@@ -96,6 +96,8 @@ export interface Video extends Resource {
   date: string;
   link: string;
   thumbnail: string;
+  /** Optional: every video that predates the field has none. */
+  description: string;
 }
 
 export interface BlogPost extends Resource {
