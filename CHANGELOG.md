@@ -66,7 +66,7 @@ gains the two screens v2.0.0 needs.
   of the same fetch, the same Zod flattening, the same try/catch and the same `revalidatePath`.
   Ten copies of a thing is ten places a fix has to land, and in practice it lands in one or two.
 - **Every call goes through a typed client** that understands the v2 envelopes: `{ items, total,
-  limit, offset }` on collections, `{ error: { code, message, details } }` on failures. The API
+limit, offset }` on collections, `{ error: { code, message, details } }` on failures. The API
   writes its error messages to be read by a person, so they are shown rather than replaced with
   "Something went wrong".
 - **An empty collection is a `200`.** Every v1 action carried a `if (status === 404) return []`
@@ -78,6 +78,18 @@ gains the two screens v2.0.0 needs.
 - Blog fields the sync owns are marked as such on the screen. Almost everything there is rewritten
   by `POST /blogs/sync` on every push to `blog-dileepa-dev`, so editing it here lasts until the
   next push. Saying so once, plainly, is cheaper than everyone learning it the hard way.
+
+#### Fixed - 2.0.0
+
+- **`GET /api/auth/sign-out` is gone; the route is `POST` only.** A `GET` that clears the session
+  cookie can be triggered by any cross-site top-level navigation, and `sameSite: 'lax'` sends the
+  session cookie on exactly those — so a plain link on someone else's page was enough to sign the
+  admin out. A cross-site `POST` is not a top-level navigation, so Lax withholds the cookie and
+  the request cannot be forged. `SessionWatcher` was the only caller and has always used `POST`.
+- **Four high-severity dependency advisories closed** by moving to Next 16.3.2: 16.1.4 pulled
+  `sharp@0.34.5`, which inherits four libvips CVEs, and a `postcss` carrying two path-traversal
+  advisories that disclose arbitrary `.map` files. `npm audit` reports zero, production and
+  development alike.
 
 #### Removed - 2.0.0
 

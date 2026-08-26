@@ -20,8 +20,11 @@ already solved something, match it — that is why this phase comes after the ma
 
 ### Foundation
 
-- [ ] Next.js 16.1.4 → **16.3.x**, React → **19.2.x**, Tailwind CSS → **4.3.x**, `@types/node` → **^22**
-- [ ] Versions match `dileepa-dev` **exactly** — the current 16.1.4 / 16.1.6 drift is what v2.0.0 exists to end
+- [x] Next.js 16.1.4 → **16.3.2**, React → **19.2.8**, Tailwind CSS → **4.3.3**, `@types/node` → **^22.20.1**.
+      This was also the security fix: 16.1.4 pulled `sharp@0.34.5` (four libvips CVEs, high) and a
+      `postcss` with two path-traversal advisories. `npm audit` went from 4 high to 0
+- [x] Versions match `dileepa-dev` **exactly** — both are now Next 16.3.2, React 19.2.8,
+      Tailwind 4.3.3. The drift v2.0.0 exists to end is closed
 - [x] Vendor `brand-tokens.css` from `dileepadev/docs/brand/`, recording the source
 - [x] Manrope (UI) + JetBrains Mono (IDs, slugs, dates, JSON previews) via `next/font`, weights 400/500/700
 - [x] **Single `.env`, documented as deliberate** — this app is not deployed, so the
@@ -109,7 +112,7 @@ already solved something, match it — that is why this phase comes after the ma
 
 - [x] `README.md` describes what the app actually does — screens, comments moderation, reordering
 - [ ] Re-record or re-caption the demo video; it shows the v1.0 UI
-- [ ] `CHANGELOG.md` entries under Added, Changed, Fixed, Removed
-- [ ] Version → `2.0.0` in `package.json`
+- [x] `CHANGELOG.md` entries under Added, Changed, Fixed, Removed
+- [x] Version → `2.0.0` in `package.json`
 - [ ] Merge `feat/v2.0.0`; tag `v2.0.0`
 - [ ] Close [issue #4](https://github.com/dileepadev/admin-dileepa-dev/issues/4)
