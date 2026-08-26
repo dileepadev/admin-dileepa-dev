@@ -25,8 +25,12 @@ async function doSignOut() {
   document.cookie = 'session_expires=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
   document.cookie = 'signed_out_broadcast=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
 
-  // redirect to sign-in ONLY if we are not already there
+  // A full page navigation, not router.push: ending a session has to discard
+  // every piece of client state with it. router.push keeps the React tree and
+  // the router cache alive, which would leave the previous admin's data on
+  // screen behind the sign-in page.
   if (!isSignInPage) {
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- see above
     window.location.href = '/sign-in';
   }
 }
@@ -91,7 +95,9 @@ export default function SessionWatcher() {
     // Listen for storage events from other tabs (logout broadcast)
     function onStorage(e: StorageEvent) {
       if (e.key === 'signed_out' && window.location.pathname !== '/sign-in') {
-        // another tab signed out
+        // Another tab signed out. Same reasoning as doSignOut: discard this
+        // tab's client state rather than soft-navigating over the top of it.
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- see doSignOut
         window.location.href = '/sign-in';
       }
     }
