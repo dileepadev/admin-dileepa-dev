@@ -118,6 +118,32 @@ export interface BlogPost extends Resource {
   seo: Seo;
 }
 
+/**
+ * A comment, as the admin sees it.
+ *
+ * The site sees a different shape. `email` and `key` exist only on this one —
+ * the public endpoint returns a model with no field for either, so neither can
+ * reach a reader by accident.
+ */
+export interface Comment extends Resource {
+  slug: string;
+  author: string;
+  email: string | null;
+  body: string;
+  parentId: string | null;
+  authorIsOwner: boolean;
+  key: string;
+  /** Readers write these. There is no form field for them. */
+  reactions: ReactionCounts;
+}
+
+export interface ReactionCounts {
+  liked: number;
+  insightful: number;
+  useful: number;
+  learned: number;
+}
+
 export type ProjectStatus = 'active' | 'maintained' | 'archived' | 'concept';
 
 export interface GalleryItem {

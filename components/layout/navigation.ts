@@ -3,6 +3,7 @@ import {
   Calendar,
   FileText,
   FolderGit2,
+  MessageSquare,
   GraduationCap,
   ImageUp,
   LayoutDashboard,
@@ -53,6 +54,7 @@ export const navigation: { title: string; items: NavItem[] }[] = [
     items: [
       { name: 'Projects', href: '/projects', icon: FolderGit2 },
       { name: 'Blogs', href: '/blogs', icon: FileText },
+      { name: 'Comments', href: '/comments', icon: MessageSquare },
       { name: 'Media', href: '/media', icon: ImageUp },
     ],
   },
