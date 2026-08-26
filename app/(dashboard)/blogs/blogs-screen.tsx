@@ -42,6 +42,27 @@ export function BlogsScreen({
           nowrap: true,
           cell: (row) => <span className="font-mono">{row.readingTimeMinutes} min</span>,
         },
+        // Readers write these two, not the admin. They are shown because
+        // knowing a post landed is the point of collecting them, and there is
+        // no form field for either — the API refuses them on write.
+        {
+          header: 'Views',
+          nowrap: true,
+          cell: (row) => (
+            <span className="font-mono tabular-nums">{(row.views ?? 0).toLocaleString()}</span>
+          ),
+        },
+        {
+          header: 'Reactions',
+          nowrap: true,
+          cell: (row) => {
+            const total = Object.values(row.reactions ?? {}).reduce(
+              (sum, count) => sum + (count ?? 0),
+              0,
+            );
+            return <span className="font-mono tabular-nums">{total}</span>;
+          },
+        },
       ]}
       schema={{
         sections: [

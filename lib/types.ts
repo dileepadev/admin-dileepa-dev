@@ -116,6 +116,12 @@ export interface BlogPost extends Resource {
   sourcePath: string;
   contentHash: string;
   seo: Seo;
+  /**
+   * Read-only here. Readers write these, not the admin — there is no field for
+   * them in the form and the API refuses them on create, update and sync alike.
+   */
+  views: number;
+  reactions: ReactionCounts;
 }
 
 /**
