@@ -121,8 +121,8 @@ There is no test suite. Before calling a change done:
 
 ## Docs
 
-- `README.md` currently advertises "Projects & Tools" management. Projects does not exist —
-  fix the claim or ship the feature, and do not leave both wrong.
+- `README.md` describes the screens as they are, comments moderation and reordering included.
+  Keep it that way: it is the first thing anyone reads about this app.
 - The demo video linked in `README.md` shows the v1.0 UI; re-record or re-caption it at release.
 - `CHANGELOG.md` gets categorised entries at release time.
 
@@ -146,8 +146,8 @@ There is no test suite. Before calling a change done:
 
 ## Gotchas
 
-- **Projects does not exist anywhere.** Not in the API, not here, not on the main site. The
-  README's claim is wrong. It is net-new across three repos.
+- **Projects is built end to end** — API resource, this screen, and the site's routes. It was
+  net-new across three repos in v2.0.0, so anything describing it as missing is stale.
 - **`/events` keeps its path and changes shape.** An earlier draft of the migration renamed it to
   `sessions`; that is reverted. `status` is derived from `startAt` by the API and is not a form
   field — cancelling is the one status a person decides, and it has its own action.
@@ -165,10 +165,15 @@ There is no test suite. Before calling a change done:
 - **Auth migration can lock you out.** FastAPI must validate the existing bcrypt hashes, and
   the JWT claim names, expiry, and cookie attributes must all line up. Changing the session
   cookie name signs everyone out — acceptable, but do it deliberately.
-- **`components/ui/ToastDemo.tsx` is a development artefact** still in the tree. It should go.
 - **Dates from the API are strings.** Sorting and filtering do not work as expected until the
   FastAPI migration lands real datetimes.
-- **`navigation.ts` is a flat list of ten items.** The v2.0.0 content model needs grouping —
-  Profile, Work, Community, Content — not two more entries appended.
+- **Reordering is opt-in, and the numbering is inverted on purpose.** A screen gets drag-sorting
+  by passing `reorder` to `ResourceManager`. The table shows positions 1..N with 1 at the top,
+  while the API sorts `order` **descending** — so the top row is saved with the *highest* number.
+  That inversion lives in `lib/crud.ts` and nowhere else; do not re-implement it per screen, and
+  do not "fix" it in the API, where seven other collections share the convention.
+- **The comments screen shows email addresses.** It is the only one that does. If you are adding
+  a view that lists comments anywhere else, check which model you are reading: `PublicComment`
+  has no field for an email and `Comment` does.
 - **`proxy.ts`'s matcher excludes `api` and `_next`.** Adding a route that must be protected
   means checking that pattern, not assuming it is covered.

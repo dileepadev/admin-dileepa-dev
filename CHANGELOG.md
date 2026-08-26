@@ -23,6 +23,21 @@ gains the two screens v2.0.0 needs.
 
 #### Added - 2.0.0
 
+- **Comments** — a moderation screen. Readers post from the website and their comments are live
+  immediately, so this is what comes after: hide (reversible, and the replies underneath survive),
+  edit, delete, or reply as the author. It is the only screen showing a commenter's email address;
+  the public endpoint returns a model with no field for one.
+- **Drag to reorder**, opt-in per screen through `ResourceManager`'s `reorder` prop and used by
+  tools. Every row carries a grip, its position number, and up/down arrows — the arrows are not a
+  nicety, since native HTML5 drag does not work on touch and is not keyboard-reachable at all.
+  The commit is one request, not one PATCH per row, and it is optimistic: the row moves under the
+  cursor, and a failed save snaps back rather than leaving a wrong order on screen.
+  Positions read 1..N with 1 at the top while the API keeps sorting `order` descending; that
+  inversion lives in `lib/crud.ts` alone.
+- `description` on the video form, and in the videos table. Optional — a video that predates the
+  field simply has none.
+- View and reaction counts on the blog list, read-only. Readers write those, and the API refuses
+  them on create, update and sync alike.
 - **Projects** — a management screen for the resource the API gained in v2.0.0. Net-new; there
   was nothing to port.
 - **Events**, rebuilt on the v2 model: speakers, photos, recordings and links as repeatable field

@@ -65,25 +65,41 @@ already solved something, match it — that is why this phase comes after the ma
 
 ### New screens
 
-- [ ] Projects management — net-new across API, admin, and site
+- [x] Projects management — net-new across API, admin, and site
 - [x] Events — speakers, photos, recordings, and links as repeatable field groups
 - [x] **Build the repeatable-field pattern once, reusably.** Four of them land in the events form
-- [ ] Grouped navigation: Profile · Work · Community · Content. `navigation.ts` is a flat list of ten
-      items today, and the new model needs grouping, not two more entries appended
+- [x] Grouped navigation — `navigation.ts` is five titled groups, not a flat list
 - [x] Dashboard counting what is **live**, including projects and events
+- [x] **Comments** — moderation, not authoring. Hide (reversible), edit, delete, or reply as the
+      author. The only screen that shows a commenter's email; the public endpoint returns a model
+      with no field for one
+- [x] Blog list shows view and reaction counts, read-only — readers write those
+
+### Ordering ✅
+
+- [x] **Drag to reorder**, opt-in per screen through `ResourceManager`'s `reorder` prop. Tools uses
+      it; the other seven screens are untouched and can enable it with one prop
+- [x] Grip handle, live position number, and up/down arrows on every row. The arrows are not a
+      nicety — native HTML5 drag does not work on touch and is not keyboard-reachable at all
+- [x] One request per commit, not one PATCH per row
+- [x] Optimistic: the row moves under the cursor, and a failed save snaps back and says so
+- [x] **Positions read 1..N with 1 at the top**, while the API keeps sorting `order` descending.
+      The inversion lives in `lib/crud.ts` alone, so tools does not behave backwards from the
+      seven other collections that share the convention
 
 ### Cleanup
 
 - [x] `/events` keeps its path and is rebuilt on the v2 model — the `sessions` rename is reverted
-- [ ] Remove the standalone-blog-era fields — absolute `blog.dileepa.dev` links and banner URLs stop
-      making sense after consolidation
-- [ ] Delete `components/ui/ToastDemo.tsx`, a development artefact still in the tree
+- [x] Remove the standalone-blog-era fields — no absolute `blog.dileepa.dev` link or banner URL
+      remains in the tree
+- [x] Delete `components/ui/ToastDemo.tsx`, a development artefact
 
 ### Testing
 
-- [ ] `npm run lint` and `npm run build` both clean
-- [ ] Exercise every flow against a real API — create, edit, reorder, delete. A form that renders is
-      not a form that saves
+- [x] `npm run lint` and `npm run build` both clean; `tsc --noEmit` and Prettier too
+- [ ] Exercise every flow against a real API — create, edit, delete. A form that renders is
+      not a form that saves. **Reorder is done**: drag and the arrow controls were both driven in
+      a browser against a live API, and the new order verified in the response
 - [ ] Create a project in admin → it renders on the main site
 - [ ] Create an event with speakers, photos, and a recording → it renders correctly, and the photos appear in the site's gallery
 - [ ] Every pre-existing content type still manages correctly
@@ -91,7 +107,7 @@ already solved something, match it — that is why this phase comes after the ma
 
 ### Documentation and release
 
-- [ ] Fix the `README.md` "Projects & Tools" claim — ship the feature or drop the claim, not both wrong
+- [x] `README.md` describes what the app actually does — screens, comments moderation, reordering
 - [ ] Re-record or re-caption the demo video; it shows the v1.0 UI
 - [ ] `CHANGELOG.md` entries under Added, Changed, Fixed, Removed
 - [ ] Version → `2.0.0` in `package.json`

@@ -28,13 +28,24 @@ This application serves as the central admin interface for:
 - **Content management**, grouped the way the site is:
   - **Profile** — about, experiences, educations, tools
   - **Community** — communities, events, videos
-  - **Content** — projects, blogs, media
+  - **Content** — projects, blogs, comments, media
 - **Events** carry speakers, photos, recordings and links as repeatable field groups. Photos
   attached here are the site's event gallery.
 - **Blogs** are an index of what is in Git, not the posts themselves. The screen says so: the sync
-  rewrites most of these fields on every push to `blog-dileepa-dev`.
+  rewrites most of these fields on every push to `blog-dileepa-dev`. View and reaction counts are
+  shown but not editable — readers write those, and the API refuses them on write.
+- **Comments** — moderation, not authoring. Readers post from the website and their comments are
+  live immediately, so this screen is what comes after: hiding one (reversible, and the replies
+  underneath survive), correcting one, deleting one, or replying as the author. It is the only
+  screen showing a commenter's email address; the public endpoint returns a model with no field
+  for one.
+- **Drag to reorder.** Any list can opt into it — tools does today. Rows carry a grip, their
+  position number, and up/down arrows, because drag is a mouse gesture and the arrows are the
+  whole keyboard and touch path. The order commits in one request, not one per row.
 - **Media** — Cloudinary-backed uploads. This app never holds those credentials; every upload goes
   through the API, which is the only thing that does.
+- **Videos** carry a short description shown under the title on the site. Optional — a video that
+  predates the field simply has none.
 - **Authentication** — JWT in an `httpOnly` cookie, with the session watched client-side so an
   expired token signs out at the door rather than on the first save.
 - **Themes** — dark and light, sharing the `dileepa-theme` storage key with every other surface,
