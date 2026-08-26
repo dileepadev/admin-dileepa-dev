@@ -62,9 +62,15 @@ already solved something, match it — that is why this phase comes after the ma
 > Test the full flow on a preview deployment against a staging database **before** production.
 
 - [x] Retarget `app/actions/auth.ts` at `/auth/login`; `lib/session.ts`, the sign-out route and `proxy.ts` are unchanged and still correct
-- [ ] JWT claim names, expiry, and cookie attributes all line up with FastAPI
-- [ ] Changing the session cookie name signs everyone out — acceptable, but do it deliberately
-- [ ] Check `proxy.ts`'s matcher when adding a protected route; it excludes `api` and `_next`
+- [x] JWT claim names, expiry, and cookie attributes all line up with FastAPI — checked by
+      minting a token with the API's own `create_token` and running `lib/session.ts`'s
+      exp-extraction over it. Claims are `sub`, `email`, `roles`, `type`, `iat`, `exp`; the
+      cookie's `maxAge` lands on 3600s, matching `ACCESS_TOKEN_EXPIRE_MINUTES=60`
+- [x] Changing the session cookie name signs everyone out — acceptable, but do it deliberately.
+      **It was not changed.** The cookie is still `session`, so the cutover costs no sign-out
+- [x] Check `proxy.ts`'s matcher when adding a protected route; it excludes `api` and `_next`.
+      All twelve dashboard routes are behind the session check, `/sign-in` included (the proxy
+      redirects away from it when a session exists); `api`, `_next` and the favicon are excluded
 
 ### New screens
 
