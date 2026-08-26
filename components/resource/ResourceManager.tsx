@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useMemo, useState } from 'react';
 import { Pencil, Plus, Trash2 } from 'lucide-react';
 import {
   ApiEndpoints,
@@ -48,6 +48,7 @@ export function ResourceManager<T extends Record_>({
   save,
   remove,
   setPublished,
+  reorder,
   describe,
   endpoints,
 }: {
@@ -63,12 +64,26 @@ export function ResourceManager<T extends Record_>({
   save: (id: string | null, prevState: ActionState, formData: FormData) => Promise<ActionState>;
   remove: (id: string) => Promise<ActionState>;
   setPublished?: (id: string, published: boolean) => Promise<ActionState>;
+  /**
+   * Pass this to make the list drag-sortable.
+   *
+   * Receives the row ids top-first. What a position *means* in stored values is
+   * decided in `lib/crud.ts` — the platform sorts `order` descending, so the
+   * top row carries the highest number, and that inversion lives in exactly one
+   * place rather than in every screen that offers reordering.
+   */
+  reorder?: (positions: string[]) => Promise<ActionState>;
   /** Names one record in a confirmation, so "delete this" says which. */
   describe: (row: T) => string;
   endpoints?: ApiLink | null;
 }) {
   const [editing, setEditing] = useState<T | Partial<T> | null>(null);
   const [removing, setRemoving] = useState<string | null>(null);
+  // The order shown while a commit is in flight. `null` means "whatever the
+  // server last sent" — dropping back to that on success is what stops the list
+  // flickering between the optimistic order and the revalidated one.
+  const [pendingOrder, setPendingOrder] = useState<string[] | null>(null);
+  const [savingOrder, setSavingOrder] = useState(false);
   const toast = useToast();
   const alert = useAlert();
 
@@ -105,6 +120,45 @@ export function ResourceManager<T extends Record_>({
       type: result.success ? 'success' : 'error',
       duration: 5000,
     });
+  }
+
+  /**
+   * What the table shows: the optimistic order if one is pending, else the
+   * server's.
+   *
+   * Built by lookup rather than by sorting, so a record the pending list does
+   * not mention — one created in another tab between the drag and the
+   * revalidate — still appears, at the end, instead of vanishing.
+   */
+  const orderedRecords = useMemo(() => {
+    if (!pendingOrder) return records;
+    const byId = new Map(records.map((row) => [row.id, row]));
+    const known = pendingOrder
+      .map((id) => byId.get(id))
+      .filter((row): row is T => row !== undefined);
+    const seen = new Set(known.map((row) => row.id));
+    return [...known, ...records.filter((row) => !seen.has(row.id))];
+  }, [records, pendingOrder]);
+
+  async function onReorder(positions: string[]) {
+    if (!reorder) return;
+    // Optimistic: the row moves under the cursor, not after a round trip.
+    setPendingOrder(positions);
+    setSavingOrder(true);
+    const result = await reorder(positions);
+    setSavingOrder(false);
+
+    if (result.success) {
+      // `revalidatePath` in the action re-fetches `records` in the new order,
+      // so the optimistic copy has done its job and holding it would mean two
+      // sources of truth.
+      setPendingOrder(null);
+    } else {
+      // Snap back. Leaving a wrong order on screen after a failed save is how
+      // someone ends up dragging the same row twice.
+      setPendingOrder(null);
+      toast.push({ title: result.message, type: 'error', duration: 5000 });
+    }
   }
 
   async function onTogglePublished(row: T) {
@@ -235,9 +289,12 @@ export function ResourceManager<T extends Record_>({
       ) : (
         <DataTable
           columns={allColumns}
-          rows={records}
+          rows={orderedRecords}
           rowKey={(row) => row.id}
           caption={labelPlural}
+          reorder={
+            reorder ? { onReorder: (ids) => void onReorder(ids), busy: savingOrder } : undefined
+          }
         />
       )}
     </>

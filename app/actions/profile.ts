@@ -10,6 +10,7 @@ import {
   list,
   optional,
   remove as removeResource,
+  reorder as reorderResource,
   save,
   setPublished as setPublishedResource,
   text,
@@ -234,6 +235,10 @@ export async function saveTool(id: string | null, prevState: ActionState, formDa
 
 export async function deleteTool(id: string) {
   return removeResource(toolOptions, id);
+}
+
+export async function reorderTools(positions: string[]) {
+  return reorderResource(toolOptions, positions);
 }
 
 export async function publishTool(id: string, published: boolean) {

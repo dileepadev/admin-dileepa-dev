@@ -120,6 +120,37 @@ export async function setPublished(
   };
 }
 
+/**
+ * Commit a new display order.
+ *
+ * **One request, not one per row.** Dragging a row to the top changes the
+ * position of every row it passed, and sending a PATCH each would be N requests
+ * racing each other into a half-applied order if one failed.
+ *
+ * `positions` is the list of ids in the order a person sees them, top first.
+ * The mapping to stored values happens here, in one place, because it is the
+ * one part of this that is easy to get backwards — see the note in the caller.
+ */
+export async function reorder(
+  options: Pick<CrudOptions<z.ZodType>, 'path' | 'label' | 'route'>,
+  positions: string[],
+): Promise<ActionState> {
+  // The platform sorts `order` DESCENDING — "higher values sort first", the
+  // semantic every resource inherited from v1's `index: -1`. A person reading
+  // the admin sees positions 1..N with 1 at the top, so the top row needs the
+  // HIGHEST number, not the lowest. Inverting here keeps the display honest
+  // without changing a convention seven other collections depend on.
+  const items = positions.map((id, index) => ({ id, order: positions.length - index }));
+
+  try {
+    await resource<unknown>(options.path).reorder(items);
+  } catch (error) {
+    return toState(error, 'update', options.label.toLowerCase());
+  }
+  revalidatePath(options.route);
+  return { success: true, message: 'Order saved.' };
+}
+
 // --- Form reading -----------------------------------------------------------
 //
 // FormData gives strings and nothing else. These are the four conversions every

@@ -1,6 +1,6 @@
 'use client';
 
-import { deleteTool, publishTool, saveTool } from '@/app/actions/profile';
+import { deleteTool, publishTool, reorderTools, saveTool } from '@/app/actions/profile';
 import { ResourceManager } from '@/components/resource/ResourceManager';
 import type { ApiLink, Tool } from '@/lib/types';
 
@@ -23,12 +23,13 @@ export function ToolsScreen({
       endpoints={endpoints}
       label="Tool"
       labelPlural="Tools"
-      intro="The stack you are currently productive in, not everything you have touched. These render as mono chips under Work."
+      intro="The stack you are currently productive in, not everything you have touched. These render as mono chips under Work, in the order below — drag a row, or use the arrows, to change it."
       records={records}
       describe={(row) => row.name}
       save={saveTool}
       remove={deleteTool}
       setPublished={publishTool}
+      reorder={reorderTools}
       blank={{ published: true, logo: { light: '', dark: '' } }}
       columns={[{ header: 'Name', cell: (row) => row.name }]}
       schema={{
