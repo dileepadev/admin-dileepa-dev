@@ -1323,3 +1323,157 @@ table.data th.actions {
   gap: var(--space-3);
   margin-top: var(--space-6);
 }
+
+/* --- Environment status ---------------------------------------------------
+   The header badge naming which deployment this session is talking to. See
+   `EnvironmentStatus.tsx`. `--warning` marks production because it is a state
+   to notice, not a failure — `--error` is reserved for the API being
+   unreachable, the one thing here that actually is one. */
+
+.env-status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  color: var(--fg-muted);
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.env-status::-webkit-details-marker {
+  display: none;
+}
+
+.env-status-env {
+  text-transform: uppercase;
+  letter-spacing: var(--track-label);
+}
+
+.env-status-host {
+  color: var(--fg-muted);
+  opacity: 0.75;
+}
+
+.env-status--warning {
+  color: var(--warning);
+  border-color: color-mix(in srgb, var(--warning) 45%, transparent);
+  background: color-mix(in srgb, var(--warning) 10%, transparent);
+}
+
+.env-status--error {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  border: var(--hairline) solid color-mix(in srgb, var(--error) 45%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--error) 10%, transparent);
+  color: var(--error);
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+}
+
+.env-status-details {
+  position: relative;
+}
+
+.env-status-body {
+  position: absolute;
+  right: 0;
+  top: calc(100% + var(--space-2));
+  z-index: 40;
+  width: max-content;
+  max-width: 22rem;
+  padding: var(--space-4);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: 0 8px 24px color-mix(in srgb, black 20%, transparent);
+}
+
+.env-status-body dl {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+}
+
+.env-status-body dl > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.env-status-body dt {
+  color: var(--fg-muted);
+  flex: none;
+}
+
+.env-status-body dd {
+  color: var(--fg);
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.env-status-warning {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: var(--hairline) solid var(--border);
+  font-size: var(--text-small);
+  color: var(--warning);
+}
+
+/* An API older than this admin: no `/status`, so two rows read "Unknown".
+   `--fg-muted`, deliberately not `--warning` — nothing is wrong, and every
+   other screen is reading from that same API without trouble. Styling it as a
+   problem would contradict the data the user is looking at. */
+.env-status-note {
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: var(--hairline) solid var(--border);
+  font-size: var(--text-small);
+  color: var(--fg-muted);
+}
+
+.env-status-note code {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+}
+
+/* The persistent "API is not answering" banner. `--error`, because unlike the
+   production badge this is a failure rather than a state worth noticing. */
+.api-offline {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin: var(--space-6) 0 0;
+  padding: var(--space-4);
+  border: var(--hairline) solid color-mix(in srgb, var(--error) 45%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--error) 8%, transparent);
+  font-size: var(--text-small);
+  color: var(--fg);
+}
+
+.api-offline svg {
+  color: var(--error);
+  margin-top: 2px;
+}
+
+.api-offline strong {
+  color: var(--error);
+  font-weight: 500;
+}
+
+.api-offline code {
+  font-family: var(--font-mono);
+  font-size: 0.95em;
+}
+

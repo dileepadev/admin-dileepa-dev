@@ -3,10 +3,19 @@
 import { useState } from 'react';
 import { LogOut, Menu, X } from 'lucide-react';
 import { signOut } from '@/app/actions/auth';
-import { Button, ThemeToggle } from '@/components/ui';
+import { Button, EnvironmentStatus, ThemeToggle } from '@/components/ui';
 import { Sidebar } from './Sidebar';
+import type { Connection } from '@/lib/types';
 
-export function Header() {
+export function Header({
+  connection,
+  apiHost,
+  local,
+}: {
+  connection: Connection;
+  apiHost: string;
+  local: boolean;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -43,6 +52,7 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-2">
+            <EnvironmentStatus connection={connection} apiHost={apiHost} local={local} />
             <ThemeToggle />
             <form action={signOut}>
               <Button type="submit" variant="secondary" size="compact" aria-label="Sign out">

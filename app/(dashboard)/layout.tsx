@@ -1,8 +1,15 @@
+import { getSystemStatus } from '@/app/actions/maintenance';
+import { apiHost } from '@/lib/api';
 import { Header } from '@/components/layout/Header';
 import { Sidebar } from '@/components/layout/Sidebar';
-import { Container } from '@/components/ui';
+import { ApiOfflineBanner, Container } from '@/components/ui';
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const connection = await getSystemStatus();
+  // Whether the admin itself is a dev server. Independent of which API it
+  // talks to, which is the entire point of showing both.
+  const local = process.env.NODE_ENV === 'development';
+
   return (
     <div className="flex min-h-dvh">
       {/* `--border-strong` rather than `--border`: this is the edge of a thing,
@@ -13,9 +20,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       </aside>
 
       <div className="min-w-0 flex-1">
-        <Header />
+        <Header connection={connection} apiHost={apiHost()} local={local} />
         <main>
-          <Container>{children}</Container>
+          <Container>
+            {/* Only a genuine transport failure. An API that answers but
+                has no `/status` is `partial`, not this — every screen below
+                reads from it fine, and claiming otherwise would contradict
+                the data on the page. Raised here rather than per screen
+                because every screen reads the same API. */}
+            {connection.state === 'unreachable' && <ApiOfflineBanner apiHost={apiHost()} />}
+            {children}
+          </Container>
         </main>
       </div>
     </div>

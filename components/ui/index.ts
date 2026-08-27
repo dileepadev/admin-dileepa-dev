@@ -7,6 +7,8 @@ export { Field, Fieldset, Input, Textarea, Select, Checkbox } from './Field';
 export { PasswordInput } from './PasswordInput';
 export { DataTable } from './DataTable';
 export { ApiCatalogue, ApiEndpoints } from './ApiEndpoints';
+export { EnvironmentStatus } from './EnvironmentStatus';
+export { ApiOfflineBanner } from './ApiOfflineBanner';
 export { EmptyState } from './EmptyState';
 export { Lockup } from './Lockup';
 export { ThemeToggle } from './ThemeToggle';
