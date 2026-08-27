@@ -133,6 +133,39 @@ already solved something, match it — that is why this phase comes after the ma
 - [ ] Every pre-existing content type still manages correctly
 - [ ] Both themes and narrow widths
 
+### Account and resilience
+
+- [x] **An Account screen** — the signed-in account, the session, its expiry counted down live,
+      and the connection it is all running over. Account from the API (current), session decoded
+      from the cookie on the server (a snapshot of sign-in); shown side by side because the
+      disagreement is the informative case
+- [x] **Fixed: an unreachable API 500'd every screen.** Every list read now degrades to empty
+      through `readList`, with a banner naming the API that is not answering so an empty table is
+      never mistaken for empty data. Verified by killing the API: all eight screens render 200
+      with no page errors, where the dashboard previously returned a 500
+- [x] The bailout signal Next uses to mark a route dynamic is rethrown rather than swallowed —
+      catching it would have prerendered every screen at build time with no data, which is the
+      same bug wearing a quieter coat
+
+### Environment status
+
+- [x] **A header badge naming the environment, the API, and the database**, on every screen. Reads
+      `GET /status`, which the API registers in every environment specifically so this cannot be
+      mistaken — a session pointed at `api.dileepa.dev` reads "production" in `--warning` here just
+      as plainly as one pointed at a laptop reads "development"
+- [x] **Fixed while building it: an unreachable API crashed every screen, not just this one.**
+      `getSystemStatus` runs in the root dashboard layout, and its first version only caught
+      `ApiError` — the shape `request()` throws for an HTTP response. A network failure (`fetch`
+      itself refusing the connection) throws a plain `TypeError` instead, which was not caught and
+      therefore failed the entire layout render rather than the one screen that happened to call
+      it. Caught broadly now, and the same fix applied to `getDatabaseStatus` for the same reason.
+      Verified by pointing the app at a dead port: every screen still rendered, with the badge
+      alone showing "API unreachable"
+- [x] Also swallows Next's own `DYNAMIC_SERVER_USAGE` bailout without logging it as an error — a
+      route reading cookies during the build's static-shell pass throws that internally as the
+      mechanism that marks it dynamic, and every screen here does so anyway through its own data
+      fetching, so the layout's copy of the same signal was pure noise in the build output
+
 ### Database maintenance
 
 - [x] **A Database screen that copies production into development, or empties it.** This was

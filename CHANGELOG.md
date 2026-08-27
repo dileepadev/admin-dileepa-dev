@@ -23,6 +23,32 @@ gains the two screens v2.0.0 needs.
 
 #### Added - 2.0.0
 
+- **The header badge reports whether the admin itself is local, alongside which API answered.**
+  Neither implies the other, which is the whole point: `next dev` pointed at the deployed API is
+  editing production while every other signal on the machine says "local" — the terminal shows
+  `localhost:3101`, and the data looks real because it is. That combination gets named outright,
+  with the one-line fix for it, rather than left to be inferred from a hostname. The same row
+  appears in the Account screen's Connection card.
+
+- **An Account screen** (`/account`) — who you are signed in as, and for how long. The account
+  (email, roles, active, id, created) is read from `GET /auth/profile`, so it is current; the
+  session (expiry counted down live, issued-at, length, token type, signing algorithm, subject,
+  roles) is decoded from the token in the cookie, so it is a snapshot of sign-in. Both are shown
+  because where they disagree the difference is the useful part — a role changed since sign-in
+  says so, with a note that signing out picks it up. The cookie is `httpOnly` and stays that way:
+  the token is decoded on the server and only the claims cross to the browser, never the token.
+- **A status badge in the header**, on every screen: which environment, which API host, and
+  which database this session is actually talking to. It exists because the Database screen's own
+  copy can make the two databases converge — after a copy, development and production can hold
+  identical content, and the one thing that still tells them apart is which connection this
+  session uses, which needed to be visible everywhere, not only on the one screen that changes it.
+  Collapsed to environment and host by default, expanding via `<details>` to the database label,
+  whether docs are enabled, and whether the Database screen is available on this deployment.
+  Production gets `--warning` styling and an explicit sentence — "This session writes to
+  production" — because that is a state worth noticing, not a decorative one. When the API cannot
+  be reached at all, the badge says so in `--error` rather than staying quiet, since silence here
+  would read as "everything is fine" on the one screen most likely to be asked while something is
+  not.
 - **A Database screen** (`/database`), for working against production data without touching it.
   It shows both databases with their credentials stripped, a per-collection count on each side,
   and two actions: replace this database with a copy of production, or empty it. Neither exists
@@ -113,6 +139,51 @@ limit, offset }` on collections, `{ error: { code, message, details } }` on fail
 
 #### Fixed - 2.0.0
 
+- **The dashboard claimed the API was not answering while reading from it successfully.**
+  `getSystemStatus` mapped every failure to `null`, and the layout rendered `null` as "not
+  answering". But `GET /status` is newer than the deployed API and 404s there, so pointing
+  `API_URL` at `api.dileepa.dev` produced a standing banner — *"api.dileepa.dev is not answering …
+  check that the API is running"* — on top of screens that were loading production data perfectly
+  well. The advice was wrong in both directions: the API was running, and `API_URL` was right.
+
+  The three outcomes are now distinct (`Connection` in `lib/types.ts`). A 404 on `/status` falls
+  back to the public `/version`, which has been deployed since v2.0.0 and carries the environment
+  and version — so the badge still reports `production`, marks the database and maintenance rows
+  `Unknown`, and says why in a muted note rather than an alarm. Only a genuine transport failure
+  raises the offline banner now.
+
+- **`API_URL` with a trailing slash silently 404'd every request.** Every endpoint path already
+  begins with `/`, so `https://api.dileepa.dev/` built `https://api.dileepa.dev//projects`, which
+  the API does not collapse — it 404s. The admin then rendered as though every collection were
+  empty, on every screen, with no error anywhere, because one 404 per resource is
+  indistinguishable from having no data. `normalizeApiUrl` in `lib/api.ts` strips the slash at
+  load.
+
+- **`API_URL` over `http://` put the admin bearer token on the wire in cleartext.** The token
+  travels in a request header, and the deployed API's 301 to HTTPS does not help: the first
+  request has already left the machine carrying it. Remote hosts are now upgraded to `https://`
+  before any request is made; `localhost` and friends are left alone, where plaintext is correct.
+
+  Both are corrected with a warning rather than thrown on. Throwing at module load takes the whole
+  admin down over a one-character typo in a dotenv file, and neither safe value is in doubt —
+  nobody means "send my admin token in the clear". The warning names the file to fix.
+
+- **An unreachable API took down every screen instead of one.** Each `getX()` in `app/actions/`
+  was a bare `(await resource(path).list()).items`, so a connection failure threw out of the
+  server component and 500'd the whole route — worst on the dashboard index, which reads nine
+  collections and therefore failed if any one of them did. They now go through `readList` in
+  `lib/crud.ts`, which degrades to an empty list.
+
+  Degrading is only honest if the failure is stated, so it comes with a banner in the dashboard
+  layout naming the API that is not answering. Otherwise "the API is down" renders as "you have
+  no projects", under an empty state helpfully explaining how to publish one.
+
+  `readList` **rethrows** Next's `DYNAMIC_SERVER_USAGE` bailout rather than swallowing it, and
+  `isStaticBailout` in `lib/api.ts` is now shared for that purpose. That signal is how Next
+  learns a route is dynamic; catching it in a `catch` meant for network errors would have left
+  every screen looking static and prerendered at build time with no data at all — trading a
+  visible failure for a silent one. `api-links.ts`, `upload.ts` and `maintenance.ts` had the same
+  hole and are fixed the same way.
 - **`ApiEndpoints.tsx` read `.length` off two optional fields.** `ApiLink.endpoints` and
   `Endpoint.parameters` both default to an empty list server-side and are therefore optional in
   the spec, so a catalogue entry arriving without either crashed the panel. Found by generating

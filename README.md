@@ -46,6 +46,16 @@ This application serves as the central admin interface for:
   through the API, which is the only thing that does.
 - **Videos** carry a short description shown under the title on the site. Optional — a video that
   predates the field simply has none.
+- **Account** — who you are signed in as and for how long: email, roles, whether the account is
+  active, and the session's expiry counted down live alongside when it was issued, how long it
+  runs, and how it is signed. The account comes from the API and the session from your cookie, so
+  where they disagree you can see it. The token is decoded on the server; only the claims reach
+  the browser.
+- **A status badge in the header**, on every screen — which environment, which API host, and
+  which database this session is talking to. Reads `GET /status`, which the API registers in
+  every environment specifically so this cannot be mistaken. Production gets `--warning`
+  styling and an explicit warning line; an unreachable API says so in `--error` rather than
+  the badge going quiet.
 - **Database** — copy production into the development database, or empty it, so every screen here
   shows real content without production being touched. The copy only runs in one direction, and
   not because this app is careful: the API writes to the database it is pointed at and reads from
@@ -56,6 +66,8 @@ This application serves as the central admin interface for:
   feature is unavailable rather than offering buttons that would fail.
 - **Authentication** — JWT in an `httpOnly` cookie, with the session watched client-side so an
   expired token signs out at the door rather than on the first save.
+- **An unreachable API degrades rather than crashes.** Every list read falls back to empty and a
+  banner names the API that is not answering, so a blank table is never mistaken for no data.
 - **Themes** — dark and light, sharing the `dileepa-theme` storage key with every other surface,
   so the theme follows you between them.
 
@@ -100,9 +112,20 @@ This application serves as the central admin interface for:
    ```
 
    One file, on purpose — see the note at the top. `API_URL` is read on the server, where every
-   call is made from; point it at `http://localhost:8000` for a local API or at
-   `https://api.dileepa.dev` for the real one. The API's own CORS allowlist decides whether it is
-   allowed.
+   call is made from, and it is the **only** thing that decides which database you are editing.
+   How you start this app says nothing about it: `next dev` pointed at the deployed API is editing
+   production, and looks exactly like `next dev` pointed at a local one.
+
+   | `API_URL`                 | Talks to      | Database                                 |
+   | ------------------------- | ------------- | ---------------------------------------- |
+   | `http://localhost:8000`   | a local API   | whatever its own banner says, usually dev |
+   | `https://api.dileepa.dev` | the deployed API | **production** — saves are live         |
+
+   The header badge reports which of those answered, and whether this admin is local, on every
+   screen. Write it with no trailing slash and with `https` for anything that is not localhost; a
+   trailing slash builds `//projects`, which the API 404s, and `http` puts the admin token on the
+   wire in cleartext. Both are corrected at load with a warning — see `normalizeApiUrl` in
+   [`lib/api.ts`](lib/api.ts) — but the file should be right.
 
 4. Start the API. This app is a client and does nothing useful without one:
 
