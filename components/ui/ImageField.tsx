@@ -178,7 +178,7 @@ export function ImageField({
         <img
           src={url}
           alt=""
-          className="border-border-hairline bg-bg-raised mt-1 h-16 w-16 rounded border object-contain"
+          className="border-border-strong bg-bg-raised mt-1 h-16 w-16 rounded border object-contain"
         />
       )}
 

@@ -23,7 +23,7 @@ export function ThemeToggle() {
       // surface lifts one step and the border warms to the accent. It used to
       // swap its border for `--bg-raised`, which in the light theme is #fff —
       // so the hover was invisible on a white header.
-      className="border-border-strong text-fg-muted hover:bg-surface-hover hover:text-fg hover:border-brand ease-brand inline-flex h-9 w-9 items-center justify-center rounded border transition-colors duration-[160ms]"
+      className="border-border-strong text-fg-muted hover:bg-surface-hover hover:text-fg hover:border-brand ease-brand inline-flex h-10 w-10 items-center justify-center rounded border transition-colors duration-[160ms]"
     >
       <Sun className="hidden h-4 w-4 dark:block" aria-hidden="true" />
       <Moon className="block h-4 w-4 dark:hidden" aria-hidden="true" />

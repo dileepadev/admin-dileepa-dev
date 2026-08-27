@@ -149,7 +149,7 @@ export function MediaLibrary({ images }: { images: UploadRecord[] }) {
             <li key={image.publicId}>
               <Card className="flex h-full flex-col justify-between p-4">
                 <div>
-                  <div className="border-border-hairline bg-bg-raised flex h-36 w-full items-center justify-center overflow-hidden rounded border">
+                  <div className="border-border-strong bg-bg-raised flex h-36 w-full items-center justify-center overflow-hidden rounded border">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={image.url} alt="" className="max-h-full max-w-full object-contain" />
                   </div>
@@ -159,13 +159,13 @@ export function MediaLibrary({ images }: { images: UploadRecord[] }) {
                   >
                     {image.fileName ?? image.publicId}
                   </p>
-                  <p className="text-fg-muted mt-1 font-mono text-xs">
+                  <p className="text-fg-muted text-label mt-1 font-mono">
                     {image.width && image.height ? `${image.width}×${image.height}` : '—'}
                     {image.size ? ` · ${Math.round(image.size / 1024)} KB` : ''}
                   </p>
                 </div>
 
-                <div className="border-border-hairline/60 mt-4 flex items-center gap-2 border-t pt-3">
+                <div className="border-border-hairline mt-4 flex items-center gap-2 border-t pt-3">
                   <Button
                     type="button"
                     variant="secondary"

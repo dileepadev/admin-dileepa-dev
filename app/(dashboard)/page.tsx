@@ -76,14 +76,14 @@ export default async function DashboardPage() {
             {stats.map((stat) => (
               <li key={stat.label}>
                 <Link href={stat.href} className="group block h-full no-underline">
-                  <Card className="ease-brand group-hover:border-brand/70 group-hover:bg-surface-hover/30 flex h-full flex-col justify-between transition-all duration-160">
+                  <Card className="ease-brand group-hover:border-brand group-hover:bg-surface-hover flex h-full flex-col justify-between transition-colors duration-160">
                     <div>
                       <p className="text-fg-muted text-small font-mono">{stat.label}</p>
                       <p className="text-fg text-h1 mt-1.5 font-bold tracking-[-0.02em]">
                         {stat.live}
                       </p>
                     </div>
-                    <p className="text-fg-muted mt-2 font-mono text-xs">
+                    <p className="text-fg-muted text-label mt-2 font-mono">
                       {stat.total === stat.live ? 'all live' : `${stat.total - stat.live} hidden`}
                     </p>
                   </Card>
@@ -96,7 +96,7 @@ export default async function DashboardPage() {
             <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
               <p className="text-fg-muted text-small font-mono">Event gallery</p>
               <Link href="/events" className="text-brand text-small font-medium hover:underline">
-                View events &rarr;
+                View events
               </Link>
             </div>
             <p className="text-fg-muted text-small mt-2 leading-relaxed">

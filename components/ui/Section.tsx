@@ -32,7 +32,7 @@ export function SectionHeading({
   return (
     <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
       <div className="min-w-0 flex-1">
-        <p className="text-brand text-label font-mono tracking-[0.06em] uppercase">{label}</p>
+        <p className="text-brand text-small font-mono font-medium tracking-[0.01em]">{label}</p>
         <h1 className="text-fg text-h1 mt-1.5 flex items-baseline gap-3 font-bold tracking-[-0.02em]">
           {title}
           {count !== undefined && (

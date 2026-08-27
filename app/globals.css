@@ -271,6 +271,30 @@ p {
   color: inherit;
 }
 
+/* An external link takes a small arrow glyph. Design system §6, DESIGN.md §9.2 */
+a[target='_blank']:not(.no-external)::after {
+  content: '';
+  display: inline-block;
+  width: 0.72em;
+  height: 0.72em;
+  margin-left: 0.28em;
+  vertical-align: 0.05em;
+  background-color: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 1.5h7v7M10.5 1.5L1.5 10.5'/%3E%3C/svg%3E")
+    no-repeat center / contain;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' fill='none' stroke='currentColor' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 1.5h7v7M10.5 1.5L1.5 10.5'/%3E%3C/svg%3E")
+    no-repeat center / contain;
+  opacity: 0.65;
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+a[target='_blank']:not(.no-external):hover::after {
+  opacity: 1;
+  transform: translate(1px, -1px);
+}
+
 button,
 a,
 [role='button'],
@@ -324,9 +348,8 @@ input[type='submit'] {
   font-family: var(--font-mono);
   font-size: var(--text-label);
   line-height: var(--lh-label);
-  font-weight: 400;
-  letter-spacing: var(--track-wide);
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: var(--track-label);
   color: var(--fg-muted);
   padding: 0 var(--space-3);
   margin-bottom: var(--space-1);
@@ -561,7 +584,7 @@ input[type='submit'] {
 
 .field textarea {
   height: auto;
-  min-height: 120px;
+  min-height: 140px;
   padding: var(--space-3);
   resize: vertical;
   line-height: var(--lh-body);
@@ -768,7 +791,7 @@ textarea:-webkit-autofill {
   /* A wide table scrolls inside its own box. The page body never scrolls
      sideways, which is what makes a narrow window usable rather than broken. */
   overflow-x: auto;
-  border: var(--hairline) solid var(--border);
+  border: var(--hairline) solid var(--border-strong);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
 }
@@ -788,9 +811,8 @@ table.data th {
   text-align: left;
   font-family: var(--font-mono);
   font-size: var(--text-label);
-  font-weight: 400;
-  letter-spacing: var(--track-wide);
-  text-transform: uppercase;
+  font-weight: 500;
+  letter-spacing: var(--track-label);
   color: var(--fg-muted);
   padding: var(--space-3) var(--space-5);
   border-bottom: var(--hairline) solid var(--border);
@@ -872,8 +894,7 @@ table.data th.actions {
   border-bottom: var(--hairline) solid var(--border);
   font-family: var(--font-mono);
   font-size: var(--text-label);
-  letter-spacing: var(--track-wide);
-  text-transform: uppercase;
+  letter-spacing: var(--track-label);
   color: var(--fg-muted);
 }
 
@@ -1191,7 +1212,6 @@ table.data th.actions {
   font-size: var(--text-label);
   letter-spacing: var(--track-label);
   color: var(--fg-muted);
-  text-transform: uppercase;
 }
 
 .db-value {
@@ -1249,7 +1269,6 @@ table.data th.actions {
   color: var(--fg-muted);
   font-weight: 500;
   letter-spacing: var(--track-label);
-  text-transform: uppercase;
   font-size: var(--text-label);
 }
 
@@ -1350,7 +1369,7 @@ table.data th.actions {
 }
 
 .env-status-env {
-  text-transform: uppercase;
+  text-transform: capitalize;
   letter-spacing: var(--track-label);
 }
 
@@ -1390,9 +1409,9 @@ table.data th.actions {
   width: max-content;
   max-width: 22rem;
   padding: var(--space-4);
-  border: var(--hairline) solid var(--border);
+  border: var(--hairline) solid var(--border-strong);
   border-radius: var(--radius-lg);
-  background: var(--bg-surface);
+  background: var(--bg-raised);
   box-shadow: 0 8px 24px color-mix(in srgb, black 20%, transparent);
 }
 
@@ -1486,7 +1505,6 @@ table.data th.actions {
   font-size: var(--text-small);
   font-weight: 500;
   letter-spacing: var(--track-label);
-  text-transform: uppercase;
   color: var(--fg-muted);
   font-family: var(--font-mono);
   margin-bottom: var(--space-4);

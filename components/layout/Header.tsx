@@ -29,7 +29,7 @@ export function Header({
               aria-expanded={open}
               aria-controls="admin-nav"
               aria-label={open ? 'Close menu' : 'Open menu'}
-              className="border-border-strong text-fg-muted hover:bg-surface-hover hover:text-fg hover:border-brand ease-brand inline-flex h-9 w-9 items-center justify-center rounded border transition-colors duration-160 lg:hidden"
+              className="border-border-strong text-fg-muted hover:bg-surface-hover hover:text-fg hover:border-brand ease-brand inline-flex h-10 w-10 items-center justify-center rounded border transition-colors duration-160 lg:hidden"
             >
               {open ? (
                 <X className="h-4 w-4" aria-hidden="true" />

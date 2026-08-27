@@ -11,7 +11,7 @@ export function Lockup({ href = '/' }: { href?: string }) {
     <Link
       href={href}
       aria-label="dileepadev admin — dashboard"
-      className="inline-flex items-baseline no-underline"
+      className="lockup no-underline"
     >
       <span className="wordmark">dileepadev</span>
       <span className="mark" aria-hidden="true">

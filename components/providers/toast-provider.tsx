@@ -70,8 +70,8 @@ function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
   return (
     <div
       role="status"
-      className={`border-border-hairline bg-bg-surface text-fg pointer-events-auto w-full max-w-sm rounded border px-4 py-3 ${
-        toast.type === 'error' ? 'border-error/50' : ''
+      className={`border-border-strong bg-bg-raised text-fg pointer-events-auto w-full max-w-sm rounded-lg border px-4 py-3 shadow-lg ${
+        toast.type === 'error' ? 'border-error' : ''
       }`}
     >
       <div className="flex items-start gap-4">

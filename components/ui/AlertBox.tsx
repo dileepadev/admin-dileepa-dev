@@ -48,7 +48,7 @@ export default function AlertBox({
       aria-labelledby="alert-title"
       className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4"
     >
-      <div className="border-border-hairline bg-bg-surface w-full max-w-md rounded-lg border p-6">
+      <div className="border-border-strong bg-bg-raised w-full max-w-md rounded-lg border p-6">
         <h2 id="alert-title" className="text-fg text-h3 font-medium">
           {title}
         </h2>
