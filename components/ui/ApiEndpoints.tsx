@@ -31,7 +31,11 @@ const LOCATION_LABEL: Record<ParameterLocation, string> = {
 const LOCATION_ORDER: ParameterLocation[] = ['path', 'query', 'body', 'header'];
 
 export function ApiEndpoints({ link }: { link: ApiLink | null }) {
-  if (!link || link.endpoints.length === 0) return null;
+  // `endpoints` and `parameters` are optional in the spec — both default to an
+  // empty list server-side, so a catalogue entry may arrive without them.
+  // Normalised once here rather than guarded at each of the five uses below.
+  const endpoints = link?.endpoints ?? [];
+  if (!link || endpoints.length === 0) return null;
 
   return (
     <details className="api-panel">
@@ -39,7 +43,7 @@ export function ApiEndpoints({ link }: { link: ApiLink | null }) {
         <span className="api-panel-label">API</span>
         <span className="api-panel-path truncate">{link.basePath}</span>
         <span className="api-panel-count ml-auto">
-          {link.endpoints.length} endpoint{link.endpoints.length === 1 ? '' : 's'}
+          {endpoints.length} endpoint{endpoints.length === 1 ? '' : 's'}
         </span>
         <ChevronDown className="api-panel-chevron h-4 w-4 flex-none" aria-hidden="true" />
       </summary>
@@ -50,13 +54,13 @@ export function ApiEndpoints({ link }: { link: ApiLink | null }) {
         </p>
 
         <div className="mt-4">
-          {link.endpoints.map((endpoint) => (
+          {endpoints.map((endpoint) => (
             <div className="endpoint-row" key={`${endpoint.method} ${endpoint.path}`}>
               <span className="endpoint-method">{endpoint.method}</span>
               <span className="endpoint-path">{endpoint.path}</span>
               <span className="endpoint-auth">{AUTH_LABEL[endpoint.auth]}</span>
               {endpoint.summary && <span className="endpoint-summary">{endpoint.summary}</span>}
-              <Parameters parameters={endpoint.parameters} />
+              <Parameters parameters={endpoint.parameters ?? []} />
             </div>
           ))}
         </div>
@@ -149,13 +153,13 @@ export function ApiCatalogue({ links }: { links: ApiLink[] }) {
               <a href={link.docsUrl} target="_blank" rel="noopener noreferrer">
                 <span className="api-catalogue-path">{link.basePath}</span>
                 <span className="api-catalogue-label">{link.label}</span>
-                <span className="api-catalogue-count">{link.endpoints.length}</span>
+                <span className="api-catalogue-count">{link.endpoints?.length ?? 0}</span>
               </a>
             ) : (
               <span>
                 <span className="api-catalogue-path">{link.basePath}</span>
                 <span className="api-catalogue-label">{link.label}</span>
-                <span className="api-catalogue-count">{link.endpoints.length}</span>
+                <span className="api-catalogue-count">{link.endpoints?.length ?? 0}</span>
               </span>
             )}
           </li>
