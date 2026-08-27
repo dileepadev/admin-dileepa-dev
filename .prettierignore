@@ -7,3 +7,16 @@ app/brand-tokens.css
 # Generated or vendored output.
 .next/
 node_modules/
+
+# Generated, not written. `openapi.json` is the API's published spec and
+# `lib/api-schema.ts` is produced from it by `npm run api:types`; formatting
+# either one means the next regeneration reverts the change.
+openapi.json
+lib/api-schema.ts
+
+# Prose is hand-wrapped, not machine-wrapped. Every Markdown file here is
+# wrapped to a deliberate measure and uses `*emphasis*` and indented fences;
+# Prettier rewrites all three. This matches `dileepa-dev`, which ignores
+# Markdown for the same reason — several of these files are the same governance
+# documents, copied between the repositories.
+*.md
