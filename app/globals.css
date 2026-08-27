@@ -582,7 +582,8 @@ input[type='submit'] {
   border-color: var(--error);
 }
 
-.field input:not([type='checkbox']):not([type='radio']):not([type='hidden'])[aria-invalid='true']:focus,
+.field
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden'])[aria-invalid='true']:focus,
 .field textarea[aria-invalid='true']:focus,
 .field select[aria-invalid='true']:focus {
   box-shadow: 0 0 0 var(--ring-width) color-mix(in srgb, var(--error) 28%, transparent);
@@ -1165,4 +1166,160 @@ table.data th.actions {
     animation: none;
     opacity: 0.5;
   }
+}
+
+/* --- Database maintenance ------------------------------------------------
+   Two destructive actions on one screen, so the styling has one job: make the
+   database being written to impossible to mistake for the one being read.
+   `--error` is used on the target and nowhere else here, which is why the
+   confirmation input and the table stay neutral. */
+
+.db-targets {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+}
+
+@media (max-width: 640px) {
+  .db-targets {
+    grid-template-columns: 1fr;
+  }
+}
+
+.db-label {
+  font-family: var(--font-mono);
+  font-size: var(--text-label);
+  letter-spacing: var(--track-label);
+  color: var(--fg-muted);
+  text-transform: uppercase;
+}
+
+.db-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-body);
+  color: var(--fg);
+  margin-top: var(--space-2);
+  overflow-wrap: anywhere;
+}
+
+/* The only thing on this screen that anything destroys. */
+.db-value--target {
+  color: var(--error);
+  font-weight: 500;
+}
+
+.db-note {
+  font-size: var(--text-small);
+  color: var(--fg-muted);
+  margin-top: var(--space-2);
+}
+
+.db-blocked {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding: var(--space-4);
+  border: var(--hairline) solid var(--warning);
+  border-radius: var(--radius);
+  color: var(--fg);
+  font-size: var(--text-small);
+}
+
+.db-blocked svg {
+  color: var(--warning);
+  margin-top: 2px;
+}
+
+.db-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: var(--text-small);
+}
+
+.db-table th,
+.db-table td {
+  text-align: left;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: var(--hairline) solid var(--border);
+}
+
+.db-table thead th {
+  color: var(--fg-muted);
+  font-weight: 500;
+  letter-spacing: var(--track-label);
+  text-transform: uppercase;
+  font-size: var(--text-label);
+}
+
+.db-table tbody th {
+  font-weight: 400;
+  color: var(--fg);
+}
+
+.db-table td {
+  color: var(--fg-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.db-table tr[data-excluded] th,
+.db-table tr[data-excluded] td {
+  color: var(--fg-muted);
+}
+
+.db-skip {
+  margin-left: var(--space-2);
+  font-size: var(--text-label);
+  color: var(--fg-muted);
+}
+
+.db-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-small);
+  color: var(--fg);
+  max-width: 28rem;
+}
+
+.db-confirm code {
+  font-family: var(--font-mono);
+  color: var(--fg);
+  padding: 2px var(--space-2);
+  border: var(--hairline) solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+}
+
+/* This input is not inside a `.field`, so it inherits none of the form
+   styling. Matched here rather than by wrapping it: the label is doing
+   something a `Field` does not — naming the exact string that arms two
+   destructive buttons. */
+.db-confirm input {
+  width: 100%;
+  padding: 0 var(--space-3);
+  height: var(--control-h);
+  background: var(--bg-surface);
+  border: var(--hairline) solid var(--border-input);
+  border-radius: var(--radius);
+  color: var(--fg);
+  font-family: var(--font-mono);
+  font-size: var(--text-body);
+  outline: none;
+  transition:
+    border-color var(--dur) var(--ease),
+    box-shadow var(--dur) var(--ease);
+}
+
+.db-confirm input:focus-visible {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 var(--ring-width) color-mix(in srgb, var(--brand) 28%, transparent);
+}
+
+.db-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
 }

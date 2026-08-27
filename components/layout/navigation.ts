@@ -1,6 +1,7 @@
 import {
   Briefcase,
   Calendar,
+  Database,
   FileText,
   FolderGit2,
   MessageSquare,
@@ -57,5 +58,11 @@ export const navigation: { title: string; items: NavItem[] }[] = [
       { name: 'Comments', href: '/comments', icon: MessageSquare },
       { name: 'Media', href: '/media', icon: ImageUp },
     ],
+  },
+  {
+    // Last, and its own group rather than an item under Overview: everything
+    // above edits records, and this empties the database they live in.
+    title: 'Maintenance',
+    items: [{ name: 'Database', href: '/database', icon: Database }],
   },
 ];
