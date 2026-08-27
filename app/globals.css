@@ -552,7 +552,11 @@ input[type='submit'] {
 
 .field input:not([type='checkbox']):not([type='radio']):not([type='hidden']),
 .field textarea,
-.field select {
+.field select,
+.form input:not([type='checkbox']):not([type='radio']):not([type='hidden']),
+.form textarea,
+.form select,
+.input {
   width: 100%;
   padding: 0 var(--space-3);
   height: var(--control-h);
@@ -560,29 +564,86 @@ input[type='submit'] {
   border: var(--hairline) solid var(--border-input);
   border-radius: var(--radius);
   color: var(--fg);
+  -webkit-text-fill-color: var(--fg);
   font-family: var(--font-sans);
   font-size: var(--text-body);
   outline: none;
   transition:
+    background-color var(--dur) var(--ease),
     border-color var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease);
 }
 
-.field select {
+.field input:not([type='checkbox']):not([type='radio']):not([type='hidden']):hover:not(:disabled):not(:focus),
+.field textarea:hover:not(:disabled):not(:focus),
+.field select:hover:not(:disabled):not(:focus),
+.form input:not([type='checkbox']):not([type='radio']):not([type='hidden']):hover:not(:disabled):not(:focus),
+.form textarea:hover:not(:disabled):not(:focus),
+.form select:hover:not(:disabled):not(:focus),
+.input:hover:not(:disabled):not(:focus) {
+  background: var(--surface-hover);
+  border-color: color-mix(in srgb, var(--fg) 20%, var(--border-strong));
+}
+
+.field input:invalid,
+.field textarea:invalid,
+.field select:invalid,
+.form input:invalid,
+.form textarea:invalid,
+.form select:invalid,
+.input:invalid {
+  box-shadow: none;
+}
+
+.field input:user-invalid:not(:focus),
+.field textarea:user-invalid:not(:focus),
+.field select:user-invalid:not(:focus),
+.form input:user-invalid:not(:focus),
+.form textarea:user-invalid:not(:focus),
+.form select:user-invalid:not(:focus),
+.input:user-invalid:not(:focus) {
+  border-color: var(--error);
+}
+
+.field input::placeholder,
+.field textarea::placeholder,
+.form input::placeholder,
+.form textarea::placeholder,
+.input::placeholder {
+  color: var(--fg-muted);
+  -webkit-text-fill-color: var(--fg-muted);
+  opacity: 0.6;
+}
+
+.field input:disabled,
+.field textarea:disabled,
+.field select:disabled,
+.form input:disabled,
+.form textarea:disabled,
+.form select:disabled,
+.input:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.field select,
+.form select {
   /* Native selects ignore `padding` on the text but honour it on the box, and
      a select set to the control height needs the arrow to have somewhere to
      sit. */
   padding-right: var(--space-2);
 }
 
-.field input[type='file'] {
+.field input[type='file'],
+.form input[type='file'] {
   padding: var(--space-2) var(--space-3);
   /* A file input's button is drawn by the browser and is taller than its text,
      so the fixed control height clips it. */
   height: auto;
 }
 
-.field textarea {
+.field textarea,
+.form textarea {
   height: auto;
   min-height: 140px;
   padding: var(--space-3);
@@ -594,21 +655,32 @@ input[type='submit'] {
    the border moves to the accent underneath it. */
 .field input:not([type='checkbox']):not([type='radio']):not([type='hidden']):focus,
 .field textarea:focus,
-.field select:focus {
+.field select:focus,
+.form input:not([type='checkbox']):not([type='radio']):not([type='hidden']):focus,
+.form textarea:focus,
+.form select:focus,
+.input:focus {
   border-color: var(--brand);
   box-shadow: 0 0 0 var(--ring-width) var(--ring);
 }
 
 .field input:not([type='checkbox']):not([type='radio']):not([type='hidden'])[aria-invalid='true'],
 .field textarea[aria-invalid='true'],
-.field select[aria-invalid='true'] {
+.field select[aria-invalid='true'],
+.form input:not([type='checkbox']):not([type='radio']):not([type='hidden'])[aria-invalid='true'],
+.form textarea[aria-invalid='true'],
+.form select[aria-invalid='true'] {
   border-color: var(--error);
 }
 
 .field
   input:not([type='checkbox']):not([type='radio']):not([type='hidden'])[aria-invalid='true']:focus,
 .field textarea[aria-invalid='true']:focus,
-.field select[aria-invalid='true']:focus {
+.field select[aria-invalid='true']:focus,
+.form
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden'])[aria-invalid='true']:focus,
+.form textarea[aria-invalid='true']:focus,
+.form select[aria-invalid='true']:focus {
   box-shadow: 0 0 0 var(--ring-width) color-mix(in srgb, var(--error) 28%, transparent);
 }
 
@@ -683,11 +755,14 @@ textarea:-webkit-autofill {
 }
 
 .form-section {
-  border: var(--hairline) solid var(--border);
+  border: var(--hairline) solid var(--border-strong);
   border-radius: var(--radius-lg);
   background: var(--bg-surface);
   padding: var(--space-6);
   min-width: 0;
+  transition:
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
 }
 
 .form-section-head {
@@ -874,10 +949,13 @@ table.data th.actions {
 /* --- Repeatable field groups -------------------------------------------- */
 
 .group {
-  border: var(--hairline) solid var(--border);
-  border-radius: var(--radius);
+  border: var(--hairline) solid var(--border-strong);
+  border-radius: var(--radius-lg);
   background: var(--bg);
   padding: var(--space-5);
+  transition:
+    background-color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
 }
 
 .group + .group {
@@ -1327,13 +1405,20 @@ table.data th.actions {
   font-size: var(--text-body);
   outline: none;
   transition:
+    background-color var(--dur) var(--ease),
     border-color var(--dur) var(--ease),
     box-shadow var(--dur) var(--ease);
 }
 
+.db-confirm input:hover:not(:disabled):not(:focus) {
+  background: var(--surface-hover);
+  border-color: color-mix(in srgb, var(--fg) 20%, var(--border-strong));
+}
+
+.db-confirm input:focus,
 .db-confirm input:focus-visible {
   border-color: var(--brand);
-  box-shadow: 0 0 0 var(--ring-width) color-mix(in srgb, var(--brand) 28%, transparent);
+  box-shadow: 0 0 0 var(--ring-width) var(--ring);
 }
 
 .db-actions {

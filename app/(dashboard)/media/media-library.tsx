@@ -91,7 +91,7 @@ export function MediaLibrary({ images }: { images: UploadRecord[] }) {
               {/* Styled trigger row: a read-only text display + pick button */}
               <div className="flex gap-2">
                 <div
-                  className="border-border-input text-fg-muted text-body flex min-w-0 flex-1 cursor-pointer items-center truncate rounded border px-3"
+                  className="border-border-input text-fg-muted text-body hover:bg-surface-hover hover:border-border-strong ease-brand flex min-w-0 flex-1 cursor-pointer items-center truncate rounded border px-3 transition-colors duration-[160ms]"
                   style={{ height: 'var(--control-h)' }}
                   onClick={() => fileRef.current?.click()}
                   role="button"
