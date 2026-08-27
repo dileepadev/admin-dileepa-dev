@@ -19,7 +19,72 @@ import { getSession } from '@/lib/session';
  *    swallowed genuinely missing records.
  */
 
-const API_URL = process.env.API_URL || 'http://localhost:8000';
+/**
+ * Hosts where plaintext HTTP is the normal, correct thing. Anything else
+ * reached over `http://` is a live network carrying an admin bearer token.
+ */
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]', '::1', 'host.docker.internal']);
+
+/**
+ * `API_URL` as requests will actually use it.
+ *
+ * Two corrections, both for mistakes that are almost invisible in a dotenv
+ * file and total in their effect:
+ *
+ * 1. **A trailing slash.** Every endpoint below starts with `/`, so
+ *    `http://api.dileepa.dev/` builds `http://api.dileepa.dev//projects`.
+ *    FastAPI does not collapse that — it 404s. The admin then renders as if
+ *    every collection were empty, on every screen, with no error anywhere,
+ *    because a 404 per resource is indistinguishable from having no data.
+ * 2. **`http://` to a remote host.** The bearer token goes in a request
+ *    header. Over plaintext it is readable by anything on the path, and the
+ *    301 to HTTPS does not help: the first request has already left the
+ *    machine with the token in it. Upgrading here means it never does.
+ *
+ * Upgrading rather than throwing is deliberate. Throwing at module load takes
+ * the whole admin down over a one-character config typo, and the safe value is
+ * unambiguous — nobody means "send my admin token in the clear". It is loud
+ * about it instead: the warning names the file to fix, and the header badge
+ * shows the corrected host on every screen.
+ */
+function normalizeApiUrl(raw: string): string {
+  const trimmed = raw.trim().replace(/\/+$/, '');
+
+  let url: URL;
+  try {
+    url = new URL(trimmed);
+  } catch {
+    // Not a URL at all. Left verbatim so the failure names the actual value —
+    // a fabricated one would send someone looking in the wrong place.
+    console.warn(`API_URL is not a valid URL: ${raw}. Fix it in .env.`);
+    return trimmed;
+  }
+
+  if (url.protocol === 'http:' && !LOCAL_HOSTS.has(url.hostname)) {
+    console.warn(
+      `API_URL points at ${url.host} over http://, which would send the admin ` +
+        `bearer token in cleartext. Using https:// instead — fix it in .env.`,
+    );
+    url.protocol = 'https:';
+  }
+
+  return url.href.replace(/\/+$/, '');
+}
+
+export const API_URL = normalizeApiUrl(process.env.API_URL || 'http://localhost:8000');
+
+/**
+ * The host this deployment talks to, for the header badge and the Account
+ * screen. Falls back to the raw value when `API_URL` does not parse, which is
+ * exactly when showing it verbatim is most useful.
+ */
+export function apiHost(): string {
+  try {
+    return new URL(API_URL).host;
+  } catch {
+    return API_URL;
+  }
+}
 
 export interface Page<T> {
   items: T[];
@@ -123,4 +188,24 @@ export const singleton = <T>(path: string) => ({
   update: (body: unknown) => request<T>(path, { method: 'PATCH', body }),
 });
 
-export { request, API_URL };
+/**
+ * Next's own signal that a route bailed out of static rendering because
+ * something in it read cookies — every authenticated read here does.
+ *
+ * It is control flow, not a failure, and it **must be rethrown**. Next catches
+ * it to mark the route dynamic; swallowing it in a `catch` that was meant for
+ * network errors would leave the route looking static, and Next would then
+ * prerender it at build time with whatever a cookie-less request returned —
+ * which is nothing. A page that degrades to empty when the API is down is a
+ * feature; a page frozen at build time showing empty is a bug.
+ */
+export function isStaticBailout(error: unknown): boolean {
+  return (
+    typeof error === 'object' &&
+    error !== null &&
+    'digest' in error &&
+    error.digest === 'DYNAMIC_SERVER_USAGE'
+  );
+}
+
+export { request };

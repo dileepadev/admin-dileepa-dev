@@ -6,10 +6,13 @@
  * failed and what to do about it.
  */
 
+import packageJson from '@/package.json';
+
 export const APP = {
   name: 'dileepa.dev admin',
   description: 'Content for dileepa.dev, its API, and the blog index.',
   site: 'https://dileepa.dev',
+  version: packageJson.version,
 } as const;
 
 /**
