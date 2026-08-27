@@ -2,7 +2,7 @@ import 'server-only';
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { ApiError, resource } from '@/lib/api';
+import { ApiError, isStaticBailout, resource } from '@/lib/api';
 
 /**
  * One CRUD implementation, shared by every resource.
@@ -54,6 +54,37 @@ function toState(error: unknown, verb: string, label: string): ActionState {
   return {
     message: `Could not ${verb} the ${label}. The API did not answer — check that it is running.`,
   };
+}
+
+/**
+ * Read a collection, degrading to empty rather than taking the screen down.
+ *
+ * Every `getX()` in `app/actions/` used to be a bare
+ * `(await resource(path).list()).items`, so an API that was not answering did
+ * not produce an empty table — it produced a 500 on the whole route, and on
+ * the dashboard index, which reads nine collections at once, it produced one
+ * for any of the nine.
+ *
+ * Degrading is only honest because the failure is visible elsewhere: the
+ * header's status badge turns red and the dashboard layout raises a banner
+ * saying the API did not answer. Without that this would be the worst kind of
+ * fix, quietly turning "the API is down" into "you have no projects".
+ *
+ * `isStaticBailout` is rethrown rather than caught — see `lib/api.ts`. It is
+ * how Next learns the route is dynamic, and every screen here is.
+ */
+export async function readList<T>(path: string, label: string): Promise<T[]> {
+  try {
+    return (await resource<T>(path).list()).items;
+  } catch (error) {
+    if (isStaticBailout(error)) throw error;
+    if (error instanceof ApiError) {
+      console.error(`Could not list ${label}: ${error.message}`);
+    } else {
+      console.error(`Could not reach the API to list ${label}:`, error);
+    }
+    return [];
+  }
 }
 
 export interface CrudOptions<Schema extends z.ZodType> {

@@ -2,13 +2,14 @@
 
 import { z } from 'zod';
 import { revalidatePath } from 'next/cache';
-import { ApiError, resource, singleton } from '@/lib/api';
+import { ApiError, singleton } from '@/lib/api';
 import {
   type ActionState,
   flag,
   lines,
   list,
   optional,
+  readList,
   remove as removeResource,
   reorder as reorderResource,
   save,
@@ -146,7 +147,7 @@ const experienceOptions = {
 };
 
 export async function getExperiences(): Promise<Experience[]> {
-  return (await resource<Experience>('/experiences').list()).items;
+  return readList<Experience>('/experiences', 'experiences');
 }
 
 export async function saveExperience(
@@ -192,7 +193,7 @@ const educationOptions = {
 };
 
 export async function getEducations(): Promise<Education[]> {
-  return (await resource<Education>('/educations').list()).items;
+  return readList<Education>('/educations', 'educations');
 }
 
 export async function saveEducation(id: string | null, prevState: ActionState, formData: FormData) {
@@ -226,7 +227,7 @@ const toolOptions = {
 };
 
 export async function getTools(): Promise<Tool[]> {
-  return (await resource<Tool>('/tools').list()).items;
+  return readList<Tool>('/tools', 'tools');
 }
 
 export async function saveTool(id: string | null, prevState: ActionState, formData: FormData) {
@@ -274,7 +275,7 @@ const communityOptions = {
 };
 
 export async function getCommunities(): Promise<Community[]> {
-  return (await resource<Community>('/communities').list()).items;
+  return readList<Community>('/communities', 'communities');
 }
 
 export async function saveCommunity(id: string | null, prevState: ActionState, formData: FormData) {
@@ -320,7 +321,7 @@ const videoOptions = {
 };
 
 export async function getVideos(): Promise<Video[]> {
-  return (await resource<Video>('/videos').list()).items;
+  return readList<Video>('/videos', 'videos');
 }
 
 export async function saveVideo(id: string | null, prevState: ActionState, formData: FormData) {

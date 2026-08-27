@@ -1,6 +1,6 @@
 'use server';
 
-import { API_URL, ApiError, resource } from '@/lib/api';
+import { API_URL, ApiError, isStaticBailout, resource } from '@/lib/api';
 import { IMAGE_FORMATS, IMAGE_MIME_TYPES, MAX_IMAGE_BYTES } from '@/lib/constants';
 import { getSession } from '@/lib/session';
 import type { UploadRecord } from '@/lib/types';
@@ -102,6 +102,8 @@ export async function getImages(): Promise<UploadRecord[]> {
   try {
     return (await resource<UploadRecord>('/uploads').list()).items;
   } catch (error) {
+    // Rethrown, not swallowed: this is how Next learns the route is dynamic.
+    if (isStaticBailout(error)) throw error;
     if (error instanceof ApiError) console.error('Could not list uploads:', error.message);
     return [];
   }

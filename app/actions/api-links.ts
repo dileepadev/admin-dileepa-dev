@@ -1,7 +1,7 @@
 'use server';
 
 import { cache } from 'react';
-import { ApiError, resource } from '@/lib/api';
+import { ApiError, isStaticBailout, resource } from '@/lib/api';
 import type { ApiLink } from '@/lib/types';
 
 /**
@@ -26,6 +26,8 @@ export const getApiLinks = cache(async (): Promise<ApiLink[]> => {
   try {
     return (await resource<ApiLink>('/api-links').list()).items;
   } catch (error) {
+    // Rethrown, not swallowed: this is how Next learns the route is dynamic.
+    if (isStaticBailout(error)) throw error;
     if (error instanceof ApiError) {
       console.error('Could not read the API catalogue:', error.message);
     }

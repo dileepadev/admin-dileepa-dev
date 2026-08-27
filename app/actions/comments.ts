@@ -1,11 +1,11 @@
 'use server';
 
 import { z } from 'zod';
-import { resource } from '@/lib/api';
 import {
   type ActionState,
   flag,
   optional,
+  readList,
   remove as removeResource,
   save,
   setPublished as setPublishedResource,
@@ -59,7 +59,7 @@ const commentOptions = {
 export async function getComments(): Promise<Comment[]> {
   // Newest first, and hidden ones included — this is a queue, and the thing
   // most likely to need attention is the thing that just arrived.
-  return (await resource<Comment>('/comments').list()).items;
+  return readList<Comment>('/comments', 'comments');
 }
 
 export async function saveComment(id: string | null, prevState: ActionState, formData: FormData) {

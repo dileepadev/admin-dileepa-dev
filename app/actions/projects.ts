@@ -8,6 +8,7 @@ import {
   groups,
   list,
   optional,
+  readList,
   remove as removeResource,
   save,
   setPublished as setPublishedResource,
@@ -123,7 +124,7 @@ const projectOptions = {
 };
 
 export async function getProjects(): Promise<Project[]> {
-  return (await resource<Project>('/projects').list()).items;
+  return readList<Project>('/projects', 'projects');
 }
 
 export async function getProject(slug: string): Promise<Project | null> {

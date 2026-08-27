@@ -9,6 +9,7 @@ import {
   list,
   number,
   optional,
+  readList,
   remove as removeResource,
   save,
   setPublished as setPublishedResource,
@@ -181,7 +182,7 @@ const eventOptions = {
 };
 
 export async function getEvents(): Promise<EventRecord[]> {
-  return (await resource<EventRecord>('/events').list()).items;
+  return readList<EventRecord>('/events', 'events');
 }
 
 export async function getEvent(slug: string): Promise<EventRecord | null> {

@@ -8,6 +8,7 @@ import {
   list,
   number,
   optional,
+  readList,
   remove as removeResource,
   save,
   setPublished as setPublishedResource,
@@ -89,7 +90,7 @@ const blogOptions = {
 };
 
 export async function getBlogs(): Promise<BlogPost[]> {
-  return (await resource<BlogPost>('/blogs').list()).items;
+  return readList<BlogPost>('/blogs', 'blog posts');
 }
 
 export async function getBlog(slug: string): Promise<BlogPost | null> {
