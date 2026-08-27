@@ -64,6 +64,31 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Which deployment this admin session is pointed at
+         * @description Environment, version, and database — with credentials stripped.
+         *
+         *     `/version` answers the same "which environment" question but is public and
+         *     therefore deliberately thin. This carries the one field `/version` cannot:
+         *     `database`, which is fine to show a signed-in admin and not fine to hand
+         *     an anonymous caller for free, since it names the Atlas cluster.
+         */
+        get: operations["system_status_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/auth/login": {
         parameters: {
             query?: never;
@@ -3142,6 +3167,32 @@ export interface components {
              */
             isHost: boolean;
         };
+        /**
+         * SystemStatus
+         * @description What the admin dashboard's header shows: where this session is pointed.
+         *
+         *     Admin-only and unrelated to `/maintenance/*` — this is read-only, tells a
+         *     signed-in session which deployment it is actually talking to, and is
+         *     registered in every environment rather than only outside production. A
+         *     session pointed at `api.dileepa.dev` should see "production" here just as
+         *     plainly as one pointed at a local API sees "development".
+         *
+         *     `database` is the credential-free label — see `database_label` in
+         *     `app/core/config.py`. Nothing that reaches this model can be used to open a
+         *     connection.
+         */
+        SystemStatus: {
+            /** Environment */
+            environment: string;
+            /** Version */
+            version: string;
+            /** Database */
+            database: string;
+            /** Docsenabled */
+            docsEnabled: boolean;
+            /** Maintenanceavailable */
+            maintenanceAvailable: boolean;
+        };
         /** TokenPair */
         TokenPair: {
             /** Access Token */
@@ -3457,6 +3508,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["Version"];
+                };
+            };
+        };
+    };
+    system_status_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SystemStatus"];
                 };
             };
         };

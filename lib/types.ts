@@ -103,6 +103,29 @@ export type Slides = Schemas['Slides'];
  * request for this shape against `api.dileepa.dev` is a 404 rather than a 403 —
  * which is what `getDatabaseStatus` returning `null` represents.
  */
+/** The signed-in account, read fresh from the database by `GET /auth/profile`. */
+export type UserProfile = Schemas['UserProfile'];
+
+export type SystemStatus = Schemas['SystemStatus'];
+export type Version = Schemas['Version'];
+
+/**
+ * What the admin could learn about the API it is pointed at.
+ *
+ * Three outcomes, kept apart because they call for three different things and
+ * collapsing them produces an alarm that contradicts what the user can see:
+ *
+ * - `ok` — `/status` answered. Everything below the badge works.
+ * - `partial` — the API answered, but has no `/status`. It is an older
+ *   deployment than this admin, which is the normal state between shipping the
+ *   dashboard and shipping the API. Every other screen works fine; only the
+ *   database and maintenance rows cannot be filled in.
+ * - `unreachable` — nothing answered. This is the only one worth a banner.
+ */
+export type Connection =
+  | { state: 'ok'; status: SystemStatus }
+  | { state: 'partial'; environment: string; version: string }
+  | { state: 'unreachable' };
 export type DatabaseStatus = Schemas['DatabaseStatus'];
 export type CollectionCount = Schemas['CollectionCount'];
 export type MaintenanceResult = Schemas['MaintenanceResult'];
