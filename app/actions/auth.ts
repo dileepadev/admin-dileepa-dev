@@ -3,6 +3,7 @@
 import { z } from 'zod';
 import { createSession, deleteSession, broadcastSignOut } from '@/lib/session';
 import { redirect } from 'next/navigation';
+import { API_URL } from '@/lib/api';
 
 const signInSchema = z.object({
   email: z.string().email({ message: 'That is not an email address.' }),
@@ -33,7 +34,6 @@ export async function signIn(prevState: SignInState, formData: FormData): Promis
   const { email, password } = validatedFields.data;
   // `/auth/login` in v2.0.0 — v1's `/auth/sign-in` is not aliased. The body and
   // the token shape are unchanged, so a session minted by either still works.
-  const API_URL = process.env.API_URL || 'http://localhost:8000';
 
   try {
     const response = await fetch(`${API_URL}/auth/login`, {

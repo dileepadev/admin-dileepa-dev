@@ -79,7 +79,9 @@ export async function readList<T>(path: string, label: string): Promise<T[]> {
   } catch (error) {
     if (isStaticBailout(error)) throw error;
     if (error instanceof ApiError) {
-      console.error(`Could not list ${label}: ${error.message}`);
+      if (error.status !== 401) {
+        console.error(`Could not list ${label}: ${error.message}`);
+      }
     } else {
       console.error(`Could not reach the API to list ${label}:`, error);
     }

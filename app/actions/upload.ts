@@ -104,7 +104,11 @@ export async function getImages(): Promise<UploadRecord[]> {
   } catch (error) {
     // Rethrown, not swallowed: this is how Next learns the route is dynamic.
     if (isStaticBailout(error)) throw error;
-    if (error instanceof ApiError) console.error('Could not list uploads:', error.message);
+    if (error instanceof ApiError) {
+      if (error.status !== 401) {
+        console.error('Could not list uploads:', error.message);
+      }
+    }
     return [];
   }
 }

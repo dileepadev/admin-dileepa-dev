@@ -28,8 +28,14 @@ export const getApiLinks = cache(async (): Promise<ApiLink[]> => {
   } catch (error) {
     // Rethrown, not swallowed: this is how Next learns the route is dynamic.
     if (isStaticBailout(error)) throw error;
+    // An expired, invalid, or missing session on an admin-only endpoint, or
+    // an older API without /api-links (404), is not a fatal failure. The
+    // catalogue is context, not content: when it cannot be read, the panel
+    // simply does not render and the screen behaves as it did before.
     if (error instanceof ApiError) {
-      console.error('Could not read the API catalogue:', error.message);
+      if (error.status !== 401 && error.status !== 403 && error.status !== 404) {
+        console.warn('Could not read the API catalogue:', error.message);
+      }
     }
     return [];
   }
