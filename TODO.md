@@ -49,8 +49,14 @@ already solved something, match it — that is why this phase comes after the ma
 - [x] **Collapse ten near-identical action files into one CRUD implementation** — about 2,300
       lines of the same fetch, Zod flattening and try/catch. Ten copies of a thing is ten places a
       fix has to land
-- [ ] Generate a typed client from the published OpenAPI spec, as `dileepa-dev` does. The shapes
-      are hand-written in `lib/types.ts` until then
+- [x] Generate a typed client from the published OpenAPI spec, as `dileepa-dev` does. `openapi.json`
+      is vendored, `npm run api:types` writes `lib/api-schema.ts`, and `lib/types.ts` is now
+      nothing but named aliases onto it — the same two-file split the main site uses. Three
+      drifts fell out of it, which is the whole argument for generating rather than writing:
+      `Comment` declared an `order` the API does not return, `EventRecord` was missing `series`
+      entirely, and `UploadRecord` had neither `mimetype` nor its timestamps. A fourth was a real
+      bug — `ApiLink.endpoints` and `Endpoint.parameters` are optional in the spec, and
+      `ApiEndpoints.tsx` read `.length` off both unguarded
 - [x] Adopt the new list and error envelopes; surface the API's real message, never a generic failure
 - [x] Stop treating a `404` on a collection as "empty" — v2 answers an empty list with a `200`, and
       the old branch also swallowed genuinely missing records
@@ -102,6 +108,19 @@ already solved something, match it — that is why this phase comes after the ma
 - [x] Remove the standalone-blog-era fields — no absolute `blog.dileepa.dev` link or banner URL
       remains in the tree
 - [x] Delete `components/ui/ToastDemo.tsx`, a development artefact
+- [x] **`next.config.ts` no longer allows two image hosts that nothing serves.**
+      `dileepadev.blob.core.windows.net` is the Azure Blob backend the API retired in v2.0.0, and
+      `youtube.com` never served an image to `next/image` at all — recordings are linked, not
+      embedded. Each was a host the image optimiser would fetch arbitrary paths from on request.
+      Cloudinary only, matching the main site
+- [x] **Security headers.** The app set none: no CSP, no `nosniff`, no framing or referrer
+      policy, and `X-Powered-By` on every response. Added in `next.config.ts` so the posture
+      ships with the code. The CSP is tight because this app loads no third-party script and
+      embeds no frame — `img-src` names Cloudinary and nothing else
+- [x] Add `typecheck`, `format` and `format:check` scripts, so the checks the release notes
+      claim were run are runnable by name rather than from memory. `format:check` was failing on
+      14 files when it was first run: Markdown is now ignored, for the reason `dileepa-dev`
+      ignores it, and the three real code files are formatted
 
 ### Testing
 
@@ -113,6 +132,23 @@ already solved something, match it — that is why this phase comes after the ma
 - [ ] Create an event with speakers, photos, and a recording → it renders correctly, and the photos appear in the site's gallery
 - [ ] Every pre-existing content type still manages correctly
 - [ ] Both themes and narrow widths
+
+### Database maintenance
+
+- [x] **A Database screen that copies production into development, or empties it.** This was
+      being done by hand; the screen is the same operation with the guards written down. The
+      dangerous half lives in the API — `app/routers/maintenance.py`, five layered guards, and
+      routes that are not registered in production at all — and this app only sends a
+      confirmation string, so it has no argument that could be inverted. Both buttons are
+      disabled until the target database's name is typed. Driven in a browser against both live
+      databases: clear removed 132 documents and left `users` intact, copy restored all fourteen
+      collections with `_id`s preserved, and production was unchanged throughout
+- [x] Counting fifteen collections on each side was thirty sequential round trips to Atlas —
+      about twelve seconds of a screen showing nothing. Gathered instead, which is one round
+      trip's worth of latency
+- [x] The busy state is tied to the API call, not to `router.refresh()`. A transition stays
+      pending until everything inside it settles, so the buttons went on spinning long after the
+      copy had finished — which reads as a hung request on the screen where that is most alarming
 
 ### Documentation and release
 

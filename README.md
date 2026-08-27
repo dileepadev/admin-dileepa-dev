@@ -46,6 +46,14 @@ This application serves as the central admin interface for:
   through the API, which is the only thing that does.
 - **Videos** carry a short description shown under the title on the site. Optional — a video that
   predates the field simply has none.
+- **Database** — copy production into the development database, or empty it, so every screen here
+  shows real content without production being touched. The copy only runs in one direction, and
+  not because this app is careful: the API writes to the database it is pointed at and reads from
+  a separately configured source, so there is no argument here that could be inverted. Both
+  actions stay disabled until the target database's own name is typed out. `users` is never
+  copied, so you stay signed in. **Development only** — the API does not register these routes
+  when it runs in production, so pointing `API_URL` at `api.dileepa.dev` makes the screen say the
+  feature is unavailable rather than offering buttons that would fail.
 - **Authentication** — JWT in an `httpOnly` cookie, with the session watched client-side so an
   expired token signs out at the door rather than on the first save.
 - **Themes** — dark and light, sharing the `dileepa-theme` storage key with every other surface,

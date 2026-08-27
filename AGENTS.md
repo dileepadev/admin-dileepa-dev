@@ -36,7 +36,10 @@ cross-repository roadmap lives in `dileepadev/TODO.md`.
 | --- | --- |
 | `app/(auth)/sign-in/` | **Built.** Sign-in page and form |
 | `app/(dashboard)/` | **Built.** Ten content screens + the dashboard index |
+| `app/(dashboard)/database/` | **Built.** Copy production into development, or empty it. Development-only: the API does not register these routes in production |
 | `app/actions/` | **Built.** Four modules — `auth`, `profile`, `events`, `projects`, `blogs`, `upload`. Not one per resource: the CRUD is shared |
+| `lib/api-schema.ts` | **Generated** from `openapi.json` by `npm run api:types`. Never edited by hand |
+| `lib/types.ts` | **Built.** Names the generated shapes; the only file that reaches into `api-schema.ts` |
 | `lib/api.ts` | **Built.** The typed FastAPI client — envelopes, error envelope, bearer token |
 | `lib/crud.ts` | **Built.** One CRUD implementation, plus the FormData readers |
 | `components/resource/` | **Built.** `fields.ts` describes a form, `ResourceForm` renders it, `ResourceManager` is the screen |
@@ -177,3 +180,13 @@ There is no test suite. Before calling a change done:
   has no field for an email and `Comment` does.
 - **`proxy.ts`'s matcher excludes `api` and `_next`.** Adding a route that must be protected
   means checking that pattern, not assuming it is covered.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

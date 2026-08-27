@@ -23,6 +23,38 @@ gains the two screens v2.0.0 needs.
 
 #### Added - 2.0.0
 
+- **A Database screen** (`/database`), for working against production data without touching it.
+  It shows both databases with their credentials stripped, a per-collection count on each side,
+  and two actions: replace this database with a copy of production, or empty it. Neither exists
+  on the production API — the routes are not registered there — so pointing `API_URL` at
+  production makes the screen say so rather than offering buttons that would fail.
+
+  The screen sends a confirmation string and nothing else. It cannot name a source, a target or
+  a direction, so there is no argument here that could be the wrong way round. Both buttons stay
+  disabled until the target database's own name is typed out, which is the friction
+  `scripts/_common.py` imposes on a production write and for the same reason: a yes/no dialog is
+  answered by reflex. `users` is never copied, so signing in still works afterwards.
+- **A typed client generated from the API's published OpenAPI spec.** `openapi.json` is vendored,
+  `npm run api:types` writes `lib/api-schema.ts`, and `lib/types.ts` is now named aliases onto it
+  rather than 307 hand-written lines — the same two-file split `dileepa-dev` uses. Generating them
+  immediately surfaced drift the hand-written copies had accumulated: `Comment` declared an `order`
+  the API does not return, `EventRecord` was missing `series` entirely, and `UploadRecord` had
+  neither `mimetype` nor its timestamps.
+- **Security headers on every response**, set in `next.config.ts`: a Content-Security-Policy,
+  `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy` and
+  `Strict-Transport-Security`. The app previously sent none. The policy is tight because this app
+  loads no third-party script and embeds no frame — `img-src` names Cloudinary and nothing else,
+  and the API is reached from server actions rather than the browser, so `connect-src` stays
+  `'self'`.
+
+  **The policy differs in development, and only there.** React's development build calls `eval()`,
+  hot module replacement is a WebSocket, and Turbopack serves some chunks from `blob:` URLs, so
+  `'unsafe-eval'`, `blob:` and `ws:`/`wss:` are added when `NODE_ENV` is `development` and never
+  otherwise. Verified both ways in a browser: the sign-in screen and the dashboard report a clean
+  console under `next dev`, and the production header carries none of the three.
+- `typecheck`, `format` and `format:check` scripts, so the checks the release notes claim were run
+  are runnable by name rather than from memory.
+
 - **Comments** — a moderation screen. Readers post from the website and their comments are live
   immediately, so this is what comes after: hide (reversible, and the replies underneath survive),
   edit, delete, or reply as the author. It is the only screen showing a commenter's email address;
@@ -81,6 +113,10 @@ limit, offset }` on collections, `{ error: { code, message, details } }` on fail
 
 #### Fixed - 2.0.0
 
+- **`ApiEndpoints.tsx` read `.length` off two optional fields.** `ApiLink.endpoints` and
+  `Endpoint.parameters` both default to an empty list server-side and are therefore optional in
+  the spec, so a catalogue entry arriving without either crashed the panel. Found by generating
+  the types rather than writing them.
 - **`GET /api/auth/sign-out` is gone; the route is `POST` only.** A `GET` that clears the session
   cookie can be triggered by any cross-site top-level navigation, and `sameSite: 'lax'` sends the
   session cookie on exactly those — so a plain link on someone else's page was enough to sign the
@@ -93,6 +129,11 @@ limit, offset }` on collections, `{ error: { code, message, details } }` on fail
 
 #### Removed - 2.0.0
 
+- **Two `next/image` hosts that nothing serves.** `dileepadev.blob.core.windows.net` was the Azure
+  Blob backend the API retired in v2.0.0, and `youtube.com` never served an image to `next/image`
+  at all — recordings are linked, not embedded. Each was a host the image optimiser would fetch
+  arbitrary paths from on request. Cloudinary only now, matching the main site.
+- **`X-Powered-By: Next.js`** — named the framework on every response, and nothing read it.
 - **The blog banner fields.** Posts carry no image of their own; anything a post shows is an
   ordinary Markdown image in the body pointing at a URL.
 - **Video thumbnails from the list view.** The field is still stored and editable — dropping data
