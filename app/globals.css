@@ -267,8 +267,8 @@ p {
 }
 
 ::selection {
-  background: var(--brand-fill);
-  color: var(--on-brand);
+  background: color-mix(in srgb, var(--brand) 28%, transparent);
+  color: inherit;
 }
 
 button,
