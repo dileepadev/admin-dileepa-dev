@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Lockup } from '@/components/ui';
+import packageJson from '@/package.json';
 import { navigation } from './navigation';
 
 /**
@@ -33,7 +34,7 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
     href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <div className="flex h-full flex-col gap-6 p-5">
+    <div className="flex min-h-full flex-col gap-6 p-5">
       <div className="px-3 py-1">
         <Lockup />
       </div>
@@ -62,6 +63,12 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
           </div>
         ))}
       </nav>
+
+      <div className="border-border-hairline border-t px-3 pt-4">
+        <p className="text-fg-muted text-label font-mono" title={`Version ${packageJson.version}`}>
+          v{packageJson.version}
+        </p>
+      </div>
     </div>
   );
 }

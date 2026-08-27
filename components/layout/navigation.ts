@@ -1,6 +1,7 @@
 import {
   Briefcase,
   Calendar,
+  CircleUser,
   Database,
   FileText,
   FolderGit2,
@@ -63,6 +64,9 @@ export const navigation: { title: string; items: NavItem[] }[] = [
     // Last, and its own group rather than an item under Overview: everything
     // above edits records, and this empties the database they live in.
     title: 'Maintenance',
-    items: [{ name: 'Database', href: '/database', icon: Database }],
+    items: [
+      { name: 'Account', href: '/account', icon: CircleUser },
+      { name: 'Database', href: '/database', icon: Database },
+    ],
   },
 ];
