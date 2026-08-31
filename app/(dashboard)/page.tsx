@@ -8,6 +8,8 @@ import {
   getCommunities,
   getEducations,
   getExperiences,
+  getPillars,
+  getSpeakingTopics,
   getTools,
   getVideos,
 } from '@/app/actions/profile';
@@ -23,18 +25,31 @@ export const metadata: Metadata = { title: 'Dashboard' };
  * question someone opening this app is asking.
  */
 export default async function DashboardPage() {
-  const [experiences, educations, tools, communities, videos, projects, events, blogs, apiLinks] =
-    await Promise.all([
-      getExperiences(),
-      getEducations(),
-      getTools(),
-      getCommunities(),
-      getVideos(),
-      getProjects(),
-      getEvents(),
-      getBlogs(),
-      getApiLinks(),
-    ]);
+  const [
+    experiences,
+    educations,
+    tools,
+    communities,
+    videos,
+    pillars,
+    speakingTopics,
+    projects,
+    events,
+    blogs,
+    apiLinks,
+  ] = await Promise.all([
+    getExperiences(),
+    getEducations(),
+    getTools(),
+    getCommunities(),
+    getVideos(),
+    getPillars(),
+    getSpeakingTopics(),
+    getProjects(),
+    getEvents(),
+    getBlogs(),
+    getApiLinks(),
+  ]);
 
   const live = <T extends { published?: boolean }>(rows: T[]) =>
     rows.filter((row) => row.published !== false).length;
@@ -56,6 +71,13 @@ export default async function DashboardPage() {
     },
     { label: 'Events', href: '/events', total: events.length, live: live(events) },
     { label: 'Videos', href: '/videos', total: videos.length, live: live(videos) },
+    { label: 'Pillars', href: '/pillars', total: pillars.length, live: live(pillars) },
+    {
+      label: 'Speaking topics',
+      href: '/speaking-topics',
+      total: speakingTopics.length,
+      live: live(speakingTopics),
+    },
     { label: 'Projects', href: '/projects', total: projects.length, live: live(projects) },
     { label: 'Blogs', href: '/blogs', total: blogs.length, live: live(blogs) },
   ];

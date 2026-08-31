@@ -7,6 +7,7 @@
  */
 
 import packageJson from '@/package.json';
+import type { PillarIcon } from '@/lib/types';
 
 export const APP = {
   name: 'dileepa.dev admin',
@@ -69,6 +70,29 @@ export const SOCIAL_FIELDS = [
   'youtube',
   'facebook',
 ] as const;
+
+/**
+ * The icon names a pillar card may use, in the order the select offers them.
+ *
+ * The API's `PillarIcon` is the authority — it is a closed set in the spec, and
+ * `PILLAR_ICONS satisfies readonly PillarIcon[]` is what makes a name this list
+ * invents fail to compile rather than become a 422 on save. The public site
+ * resolves each of these to an imported icon component.
+ */
+export const PILLAR_ICONS = [
+  'cpu',
+  'code',
+  'mic',
+  'book',
+  'video',
+  'users',
+  'sparkles',
+  'rocket',
+  'terminal',
+  'pen',
+  'globe',
+  'graduation-cap',
+] as const satisfies readonly PillarIcon[];
 
 export const EVENT_TYPES = [
   'talk',

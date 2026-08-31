@@ -35,7 +35,7 @@ cross-repository roadmap lives in `dileepadev/TODO.md`.
 | Path | Status |
 | --- | --- |
 | `app/(auth)/sign-in/` | **Built.** Sign-in page and form |
-| `app/(dashboard)/` | **Built.** Ten content screens + the dashboard index |
+| `app/(dashboard)/` | **Built.** Twelve content screens + the dashboard index |
 | `app/(dashboard)/database/` | **Built.** Copy production into development, or empty it. Development-only: the API does not register these routes in production |
 | `components/ui/EnvironmentStatus.tsx` | **Built.** The header badge — environment, API host, and database. Reads `GET /status`, which the API serves in every environment |
 | `app/(dashboard)/account/` | **Built.** The signed-in account and its session. Claims are decoded server-side; the token never reaches the browser |

@@ -7,8 +7,10 @@ import {
   FolderGit2,
   MessageSquare,
   GraduationCap,
+  Grid2x2,
   ImageUp,
   LayoutDashboard,
+  Presentation,
   User,
   Users,
   Video,
@@ -41,6 +43,11 @@ export const navigation: { title: string; items: NavItem[] }[] = [
       { name: 'Experiences', href: '/experiences', icon: Briefcase },
       { name: 'Educations', href: '/educations', icon: GraduationCap },
       { name: 'Tools', href: '/tools', icon: Wrench },
+      // Both hold copy the public site used to compile in: the six About cards
+      // and the speaker kit's talk themes. They sit under Profile because that
+      // is the part of the site they render on, not because of their shape.
+      { name: 'Pillars', href: '/pillars', icon: Grid2x2 },
+      { name: 'Speaking topics', href: '/speaking-topics', icon: Presentation },
     ],
   },
   {

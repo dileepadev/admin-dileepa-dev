@@ -60,6 +60,17 @@ export type Experience = Schemas['Experience'];
 export type Education = Schemas['Education'];
 export type Tool = Schemas['Tool'];
 export type Community = Schemas['Community'];
+/**
+ * The six About cards and the speaker kit's talk themes.
+ *
+ * Both were constants compiled into the public site until the API grew a
+ * collection for each. `PillarIcon` is a closed set in the spec, which is what
+ * lets the form render a select rather than a box you can typo into — and what
+ * makes the site's icon map exhaustive.
+ */
+export type Pillar = Schemas['Pillar'];
+export type PillarIcon = Pillar['icon'];
+export type SpeakingTopic = Schemas['SpeakingTopic'];
 export type Video = Schemas['Video'];
 export type BlogPost = Schemas['BlogPost'];
 export type Project = Schemas['Project'];

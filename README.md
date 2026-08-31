@@ -26,7 +26,7 @@ This application serves as the central admin interface for:
   count of rows tells you the database is not empty; a count of what a visitor can see tells you
   whether the site is right, which is the question someone opening this app is asking.
 - **Content management**, grouped the way the site is:
-  - **Profile** — about, experiences, educations, tools
+  - **Profile** — about, experiences, educations, tools, pillars, speaking topics
   - **Community** — communities, events, videos
   - **Content** — projects, blogs, comments, media
 - **Events** carry speakers, photos, recordings and links as repeatable field groups. Photos
@@ -39,7 +39,7 @@ This application serves as the central admin interface for:
   underneath survive), correcting one, deleting one, or replying as the author. It is the only
   screen showing a commenter's email address; the public endpoint returns a model with no field
   for one.
-- **Drag to reorder.** Any list can opt into it — tools does today. Rows carry a grip, their
+- **Drag to reorder.** Any list can opt into it — tools, pillars and speaking topics do today. Rows carry a grip, their
   position number, and up/down arrows, because drag is a mouse gesture and the arrows are the
   whole keyboard and touch path. The order commits in one request, not one per row.
 - **Media** — Cloudinary-backed uploads. This app never holds those credentials; every upload goes

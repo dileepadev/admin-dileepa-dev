@@ -67,6 +67,28 @@ export function aboutSchema(socialFields: readonly string[]): FormSchema {
         ],
       },
       {
+        legend: 'Speaker kit',
+        note: 'The two biographies the media kit at dileepa.dev/profile hands an event organiser, each behind its own copy button. Write them as they will be pasted — third person, no markup. Leave one empty and the site falls back to the copy compiled into it.',
+        fields: [
+          {
+            kind: 'textarea',
+            name: 'shortBio',
+            label: 'Short bio',
+            wide: true,
+            rows: 4,
+            hint: 'About 50 words. For announcements, social flyers, and an introduction read aloud.',
+          },
+          {
+            kind: 'textarea',
+            name: 'fullBio',
+            label: 'Standard bio',
+            wide: true,
+            rows: 7,
+            hint: 'About 100 words. For conference agendas and printed programmes.',
+          },
+        ],
+      },
+      {
         legend: 'Portrait',
         note: 'One of only two places a photograph appears on the site. Upload whichever formats you have — the site takes the first one that is set, in the order below, and does not convert between them. WebP is the smallest; JPG is what a camera gives you; PNG is the lossless original.',
         fields: PORTRAIT_FIELDS.map((portrait) => ({

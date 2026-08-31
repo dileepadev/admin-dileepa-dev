@@ -16,13 +16,22 @@ import {
   setPublished as setPublishedResource,
   text,
 } from '@/lib/crud';
-import { SOCIAL_FIELDS } from '@/lib/constants';
-import type { About, Community, Education, Experience, Tool, Video } from '@/lib/types';
+import { PILLAR_ICONS, SOCIAL_FIELDS } from '@/lib/constants';
+import type {
+  About,
+  Community,
+  Education,
+  Experience,
+  Pillar,
+  SpeakingTopic,
+  Tool,
+  Video,
+} from '@/lib/types';
 
 /**
  * The profile resources — about, experiences, educations, tools, communities,
- * videos. Six resources, one shape of code, because `lib/crud.ts` holds the
- * shape.
+ * videos, pillars, speaking topics. Eight resources, one shape of code, because
+ * `lib/crud.ts` holds the shape.
  */
 
 const logo = z.object({ light: z.string(), dark: z.string() });
@@ -48,6 +57,11 @@ const aboutSchema = z.object({
   // The first paragraph is the About section's heading on the site; the rest
   // are its body. One field, so a heading and a body cannot drift apart.
   description: z.array(z.string()).min(1, 'Write at least the opening paragraph.'),
+  // The two speaker biographies, and optional for the same reason
+  // `taglineDescription` is: a record written before they existed is still a
+  // valid record, and the site falls back to its own copy for either.
+  shortBio: z.string(),
+  fullBio: z.string(),
   status: z.string(),
   // Three portrait formats and a banner. All optional: the site takes the
   // first portrait that is set, so a record with only a JPG is complete.
@@ -77,6 +91,8 @@ function readAbout(data: FormData) {
     taglineDescription: text(data, 'taglineDescription'),
     location: text(data, 'location'),
     description: lines(data, 'description'),
+    shortBio: text(data, 'shortBio'),
+    fullBio: text(data, 'fullBio'),
     status: text(data, 'status'),
     images: {
       profilePng: text(data, 'images.profilePng'),
@@ -334,4 +350,86 @@ export async function deleteVideo(id: string) {
 
 export async function publishVideo(id: string, published: boolean) {
   return setPublishedResource(videoOptions, id, published);
+}
+
+// --- Pillars ----------------------------------------------------------------
+
+const pillarOptions = {
+  path: '/pillars',
+  label: 'Pillar',
+  route: '/pillars',
+  schema: z.object({
+    title: z.string().min(1, 'A title is required — it is the heading on the card.'),
+    description: z.string().min(1, 'Say what the card is actually about.'),
+    icon: z.enum(PILLAR_ICONS),
+    published: z.boolean(),
+  }),
+  read: (data: FormData) => ({
+    title: text(data, 'title'),
+    description: text(data, 'description'),
+    icon: text(data, 'icon') || 'cpu',
+    published: flag(data, 'published'),
+  }),
+};
+
+export async function getPillars(): Promise<Pillar[]> {
+  return readList<Pillar>('/pillars', 'pillars');
+}
+
+export async function savePillar(id: string | null, prevState: ActionState, formData: FormData) {
+  return save(pillarOptions, id, formData);
+}
+
+export async function deletePillar(id: string) {
+  return removeResource(pillarOptions, id);
+}
+
+export async function reorderPillars(positions: string[]) {
+  return reorderResource(pillarOptions, positions);
+}
+
+export async function publishPillar(id: string, published: boolean) {
+  return setPublishedResource(pillarOptions, id, published);
+}
+
+// --- Speaking topics --------------------------------------------------------
+
+const speakingTopicOptions = {
+  path: '/speaking-topics',
+  label: 'Speaking topic',
+  route: '/speaking-topics',
+  schema: z.object({
+    title: z.string().min(1, 'A title is required — it is the name of the talk.'),
+    summary: z.string().min(1, 'Say what the session actually covers.'),
+    published: z.boolean(),
+  }),
+  read: (data: FormData) => ({
+    title: text(data, 'title'),
+    summary: text(data, 'summary'),
+    published: flag(data, 'published'),
+  }),
+};
+
+export async function getSpeakingTopics(): Promise<SpeakingTopic[]> {
+  return readList<SpeakingTopic>('/speaking-topics', 'speaking topics');
+}
+
+export async function saveSpeakingTopic(
+  id: string | null,
+  prevState: ActionState,
+  formData: FormData,
+) {
+  return save(speakingTopicOptions, id, formData);
+}
+
+export async function deleteSpeakingTopic(id: string) {
+  return removeResource(speakingTopicOptions, id);
+}
+
+export async function reorderSpeakingTopics(positions: string[]) {
+  return reorderResource(speakingTopicOptions, positions);
+}
+
+export async function publishSpeakingTopic(id: string, published: boolean) {
+  return setPublishedResource(speakingTopicOptions, id, published);
 }

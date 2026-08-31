@@ -11,17 +11,31 @@ Changes are organized into the following categories:
 
 ## [Unreleased]
 
-### 2.0.0 — in progress on `feat/v2.0.0`
+Unreleased changes go here.
 
-The admin is retargeted at the FastAPI backend, rebuilt against the platform design system, and
-gains the two screens v2.0.0 needs.
+## [v2.0.0] - 2026-08-31
 
 > [!NOTE]
 > **This app is not deployed.** It runs on localhost against whichever API `API_URL` names, which
-> is why it keeps a single `.env` rather than adopting the per-environment split the API and the
-> main site use.
+> is why it keeps a single `.env` rather than adopting the per-environment split the API and the main site use.
+> The admin is retargeted at the FastAPI backend, rebuilt against the platform design system, and gains the two screens v2.0.0 needs.
 
-#### Added - 2.0.0
+### Added - v2.0.0
+
+- **A Pillars screen** (`/pillars`) — the six cards under the About section on the homepage. They
+  were a constant in the public site's `lib/constants.ts`, which made rewording one a pull request
+  and a deploy. `icon` is a select rather than a text box: the API serves a closed set and the
+  site resolves each name to an imported component, so a typo would render a card with no icon and
+  nothing anywhere to say why. Reorderable, because the cards render three to a row and which
+  three lead is a decision.
+- **A Speaking topics screen** (`/speaking-topics`) — the sessions and talks on the speaker kit at
+  `dileepa.dev/profile`, same reasoning and same shape. Reorderable, because the list follows
+  whatever is actually being delivered that season.
+- **The two speaker biographies on the About screen.** `shortBio` and `fullBio`, in a Speaker kit
+  section of the form. The media kit copies each one verbatim behind its own copy button, so they
+  are edited here rather than in the site's source — and they sit on the about record, beside the
+  name and title the same page renders above them, so a bio cannot disagree with the person it is
+  under.
 
 - **The header badge reports whether the admin itself is local, alongside which API answered.**
   Neither implies the other, which is the whole point: `next dev` pointed at the deployed API is
@@ -114,7 +128,7 @@ gains the two screens v2.0.0 needs.
 - A `--dry-run`-style safety on destructive actions: a confirmation names what is being deleted
   and what happens to it, and focus opens on Cancel so a stray Enter lands on the safe option.
 
-#### Changed - 2.0.0
+### Changed - v2.0.0
 
 - **The whole surface is rebuilt on the platform token sheet.** Manrope and JetBrains Mono via
   `next/font` at weights 400, 500 and 700 only; the deep-blue-and-silver palette and Geist are
@@ -137,7 +151,7 @@ limit, offset }` on collections, `{ error: { code, message, details } }` on fail
   by `POST /blogs/sync` on every push to `blog-dileepa-dev`, so editing it here lasts until the
   next push. Saying so once, plainly, is cheaper than everyone learning it the hard way.
 
-#### Fixed - 2.0.0
+### Fixed - v2.0.0
 
 - **The dashboard claimed the API was not answering while reading from it successfully.**
   `getSystemStatus` mapped every failure to `null`, and the layout rendered `null` as "not
@@ -198,7 +212,7 @@ limit, offset }` on collections, `{ error: { code, message, details } }` on fail
   advisories that disclose arbitrary `.map` files. `npm audit` reports zero, production and
   development alike.
 
-#### Removed - 2.0.0
+### Removed - v2.0.0
 
 - **Two `next/image` hosts that nothing serves.** `dileepadev.blob.core.windows.net` was the Azure
   Blob backend the API retired in v2.0.0, and `youtube.com` never served an image to `next/image`
@@ -241,4 +255,5 @@ limit, offset }` on collections, `{ error: { code, message, details } }` on fail
 <!-- v0.0.1 -->
 
 [Unreleased]: https://github.com/dileepadev/admin-dileepa-dev/branches
+[v2.0.0]: https://github.com/dileepadev/admin-dileepa-dev/releases/tag/v2.0.0
 [v1.0.0]: https://github.com/dileepadev/admin-dileepa-dev/releases/tag/v1.0.0
