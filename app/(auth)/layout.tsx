@@ -1,10 +1,11 @@
-export default function AuthLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+import { ThemeToggle } from '@/components/ui';
+
+export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40">
+    <div className="grid min-h-dvh place-items-center px-6 py-12">
+      <div className="absolute top-6 right-6">
+        <ThemeToggle />
+      </div>
       {children}
     </div>
   );

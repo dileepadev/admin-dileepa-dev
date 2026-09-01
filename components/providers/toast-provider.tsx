@@ -58,38 +58,36 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+/**
+ * A toast is a surface, not a colour.
+ *
+ * Every toast shares one treatment; the border is the only thing that varies,
+ * and only for an error. With a single accent colour there is no palette to
+ * signal type with, and a success toast that says what succeeded does not need
+ * a green box to prove it.
+ */
 function ToastItem({ toast, onClose }: { toast: Toast; onClose: () => void }) {
-  // simple entrance animation using Tailwind
-  const bgClass =
-    toast.type === 'success'
-      ? 'toast-success'
-      : toast.type === 'error'
-        ? 'toast-error'
-        : toast.type === 'info'
-          ? 'toast-info'
-          : 'toast-default';
-
   return (
     <div
       role="status"
-      className={`${bgClass} pointer-events-auto w-full max-w-sm transform rounded-md border px-4 py-3 shadow-lg transition duration-200 ease-out`}
+      className={`border-border-strong bg-bg-raised text-fg pointer-events-auto w-full max-w-sm rounded-lg border px-4 py-3 shadow-lg ${
+        toast.type === 'error' ? 'border-error' : ''
+      }`}
     >
-      <div className="flex items-start">
+      <div className="flex items-start gap-4">
         <div className="flex-1">
-          {toast.title && <div className="text-text-primary font-medium">{toast.title}</div>}
+          {toast.title && <div className="text-fg text-small font-medium">{toast.title}</div>}
           {toast.description && (
-            <div className="text-text-muted mt-1 text-sm">{toast.description}</div>
+            <div className="text-fg-muted text-small mt-1">{toast.description}</div>
           )}
         </div>
-        <div className="ml-4 shrink-0 self-start">
-          <button
-            onClick={onClose}
-            className="text-text-muted hover:text-text-primary inline-flex rounded-md bg-transparent p-1 text-sm"
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </div>
+        <button
+          onClick={onClose}
+          className="text-fg-muted hover:text-fg text-small -mt-1 inline-flex cursor-pointer rounded p-1 transition-colors duration-[160ms]"
+          aria-label="Dismiss"
+        >
+          ×
+        </button>
       </div>
     </div>
   );

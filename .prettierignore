@@ -1,0 +1,29 @@
+# The vendored canonical token sheet. AGENTS.md: "This is a copy, and a copy can
+# drift. When the canonical file changes, re-copy it; never patch this one in
+# place." Prettier's quote style differs from the source's, so formatting it
+# rewrites 5 lines and every later re-copy then shows a spurious diff.
+app/brand-tokens.css
+
+# Generated or vendored output.
+.next/
+node_modules/
+
+# Generated, not written. `openapi.json` is the API's published spec and
+# `lib/api-schema.ts` is produced from it by `npm run api:types`; formatting
+# either one means the next regeneration reverts the change.
+openapi.json
+lib/api-schema.ts
+
+# Prose is hand-wrapped, not machine-wrapped. Every Markdown file here is
+# wrapped to a deliberate measure and uses `*emphasis*` and indented fences;
+# Prettier rewrites all three. This matches `dileepa-dev`, which ignores
+# Markdown for the same reason — several of these files are the same governance
+# documents, copied between the repositories.
+*.md
+
+# The canonical design-system reference copied from `dileepadev/docs/brand/`.
+# Same rule as the vendored token sheet above: these are copies, and formatting
+# them forks them from the source so every later re-copy shows a spurious diff.
+# The brand assets are binaries and hand-authored SVG/HTML exports.
+docs/brand-tokens.css
+docs/brand/

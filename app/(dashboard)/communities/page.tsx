@@ -1,10 +1,20 @@
-import { CommunitiesList } from "./communities-list";
+import type { Metadata } from 'next';
+import { getApiLink } from '@/app/actions/api-links';
+import { getCommunities } from '@/app/actions/profile';
+import { Section } from '@/components/ui';
+import { CommunitiesScreen } from './communities-screen';
 
-export default function CommunitiesPage() {
+export const metadata: Metadata = { title: 'Communities' };
+
+export default async function CommunitiesPage() {
+  // The catalogue is fetched alongside the records rather than after them:
+  // it is a second independent read, and serialising it would put a whole
+  // round trip between the page and the screen for a panel that is closed.
+  const [records, endpoints] = await Promise.all([getCommunities(), getApiLink('communities')]);
+
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-3xl font-bold tracking-tight">Manage Communities</h1>
-      <CommunitiesList />
-    </div>
+    <Section>
+      <CommunitiesScreen records={records} endpoints={endpoints} />
+    </Section>
   );
 }

@@ -1,83 +1,73 @@
 'use client';
 
-import * as React from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useTheme } from 'next-themes';
-import { cn } from '@/lib/utils';
-import { signOut } from '@/app/actions/auth';
-import { Button } from '@/components/ui/buttons/Button';
-import { LogOut, Sun, Moon } from 'lucide-react';
-
+import { Lockup } from '@/components/ui';
+import packageJson from '@/package.json';
 import { navigation } from './navigation';
-import { version } from '../../package.json';
 
-export function Sidebar({ className }: { className?: string }) {
+/**
+ * The admin's navigation, and the site's navbar behaviour.
+ *
+ * `dileepa-dev`'s nav is the reference this follows — AGENTS.md, "This app
+ * follows dileepa-dev". Three things carry across and all three are in
+ * `.side-nav` in `app/globals.css` rather than in utilities here:
+ *
+ * - **The accent is spent once.** The current item is `--brand`; nothing else
+ *   in the list is. That is the same rule as the site's `[aria-current]`.
+ * - **Weight never changes with state.** The active row on the site used to
+ *   also change weight, which shifted the rows either side by a pixel as you
+ *   scrolled. Only colour and surface move.
+ * - **One transition, one duration.** `--dur` and `--ease`, the same pair the
+ *   site's links, cards and theme toggle use.
+ *
+ * The classes live in CSS because that is where the site's do, and because
+ * "the same interaction" is a thing that has to keep being true after the next
+ * edit — a rule can hold that, a copied string of utilities cannot.
+ */
+export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const pathname = usePathname();
-  const { setTheme, theme } = useTheme();
-  const [mounted, setMounted] = React.useState(false);
 
-  React.useEffect(() => {
-    setMounted(true);
-  }, []);
+  // The dashboard is `/`, which prefixes everything. Matched exactly for that
+  // reason; every other route matches itself or a child of itself.
+  const isActive = (href: string) =>
+    href === '/' ? pathname === '/' : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <div className={cn('bg-bg-elevated flex min-h-screen w-64 flex-col border-r', className)}>
-      <div className="border-border flex h-14 items-center border-b px-6">
-        <span className="text-text-primary font-semibold tracking-tight">admin.dileepa.dev</span>
+    <div className="flex min-h-full flex-col gap-6 p-5">
+      <div className="px-3 py-1">
+        <Lockup />
       </div>
-      <div className="flex-1 overflow-auto py-4">
-        <nav className="grid gap-1 px-2">
-          {navigation.map((item) => {
-            const isActive = pathname === item.href;
-            return (
-              <Button
-                key={item.name}
-                href={item.href}
-                variant={isActive ? 'secondary' : 'ghost'}
-                className={cn(
-                  'w-full justify-start',
-                  isActive
-                    ? 'bg-accent/50 text-accent-foreground'
-                    : 'text-text-secondary hover:text-text-primary',
-                )}
-                leftIcon={<item.icon className="h-4 w-4" />}
-              >
-                {item.name}
-              </Button>
-            );
-          })}
-        </nav>
-      </div>
-      <div className="border-border space-y-2 border-t p-4">
-        <Button
-          variant="ghost"
-          className="text-text-secondary hover:text-text-primary w-full justify-start"
-          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-          leftIcon={
-            mounted ? (
-              theme === 'dark' ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )
-            ) : (
-              <span className="h-4 w-4" />
-            )
-          }
-        >
-          {mounted ? (theme === 'dark' ? 'Light Mode' : 'Dark Mode') : 'Toggle Theme'}
-        </Button>
-        <Button
-          variant="ghost"
-          className="text-destructive hover:bg-destructive/10 hover:text-destructive w-full justify-start"
-          onClick={() => signOut()}
-          leftIcon={<LogOut className="h-4 w-4" />}
-        >
-          Sign out
-        </Button>
-        <div className="text-text-secondary text-s5 px-1 pt-2 pl-6">
-          Version <span className="text font-mono">v{version}</span>
-        </div>
+
+      <nav aria-label="Sections" className="side-nav flex-1">
+        {navigation.map((group) => (
+          <div key={group.title} className="side-nav-group">
+            <p className="side-nav-title">{group.title}</p>
+            <ul>
+              {group.items.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      onClick={onNavigate}
+                      aria-current={active ? 'page' : undefined}
+                    >
+                      <item.icon aria-hidden="true" />
+                      {item.name}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </nav>
+
+      <div className="border-border-hairline border-t px-3 pt-4">
+        <p className="text-fg-muted text-label font-mono" title={`Version ${packageJson.version}`}>
+          v{packageJson.version}
+        </p>
       </div>
     </div>
   );
