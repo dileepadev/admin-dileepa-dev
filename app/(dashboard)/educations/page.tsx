@@ -1,16 +1,20 @@
-import { EducationsList } from "./educations-list";
+import type { Metadata } from 'next';
+import { getApiLink } from '@/app/actions/api-links';
+import { getEducations } from '@/app/actions/profile';
+import { Section } from '@/components/ui';
+import { EducationsScreen } from './educations-screen';
 
-export default function EducationsPage() {
+export const metadata: Metadata = { title: 'Educations' };
+
+export default async function EducationsPage() {
+  // The catalogue is fetched alongside the records rather than after them:
+  // it is a second independent read, and serialising it would put a whole
+  // round trip between the page and the screen for a panel that is closed.
+  const [records, endpoints] = await Promise.all([getEducations(), getApiLink('educations')]);
+
   return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Manage Educations</h1>
-        <p className="text-muted-foreground">
-          Update your educational background, degrees, and institutions.
-        </p>
-      </div>
-
-      <EducationsList />
-    </div>
+    <Section>
+      <EducationsScreen records={records} endpoints={endpoints} />
+    </Section>
   );
 }

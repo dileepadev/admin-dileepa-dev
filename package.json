@@ -1,6 +1,6 @@
 {
   "name": "admin-dileepa-dev",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Admin dashboard for managing personal website and API content.",
   "author": {
     "name": "Dileepa Bandara",
@@ -18,28 +18,33 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "api:types": "openapi-typescript openapi.json -o lib/api-schema.ts"
   },
   "dependencies": {
     "clsx": "^2.1.1",
     "lucide-react": "^0.563.0",
-    "next": "16.1.4",
+    "next": "16.3.2",
     "next-themes": "^0.4.6",
-    "react": "19.2.3",
-    "react-dom": "19.2.3",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
     "tailwind-merge": "^3.4.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
-    "@types/node": "^20",
+    "@tailwindcss/postcss": "^4.3.3",
+    "@types/node": "^22.20.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.1.4",
+    "eslint-config-next": "16.3.2",
+    "openapi-typescript": "^7.13.0",
     "prettier": "^3.8.1",
     "prettier-plugin-tailwindcss": "^0.7.2",
-    "tailwindcss": "^4",
+    "tailwindcss": "^4.3.3",
     "typescript": "^5"
   }
 }

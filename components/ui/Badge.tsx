@@ -1,52 +1,43 @@
+import type { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
-interface BadgeProps {
-  children: React.ReactNode;
-  variant?:
-    | 'default'
-    | 'primary'
-    | 'secondary'
-    | 'success'
-    | 'warning'
-    | 'error'
-    | 'active'
-    | 'inactive'
-    | 'inperson'
-    | 'online';
-  size?: 'sm' | 'base' | 'md';
+/**
+ * One treatment for every badge.
+ *
+ * With a single accent colour, badges are told apart by their label, not by
+ * hue — design system §6. `filled` is the one emerald variant and is reserved:
+ * at most one per view.
+ */
+export function Badge({
+  children,
+  variant = 'default',
+  className,
+}: {
+  children: ReactNode;
+  variant?: 'default' | 'filled' | 'error';
   className?: string;
-}
-
-const variantClasses = {
-  default: 'bg-badge-default text-badge-default',
-  primary: 'bg-badge-primary text-badge-primary',
-  secondary: 'bg-badge-secondary text-badge-secondary',
-  success: 'bg-badge-success text-badge-success',
-  warning: 'bg-badge-warning text-badge-warning',
-  error: 'bg-badge-error text-badge-error',
-  active: 'bg-badge-active text-badge-active',
-  inactive: 'bg-badge-inactive text-badge-inactive',
-  inperson: 'bg-badge-inperson text-badge-inperson',
-  online: 'bg-badge-online text-badge-online',
-};
-
-const sizeClasses = {
-  sm: 'px-2 py-0.5 text-sm',
-  base: 'px-3 py-1 text-base',
-  md: 'px-3 py-1 text-md',
-};
-
-export function Badge({ children, variant = 'default', size = 'md', className }: BadgeProps) {
+}) {
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-full font-medium',
-        variantClasses[variant],
-        sizeClasses[size],
+        'text-label inline-block rounded-sm border px-3 py-1 font-medium tracking-[0.01em] whitespace-nowrap',
+        variant === 'filled' && 'bg-brand-fill text-on-brand border-transparent',
+        variant === 'error' && 'text-error border-error/40 bg-transparent',
+        variant === 'default' && 'border-border-strong bg-bg-surface text-fg-muted',
         className,
       )}
     >
       {children}
     </span>
   );
+}
+
+/**
+ * Whether a record is on the public site.
+ *
+ * "Live" and "Hidden" rather than "Published" and "Draft": the question a
+ * person is actually asking is whether a visitor can see it.
+ */
+export function PublishedBadge({ published }: { published: boolean }) {
+  return <Badge variant={published ? 'filled' : 'default'}>{published ? 'Live' : 'Hidden'}</Badge>;
 }
