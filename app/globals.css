@@ -574,10 +574,16 @@ input[type='submit'] {
     box-shadow var(--dur) var(--ease);
 }
 
-.field input:not([type='checkbox']):not([type='radio']):not([type='hidden']):hover:not(:disabled):not(:focus),
+.field
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden']):hover:not(:disabled):not(
+    :focus
+  ),
 .field textarea:hover:not(:disabled):not(:focus),
 .field select:hover:not(:disabled):not(:focus),
-.form input:not([type='checkbox']):not([type='radio']):not([type='hidden']):hover:not(:disabled):not(:focus),
+.form
+  input:not([type='checkbox']):not([type='radio']):not([type='hidden']):hover:not(:disabled):not(
+    :focus
+  ),
 .form textarea:hover:not(:disabled):not(:focus),
 .form select:hover:not(:disabled):not(:focus),
 .input:hover:not(:disabled):not(:focus) {

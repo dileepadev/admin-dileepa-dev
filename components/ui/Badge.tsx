@@ -20,7 +20,7 @@ export function Badge({
   return (
     <span
       className={cn(
-        'inline-block rounded-sm border px-3 py-1 text-label font-medium tracking-[0.01em] whitespace-nowrap',
+        'text-label inline-block rounded-sm border px-3 py-1 font-medium tracking-[0.01em] whitespace-nowrap',
         variant === 'filled' && 'bg-brand-fill text-on-brand border-transparent',
         variant === 'error' && 'text-error border-error/40 bg-transparent',
         variant === 'default' && 'border-border-strong bg-bg-surface text-fg-muted',

@@ -8,11 +8,7 @@ import Link from 'next/link';
  */
 export function Lockup({ href = '/' }: { href?: string }) {
   return (
-    <Link
-      href={href}
-      aria-label="dileepadev admin — dashboard"
-      className="lockup no-underline"
-    >
+    <Link href={href} aria-label="dileepadev admin — dashboard" className="lockup no-underline">
       <span className="wordmark">dileepadev</span>
       <span className="mark" aria-hidden="true">
         /
