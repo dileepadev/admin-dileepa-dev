@@ -209,7 +209,8 @@ already solved something, match it — that is why this phase comes after the ma
 ### Documentation and release
 
 - [x] `README.md` describes what the app actually does — screens, comments moderation, reordering
-- [x] Re-record or re-caption the demo video; it shows the v1.0 UI
+- [x] The demo video is removed from `README.md` rather than re-recorded — it showed the v1.0 UI,
+      and a stale recording of a rebuilt interface is worse than none
 - [x] `CHANGELOG.md` entries under Added, Changed, Fixed, Removed
 - [x] Version → `2.0.0` in `package.json`
 - [x] Merge `feat/v2.0.0`; tag `v2.0.0`
