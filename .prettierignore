@@ -20,3 +20,10 @@ lib/api-schema.ts
 # Markdown for the same reason — several of these files are the same governance
 # documents, copied between the repositories.
 *.md
+
+# The canonical design-system reference copied from `dileepadev/docs/brand/`.
+# Same rule as the vendored token sheet above: these are copies, and formatting
+# them forks them from the source so every later re-copy shows a spurious diff.
+# The brand assets are binaries and hand-authored SVG/HTML exports.
+docs/brand-tokens.css
+docs/brand/
