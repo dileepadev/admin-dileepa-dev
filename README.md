@@ -7,12 +7,6 @@ This is the administrative dashboard for managing content and data for [dileepa.
 > is why it has a single `.env` rather than the per-environment split the API and the main site
 > use — two files would always hold the same values.
 
-## Demo Video
-
-Click the link or image below to view the demo video on YouTube.
-
-[![Admin Dashboard Demo](https://img.youtube.com/vi/nBv4h09KpyM/0.jpg)](https://www.youtube.com/watch?v=nBv4h09KpyM)
-
 ## Overview
 
 This application serves as the central admin interface for:
@@ -116,10 +110,10 @@ This application serves as the central admin interface for:
    How you start this app says nothing about it: `next dev` pointed at the deployed API is editing
    production, and looks exactly like `next dev` pointed at a local one.
 
-   | `API_URL`                 | Talks to      | Database                                 |
-   | ------------------------- | ------------- | ---------------------------------------- |
-   | `http://localhost:8000`   | a local API   | whatever its own banner says, usually dev |
-   | `https://api.dileepa.dev` | the deployed API | **production** — saves are live         |
+   | `API_URL`                 | Talks to         | Database                                   |
+   | ------------------------- | -------------    | ----------------------------------------   |
+   | `http://localhost:8000`   | a local API      | whatever its own banner says, usually dev  |
+   | `https://api.dileepa.dev` | the deployed API | **production** — saves are live            |
 
    The header badge reports which of those answered, and whether this admin is local, on every
    screen. Write it with no trailing slash and with `https` for anything that is not localhost; a
