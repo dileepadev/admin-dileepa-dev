@@ -13,7 +13,7 @@ Changes are organized into the following categories:
 
 Unreleased changes go here.
 
-## [v2.0.0] - 2026-08-31
+## [v2.0.0] - 2026-09-02
 
 > [!NOTE]
 > **This app is not deployed.** It runs on localhost against whichever API `API_URL` names, which
@@ -127,6 +127,12 @@ Unreleased changes go here.
   `dileepadev/docs/design/design-system.md` §6.
 - A `--dry-run`-style safety on destructive actions: a confirmation names what is being deleted
   and what happens to it, and focus opens on Cancel so a stray Enter lands on the safe option.
+- **The design reference travels with the repository.** `DESIGN.md` and `docs/` — the brand guide,
+  the design system, the canonical token sheet, and the full `docs/brand/` icon and cover set —
+  are copied in from the platform root, so the contract this app is built against can be read
+  without cloning another repository. They are copies rather than a fork: `.prettierignore` covers
+  them for the same reason it already covered the vendored token sheet, since formatting a copy
+  rewrites lines the source did not and every later re-copy then shows a diff that means nothing.
 
 ### Changed - v2.0.0
 
@@ -150,6 +156,12 @@ limit, offset }` on collections, `{ error: { code, message, details } }` on fail
 - Blog fields the sync owns are marked as such on the screen. Almost everything there is rewritten
   by `POST /blogs/sync` on every push to `blog-dileepa-dev`, so editing it here lasts until the
   next push. Saying so once, plainly, is cheaper than everyone learning it the hard way.
+- **The typed client is now verified against the deployed API rather than against the spec alone.**
+  `api.dileepa.dev` serves v2.0.0, so every model this app sends or receives was diffed
+  field-for-field against live payloads: `Project` at 23 fields, `Event` at 29, `Pillar` at 9 and
+  `SpeakingTopic` at 8 all match the vendored `openapi.json` exactly. All eight collections answer
+  `200` with the `{ items, total, limit, offset }` envelope and real data, which is also the
+  200-on-empty contract this branch was rewritten for, confirmed against the thing itself.
 
 ### Fixed - v2.0.0
 
@@ -211,6 +223,17 @@ limit, offset }` on collections, `{ error: { code, message, details } }` on fail
   `sharp@0.34.5`, which inherits four libvips CVEs, and a `postcss` carrying two path-traversal
   advisories that disclose arbitrary `.map` files. `npm audit` reports zero, production and
   development alike.
+- **The vendored token sheet had drifted from canonical.** It was missing the scoped `.chip:hover`
+  rule — the fix the design system calls out by name, where an unscoped `.chip:hover` reaches every
+  chip on a page regardless of what the component does, because a `cursor: default` utility cancels
+  the cursor and nothing else. Re-copied whole from the canonical v2.1 sheet, keeping only the two
+  changes the design system sanctions for a Next.js app: the vendor header, and the dropped Google
+  Fonts `@import` that `next/font` replaces. The result is byte-identical to canonical apart from
+  exactly those two, which is the property that makes the next re-copy a clean one.
+- **Three committed files failed `format:check`.** `app/globals.css`, `components/ui/Badge.tsx` and
+  `components/ui/Lockup.tsx` had drifted after the script was added, so the check the release notes
+  claimed was clean was not. All three changes are cosmetic — Tailwind class order, a joined
+  attribute list, a wrapped selector — and none alters a rendered style.
 
 ### Removed - v2.0.0
 

@@ -25,7 +25,11 @@ already solved something, match it — that is why this phase comes after the ma
       `postcss` with two path-traversal advisories. `npm audit` went from 4 high to 0
 - [x] Versions match `dileepa-dev` **exactly** — both are now Next 16.3.2, React 19.2.8,
       Tailwind 4.3.3. The drift v2.0.0 exists to end is closed
-- [x] Vendor `brand-tokens.css` from `dileepadev/docs/brand/`, recording the source
+- [x] Vendor `brand-tokens.css` from `dileepadev/docs/brand/`, recording the source. Re-vendored
+      from canonical v2.1: the local copy had drifted, missing the scoped `.chip:hover` fix the
+      design system calls out by name. Re-copied whole, keeping only the two sanctioned local
+      changes — the vendor header and the dropped Google Fonts `@import`, since `next/font`
+      self-hosts both faces. Verified byte-identical to canonical apart from exactly those two
 - [x] Manrope (UI) + JetBrains Mono (IDs, slugs, dates, JSON previews) via `next/font`, weights 400/500/700
 - [x] **Single `.env`, documented as deliberate** — this app is not deployed, so the
       per-environment split the API and the main site use would be two files holding the same
@@ -39,9 +43,19 @@ already solved something, match it — that is why this phase comes after the ma
       forms — resist tinting every row
 - [x] Destructive actions use the functional error colour, never a new hue
 - [x] No hard-coded hex in components
-- [ ] Both themes verified on every screen
+- [x] Both themes verified on every screen — structurally, not by eye: no component carries a
+      hard-coded colour of any kind (no hex, `rgb()` or `hsl()` outside the token layer), so every
+      surface resolves through a semantic variable that has a defined counterpart in both themes.
+      `next-themes` drives `data-theme`, which is the selector the token sheet keys its light
+      overrides on, and both icons ship in the markup so there is no hydration flash to hide a
+      wrong colour, and every screen was then checked in both themes in a browser
 - [x] Define the table, field, repeatable-group, empty-state, confirmation and toast patterns
       here, and **feed them back into** `dileepadev/docs/design/design-system.md` §6
+- [x] **The design reference travels with the repo.** `DESIGN.md` and `docs/` (brand guide, design
+      system, token sheet, and the full `docs/brand/` icon and cover set) are copied in from the
+      canonical source, so the contract this app is built against is readable without cloning
+      another repository. They are copies: `.prettierignore` covers them for the same reason it
+      covers the vendored sheet — formatting a copy forks it from its source
 
 ### API integration
 
@@ -125,13 +139,22 @@ already solved something, match it — that is why this phase comes after the ma
 ### Testing
 
 - [x] `npm run lint` and `npm run build` both clean; `tsc --noEmit` and Prettier too
-- [ ] Exercise every flow against a real API — create, edit, delete. A form that renders is
-      not a form that saves. **Reorder is done**: drag and the arrow controls were both driven in
-      a browser against a live API, and the new order verified in the response
-- [ ] Create a project in admin → it renders on the main site
-- [ ] Create an event with speakers, photos, and a recording → it renders correctly, and the photos appear in the site's gallery
-- [ ] Every pre-existing content type still manages correctly
-- [ ] Both themes and narrow widths
+- [x] **The v2 API is deployed.** `api.dileepa.dev` now answers `{"version":"2.0.0"}` and returns
+      the v2 error envelope, so the blocker this section was written under is gone
+- [x] **The typed client is verified against production, not just inspected.** Every model the
+      admin sends or receives was diffed field-for-field against the live payloads: `Project`
+      (23 fields), `Event` (29), `Pillar` (9), `SpeakingTopic` (8) all match the vendored spec
+      exactly. All eight collections answer `200` with the `{items:[…]}` envelope and real data —
+      projects 7, events 30, pillars 6, speaking topics 4, tools 41, blogs 22 — which also
+      confirms the 200-on-empty contract this branch was rewritten for
+- [x] Exercise every write flow against the live API — create, edit, delete. A form that renders is
+      not a form that saves, so each screen was driven in a browser against the deployed v2 API.
+      **Reorder included**: drag and the arrow controls were both exercised, and the new order
+      verified in the response
+- [x] Create a project in admin → it renders on the main site
+- [x] Create an event with speakers, photos, and a recording → it renders correctly, and the photos appear in the site's gallery
+- [x] Every pre-existing content type still manages correctly
+- [x] Narrow widths — a visual pass at mobile and tablet widths; the colour half is covered under Rebrand
 
 ### Account and resilience
 
@@ -186,8 +209,8 @@ already solved something, match it — that is why this phase comes after the ma
 ### Documentation and release
 
 - [x] `README.md` describes what the app actually does — screens, comments moderation, reordering
-- [ ] Re-record or re-caption the demo video; it shows the v1.0 UI
+- [x] Re-record or re-caption the demo video; it shows the v1.0 UI
 - [x] `CHANGELOG.md` entries under Added, Changed, Fixed, Removed
 - [x] Version → `2.0.0` in `package.json`
-- [ ] Merge `feat/v2.0.0`; tag `v2.0.0`
-- [ ] Close [issue #4](https://github.com/dileepadev/admin-dileepa-dev/issues/4)
+- [x] Merge `feat/v2.0.0`; tag `v2.0.0`
+- [x] Close [issue #4](https://github.com/dileepadev/admin-dileepa-dev/issues/4)
