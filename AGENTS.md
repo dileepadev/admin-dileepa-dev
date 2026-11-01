@@ -91,27 +91,29 @@ Target versions for v2.0.0: Next.js **16.3.x**, React **19.2.x**, Tailwind **4.3
 - Repeatable field groups (speakers, photos, recordings, links) are one reusable pattern.
   Built once, in `components/ui/RepeatableGroup.tsx` — four of them land in the events form.
 
-## Brand rules — v2.0.0
+## Brand rules — v2.1.0
 
-Tokens come from `dileepadev/docs/brand/brand-tokens.css`. Import them; never re-declare values.
+These are the **v2.1.0** rules (dileepadev#4).
 
-> [!IMPORTANT]
-> The HTML design reference still carries **v1.0 tokens** — `--cyan`, `--gold`, a different
-> neutral ramp, Manrope aliased as the mono font, weights 600/800. Layout and structure only.
-> Every colour and type value comes from `brand-tokens.css`.
-
-- Emerald is the only accent. No second hue. Destructive actions use the functional error
-  colour, never a new one.
-- Never Emerald Deep on Carbon. Never Emerald Bright on Paper.
-- Manrope (UI) and JetBrains Mono (IDs, slugs, dates, JSON previews) via `next/font`.
-- Weights **400, 500, 700 only**. No 600.
-- Sentence case across nav, buttons, form labels, table headers, and toasts.
-- Emerald reserved for primary actions and the active nav state — one accent per surface. An
-  admin screen is mostly tables and forms; resist tinting every row.
-- No hard-coded hex in components.
-
-The admin has more table, empty-state, loading, and error surfaces than the public site.
-Define those patterns here and feed them back into `dileepadev/docs/design/design-system.md`.
+- **No brand hue.** The accent is the text colour — `--brand` is Ink 100 `#F1F1F1` on Carbon and
+  Paper 900 `#131313` on Paper. Colour appears only as a state: `--success`, `--error`,
+  `--warning`. Never add a hue as an accent.
+- Components use semantic tokens only — never a hex, never a raw ramp token.
+- Three text steps: `--fg` for titles, `--fg-body` for running text, `--fg-muted` for metadata.
+- Manrope for display and UI, JetBrains Mono for code and data. No third family.
+- Weights 400, 500, 700 only. No 600. Every heading is 500; 700 is the display line and
+  `<strong>` only. Nothing smaller than 13px (`--text-label`).
+- Corners are fixed (panel, tile, block, inline), capsule (every control and field), or
+  concentric (a row inside a tile). Never invent a radius.
+- An edge means it acts: buttons, selects and interactive chips take `--border-strong`, fields
+  take `--border-input`, labels take none.
+- Every text link carries an arrow — `→` on the site, `↗` off it.
+- The logo is the handle, `@dileepadev`: the `@` in `--fg-muted`, the wordmark in `--fg`, both
+  Manrope 500, no gap. Black and white only.
+- Sentence case everywhere — headings, buttons, nav, labels.
+- Banned words, without exception: *passionate about, leveraging, cutting-edge, revolutionize,
+  game-changing, unlock, seamless, AI enthusiast, thought leader, journey, humbled to announce,
+  10x.*
 
 ## Testing
 
