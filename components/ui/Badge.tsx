@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
  * One treatment for every badge.
  *
  * With a single accent colour, badges are told apart by their label, not by
- * hue — design system §6. `filled` is the one emerald variant and is reserved:
+ * hue — design system §6. `filled` is the one filled variant and is reserved:
  * at most one per view.
  */
 export function Badge({

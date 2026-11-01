@@ -75,7 +75,6 @@
 
   --radius-sm: var(--radius-sm);
   --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
 
   --ease-brand: var(--ease);
 }
@@ -84,145 +83,15 @@
    it from the theme, so every `rounded` in the app was drawing 4px against a
    token that says 8px. Redefining the utility fixes all of them at once. */
 @utility rounded {
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
 }
 
 /* ============================================================
-   Reference parity — the main site is the design reference
-
-   This app follows `dileepa-dev`. Everything below is that repo's
-   `app/globals.css`, value for value: the neutral ramp, the 1px hairline, the
-   shape scale, the type steps, and the derived hover/focus layer. Copying the
-   *values* would be drift; these are the same declarations resolving through
-   the same semantic names, so a component that asks for `--border` keeps
-   working and simply gets the reference's value.
-
-   `brand-tokens.css` stays a pristine vendored copy — nothing below is edited
-   into it.
+   Local tokens - only what the vendored sheet does not set
    ============================================================ */
 :root {
-  /* The reference neutral ramp, on one neutral axis. The paper stops used to
-     carry a yellow-green cast while every surface underneath them was a pure
-     grey, which is the kind of mismatch nobody can name and everybody can
-     see. Same lightnesses, hue removed; the published contrast ratios are
-     unchanged (muted 5.0:1, foreground 17:1). */
-  --ink-900: #050505;
-  --ink-800: #0d0d0d;
-  --ink-700: #141414;
-  --ink-600: #1f1f1f;
-  --ink-500: #2e2e2e;
-  --ink-400: #8d8d8d;
-  --ink-100: #f1f1f1;
-
-  --paper-200: #e3e3e3;
-  --paper-300: #d2d2d2;
-  --paper-400: #6a6a6a;
-  --paper-900: #131313;
-
-  /* Text on a saturated emerald fill. Emerald Bright is a *bright* green in
-     the WCAG luminance sense, so it behaves like a light surface: dark text
-     reads on it and light text does not — white on Emerald Bright is 2.5:1,
-     under the 4.5:1 a 14px/500 button label needs. */
-  --on-emerald-dark: var(--ink-900); /* 8.0:1 on Emerald Bright — AAA */
-  --on-emerald-light: var(--paper-0); /* 5.0:1 on Emerald Deep — AA */
-
-  /* 1px, not 0.5px. Every rule, card edge, table row and input border. A
-     half-pixel border renders at a different weight per device pixel ratio,
-     so the same table looked crisp on one screen and grey on another. */
-  --hairline: 1px;
-
-  /* --- Shape --- Four steps and a pill, so no surface invents a corner. */
-  --radius-sm: 6px;
-  --radius: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-pill: 999px;
-
-  /* One control height, so a button, an input, a select and the theme toggle
-     line up when they sit on the same row — which in an admin is constantly.
-     They used to be 38px, 45px and 36px. */
-  --control-h: 40px;
-
-  /* --- Type --- `--text-label` is the one step below `--text-small`, and it
-     exists to stop 0.72rem, 0.75rem and text-xs each being invented
-     separately for badges, table headers, hints and captions. */
-  --text-display: 2.75rem;
-  --text-h2: 1.375rem;
-  --lh-h2: 1.3;
-  --text-label: 0.75rem;
-  --lh-label: 1.45;
-
-  /* Tracking opens as type gets smaller — a label at 12px needs the air a
-     display at 44px needs taken away. */
-  --track-label: 0.01em;
+  /* Wide tracking for this app's small uppercase table headers. */
   --track-wide: 0.06em;
-
-  /* Two steps the space scale was missing, both already being used as bare
-     Tailwind utilities (`mt-10`) with nothing behind them. */
-  --space-5: 1.25rem;
-  --space-10: 2.5rem;
-}
-
-/* ============================================================
-   Semantic layer — the values components actually name
-
-   Every colour below resolves from `--brand`, `--fg` or `--bg`, so there is no
-   stop that can drift out of the theme. `color-mix` toward `--fg` darkens on
-   Paper and lightens on Carbon from the same declaration, which is why hover
-   and active states are written once here rather than twice per component.
-   ============================================================ */
-:root,
-[data-theme='dark'] {
-  --border: var(--ink-600);
-  --border-strong: var(--ink-500);
-  /* A text field's border is the only thing that says it is a text field, so
-     it is the one edge held to WCAG 1.4.11's 3:1 against the page — 3.0:1
-     here. Every other component is identified by what is inside it. */
-  --border-input: #5b5b5b;
-
-  --brand-fill: var(--emerald-bright);
-  --on-brand: var(--on-emerald-dark);
-
-  --shadow-nav: 0 10px 30px rgb(0 0 0 / 0.45);
-}
-
-[data-theme='light'] {
-  --border: var(--paper-200);
-  --border-strong: var(--paper-300);
-  --border-input: #8f8f8f; /* 3.0:1 on --bg */
-
-  --brand-fill: var(--emerald-deep);
-  --on-brand: var(--on-emerald-light); /* 5.0:1 on fill */
-
-  --shadow-nav: 0 8px 24px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.05);
-}
-
-@media (prefers-color-scheme: light) {
-  :root:not([data-theme]) {
-    --border: var(--paper-200);
-    --border-strong: var(--paper-300);
-    --border-input: #8f8f8f;
-    --brand-fill: var(--emerald-deep);
-    --on-brand: var(--on-emerald-light);
-    --shadow-nav: 0 8px 24px rgb(0 0 0 / 0.06), 0 1px 2px rgb(0 0 0 / 0.05);
-  }
-}
-
-/* Derived in one place, in both themes, from the values above. */
-:root {
-  /* A surface one step up from where it sits. This is the single answer to
-     "what does hover look like" for every card, row, chip and icon button. */
-  --surface-hover: color-mix(in srgb, var(--fg) 7%, var(--bg-surface));
-  --raised-hover: color-mix(in srgb, var(--fg) 9%, var(--bg-surface));
-
-  /* Toward --fg: lighter on Carbon, darker on Paper. Contrast against
-     --on-brand rises in both directions, so neither state can fall below AA. */
-  --brand-fill-hover: color-mix(in srgb, var(--brand-fill) 88%, var(--fg));
-  --brand-fill-active: color-mix(in srgb, var(--brand-fill) 78%, var(--fg));
-
-  /* The one focus and emphasis ring. Soft, three pixels, accent-tinted. */
-  --ring: color-mix(in srgb, var(--brand) 32%, transparent);
-  --ring-width: 3px;
 }
 
 /* ============================================================
@@ -360,7 +229,7 @@ input[type='submit'] {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
   /* The site's nav type, exactly: sans at --text-small, 500, --track-label. */
   font-family: var(--font-sans);
   font-size: var(--text-small);
@@ -427,7 +296,7 @@ input[type='submit'] {
   line-height: 1;
   letter-spacing: var(--track-label);
   padding: 0 var(--space-5);
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
   border: var(--hairline) solid transparent;
   white-space: nowrap;
   text-decoration: none;
@@ -562,7 +431,7 @@ input[type='submit'] {
   height: var(--control-h);
   background: var(--bg-surface);
   border: var(--hairline) solid var(--border-input);
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
   color: var(--fg);
   -webkit-text-fill-color: var(--fg);
   font-family: var(--font-sans);
@@ -736,7 +605,7 @@ textarea:-webkit-autofill {
   width: var(--control-h);
   height: var(--control-h);
   border: 0;
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
   background: transparent;
   color: var(--fg-muted);
   transition: color var(--dur) var(--ease);
@@ -1146,7 +1015,7 @@ table.data th.actions {
   color: var(--fg-muted);
 }
 
-/* The same emerald asterisk a required form field carries, so the mark means
+/* The same asterisk a required form field carries, so the mark means
    one thing across the whole app. */
 .endpoint-param .req {
   color: var(--brand);
@@ -1174,7 +1043,7 @@ table.data th.actions {
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
   text-decoration: none;
   color: inherit;
   transition: background var(--dur) var(--ease);
@@ -1325,7 +1194,7 @@ table.data th.actions {
   margin-top: var(--space-6);
   padding: var(--space-4);
   border: var(--hairline) solid var(--warning);
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
   color: var(--fg);
   font-size: var(--text-small);
 }
@@ -1405,7 +1274,7 @@ table.data th.actions {
   height: var(--control-h);
   background: var(--bg-surface);
   border: var(--hairline) solid var(--border-input);
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
   color: var(--fg);
   font-family: var(--font-mono);
   font-size: var(--text-body);
@@ -1446,7 +1315,7 @@ table.data th.actions {
   gap: var(--space-2);
   padding: var(--space-1) var(--space-3);
   border: var(--hairline) solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
   font-family: var(--font-mono);
   font-size: var(--text-label);
   color: var(--fg-muted);
@@ -1481,7 +1350,7 @@ table.data th.actions {
   gap: var(--space-2);
   padding: var(--space-1) var(--space-3);
   border: var(--hairline) solid color-mix(in srgb, var(--error) 45%, transparent);
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
   background: color-mix(in srgb, var(--error) 10%, transparent);
   color: var(--error);
   font-family: var(--font-mono);
@@ -1566,7 +1435,7 @@ table.data th.actions {
   margin: var(--space-6) 0 0;
   padding: var(--space-4);
   border: var(--hairline) solid color-mix(in srgb, var(--error) 45%, transparent);
-  border-radius: var(--radius);
+  border-radius: var(--radius-block);
   background: color-mix(in srgb, var(--error) 8%, transparent);
   font-size: var(--text-small);
   color: var(--fg);
