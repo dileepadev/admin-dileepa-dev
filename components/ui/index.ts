@@ -5,6 +5,7 @@ export { Container } from './Container';
 export { Section, SectionHeading } from './Section';
 export { Field, Fieldset, Input, Textarea, Select, Checkbox } from './Field';
 export { PasswordInput } from './PasswordInput';
+export { ValidatedForm, useFormErrors, type FieldMessages } from './useFormErrors';
 export { DataTable } from './DataTable';
 export { ApiCatalogue, ApiEndpoints } from './ApiEndpoints';
 export { EnvironmentStatus } from './EnvironmentStatus';

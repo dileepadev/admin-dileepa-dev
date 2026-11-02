@@ -2,6 +2,7 @@
 
 import { useId, useState, type InputHTMLAttributes } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { useFieldError } from './useFormErrors';
 
 /**
  * A password field you can read back.
@@ -32,14 +33,16 @@ export function PasswordInput({
 }: InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean }) {
   const [revealed, setRevealed] = useState(false);
   const describedBy = useId();
+  const { error, recheck } = useFieldError(props.name);
 
   return (
     <span className="password-field">
       <input
         id={props.name}
         type={revealed ? 'text' : 'password'}
-        aria-invalid={invalid || undefined}
-        aria-describedby={describedBy}
+        aria-invalid={invalid || error ? true : undefined}
+        aria-describedby={error ? `${props.name}-error ${describedBy}` : describedBy}
+        onInput={recheck}
         {...props}
       />
       <button

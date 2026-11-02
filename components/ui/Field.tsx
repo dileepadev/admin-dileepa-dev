@@ -1,10 +1,14 @@
+'use client';
+
 import type {
   ReactNode,
   InputHTMLAttributes,
   TextareaHTMLAttributes,
   SelectHTMLAttributes,
 } from 'react';
+import { CircleAlert } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useFieldError } from './useFormErrors';
 
 /**
  * A labelled form control.
@@ -30,7 +34,10 @@ export function Field({
   children: ReactNode;
   className?: string;
 }) {
-  const errorId = errors?.length ? `${name}-error` : undefined;
+  // A message the form wrote on submit wins over the one the server sent back.
+  const { error } = useFieldError(name);
+  const messages = error ? [error] : (errors ?? []);
+  const errorId = messages.length ? `${name}-error` : undefined;
 
   return (
     <label className={cn('field', className)} htmlFor={name}>
@@ -44,9 +51,10 @@ export function Field({
       </span>
       {children}
       {hint && <span className="hint leading-normal">{hint}</span>}
-      {errors?.length ? (
+      {messages.length ? (
         <span className="field-error" id={errorId}>
-          {errors.join(' ')}
+          <CircleAlert className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          {messages.join(' ')}
         </span>
       ) : null}
     </label>
@@ -83,14 +91,32 @@ export function Input({
   invalid,
   ...props
 }: InputHTMLAttributes<HTMLInputElement> & { invalid?: boolean }) {
-  return <input id={props.name} aria-invalid={invalid || undefined} {...props} />;
+  const { error, recheck } = useFieldError(props.name);
+  return (
+    <input
+      id={props.name}
+      aria-invalid={invalid || error ? true : undefined}
+      aria-describedby={error ? `${props.name}-error` : undefined}
+      onInput={recheck}
+      {...props}
+    />
+  );
 }
 
 export function Textarea({
   invalid,
   ...props
 }: TextareaHTMLAttributes<HTMLTextAreaElement> & { invalid?: boolean }) {
-  return <textarea id={props.name} aria-invalid={invalid || undefined} {...props} />;
+  const { error, recheck } = useFieldError(props.name);
+  return (
+    <textarea
+      id={props.name}
+      aria-invalid={invalid || error ? true : undefined}
+      aria-describedby={error ? `${props.name}-error` : undefined}
+      onInput={recheck}
+      {...props}
+    />
+  );
 }
 
 export function Select({
@@ -101,8 +127,15 @@ export function Select({
   options: readonly { value: string; label: string }[];
   invalid?: boolean;
 }) {
+  const { error, recheck } = useFieldError(props.name);
   return (
-    <select id={props.name} aria-invalid={invalid || undefined} {...props}>
+    <select
+      id={props.name}
+      aria-invalid={invalid || error ? true : undefined}
+      aria-describedby={error ? `${props.name}-error` : undefined}
+      onChange={recheck}
+      {...props}
+    >
       {options.map((option) => (
         <option key={option.value} value={option.value}>
           {option.label}
@@ -152,7 +185,12 @@ export function Checkbox({
           )}
         </div>
       </label>
-      {errors?.length ? <span className="field-error mt-1">{errors.join(' ')}</span> : null}
+      {errors?.length ? (
+        <span className="field-error mt-1">
+          <CircleAlert className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+          {errors.join(' ')}
+        </span>
+      ) : null}
     </div>
   );
 }

@@ -11,6 +11,7 @@ import {
   FormMessage,
   PublishedBadge,
   SectionHeading,
+  ValidatedForm,
 } from '@/components/ui';
 import { useAlert } from '@/components/providers/alert-provider';
 import { useToast } from '@/components/providers/toast-provider';
@@ -192,7 +193,7 @@ export function ResourceManager<T extends Record_>({
 
         <ApiEndpoints link={endpoints ?? null} />
 
-        <form action={action} className="grid gap-6 pb-4">
+        <ValidatedForm action={action} className="grid gap-6 pb-4">
           <FormMessage message={state.message} success={state.success} />
           <ResourceForm schema={schema} record={editing} errors={state.errors} />
           <div className="form-actions">
@@ -203,7 +204,7 @@ export function ResourceManager<T extends Record_>({
               Cancel
             </Button>
           </div>
-        </form>
+        </ValidatedForm>
       </>
     );
   }
@@ -220,7 +221,7 @@ export function ResourceManager<T extends Record_>({
                 type="button"
                 onClick={() => void onTogglePublished(row)}
                 aria-label={`${row.published ? 'Hide' : 'Show'} ${describe(row)} on the site`}
-                className="ease-brand cursor-pointer rounded transition-opacity duration-[160ms] hover:opacity-80 focus-visible:outline-none"
+                className="publish-toggle ease-brand cursor-pointer transition-opacity duration-[160ms] hover:opacity-80 focus-visible:outline-none"
               >
                 <PublishedBadge published={Boolean(row.published)} />
               </button>
@@ -335,7 +336,7 @@ export function SingletonManager({
     <>
       <SectionHeading label={label} title={title} intro={intro} />
       <ApiEndpoints link={endpoints ?? null} />
-      <form action={action} className="grid gap-6 pb-4">
+      <ValidatedForm action={action} className="grid gap-6 pb-4">
         <FormMessage message={state.message} success={state.success} />
         <ResourceForm schema={schema} record={record} errors={state.errors} />
         <div className="form-actions">
@@ -343,7 +344,7 @@ export function SingletonManager({
             {pending ? 'Saving…' : 'Save changes'}
           </Button>
         </div>
-      </form>
+      </ValidatedForm>
     </>
   );
 }

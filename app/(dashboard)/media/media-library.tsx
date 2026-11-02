@@ -5,7 +5,15 @@ import { Check, Copy, Paperclip, Trash2 } from 'lucide-react';
 import { deleteImage, uploadImage, type UploadState } from '@/app/actions/upload';
 import { useAlert } from '@/components/providers/alert-provider';
 import { useToast } from '@/components/providers/toast-provider';
-import { Button, Card, EmptyState, Field, FormMessage, Input } from '@/components/ui';
+import {
+  Button,
+  Card,
+  EmptyState,
+  Field,
+  FormMessage,
+  Input,
+  ValidatedForm,
+} from '@/components/ui';
 import { IMAGE_ACCEPT, IMAGE_FORMATS } from '@/lib/constants';
 import type { UploadRecord } from '@/lib/types';
 
@@ -65,7 +73,7 @@ export function MediaLibrary({ images }: { images: UploadRecord[] }) {
   return (
     <>
       <Card className="mb-8">
-        <form action={action} className="grid gap-4">
+        <ValidatedForm action={action} className="grid gap-4">
           <FormMessage message={state.message} success={state.success} />
 
           <div className="form-grid">
@@ -135,7 +143,7 @@ export function MediaLibrary({ images }: { images: UploadRecord[] }) {
               {pending ? 'Uploading…' : 'Upload image'}
             </Button>
           </div>
-        </form>
+        </ValidatedForm>
       </Card>
 
       {images.length === 0 ? (
