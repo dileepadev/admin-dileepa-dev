@@ -97,19 +97,17 @@ export default async function DashboardPage() {
           <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat) => (
               <li key={stat.label}>
-                <Link href={stat.href} className="group block h-full no-underline">
-                  <Card className="ease-brand group-hover:border-brand group-hover:bg-surface-hover flex h-full flex-col justify-between transition-colors duration-160">
-                    <div>
-                      <p className="text-fg-muted text-small font-mono">{stat.label}</p>
-                      <p className="text-fg text-h1 mt-1.5 font-bold tracking-[-0.02em]">
-                        {stat.live}
-                      </p>
-                    </div>
-                    <p className="text-fg-muted text-label mt-2 font-mono">
-                      {stat.total === stat.live ? 'all live' : `${stat.total - stat.live} hidden`}
-                    </p>
-                  </Card>
-                </Link>
+                <Card className="flex h-full flex-col justify-between">
+                  <div>
+                    <Link href={stat.href} className="text-link text-fg text-small font-medium">
+                      {stat.label}
+                    </Link>
+                    <p className="text-fg text-h1 mt-1.5 font-mono font-medium">{stat.live}</p>
+                  </div>
+                  <p className="text-fg-muted text-label mt-2 font-mono">
+                    {stat.total === stat.live ? 'all live' : `${stat.total - stat.live} hidden`}
+                  </p>
+                </Card>
               </li>
             ))}
           </ul>
@@ -117,16 +115,16 @@ export default async function DashboardPage() {
           <Card className="mt-3">
             <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
               <p className="text-fg-muted text-small font-mono">Event gallery</p>
-              <Link href="/events" className="text-brand text-small font-medium hover:underline">
+              <Link href="/events" className="text-link text-fg text-small font-medium">
                 View events
               </Link>
             </div>
-            <p className="text-fg-muted text-small mt-2 leading-relaxed">
+            <p className="text-fg-body text-small mt-2 leading-relaxed">
               {photos === 0 ? (
                 <>
                   No event photographs yet. Attach photos to an event and they appear in the gallery
                   on{' '}
-                  <Link href="/events" className="text-brand hover:underline">
+                  <Link href="/events" className="text-link text-fg hover:underline">
                     the events screen
                   </Link>{' '}
                   and on the site.

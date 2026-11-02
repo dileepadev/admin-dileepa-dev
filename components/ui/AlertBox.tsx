@@ -46,13 +46,13 @@ export default function AlertBox({
       role="dialog"
       aria-modal="true"
       aria-labelledby="alert-title"
-      className="fixed inset-0 z-50 grid place-items-center bg-black/60 p-4"
+      className="dialog-backdrop fixed inset-0 z-50 grid place-items-center p-4"
     >
-      <div className="border-border-strong bg-bg-raised w-full max-w-md rounded-lg border p-6">
+      <div className="border-border-strong bg-bg-surface rounded-tile w-full max-w-md border p-6">
         <h2 id="alert-title" className="text-fg text-h3 font-medium">
           {title}
         </h2>
-        {message && <p className="text-fg-muted text-small mt-3">{message}</p>}
+        {message && <p className="text-fg-body text-small mt-3">{message}</p>}
 
         <div className="mt-6 flex justify-end gap-3">
           <Button ref={cancelRef} type="button" variant="secondary" onClick={onCancel}>
