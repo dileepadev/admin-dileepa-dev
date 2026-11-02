@@ -18,17 +18,12 @@ platform serves. It is a Next.js App Router app that talks to the API through se
 > `dileepa-dev` use: two files would always hold the same values. If it is ever deployed, split
 > the configuration then, deliberately.
 
-v2.0.0 rebrands the whole UI to the new design system, retargets every integration at the
-migrated FastAPI backend, adds management for **projects**, and rebuilds **events** on the v2
-model.
+v2.0.0 shipped the FastAPI integration and content management screens. v2.1.0 is released: the
+monochrome design system, with no change to what the app does.
 
-This app **follows** `dileepa-dev`. It does not invent its own components. Where the main site
-has already solved something, match it.
-
-Currently on branch `feat/v2.0.0`. Version `1.0.0`; the target is `2.0.0`.
-
-[TODO.md](TODO.md) holds this repo's slice. Issue **#4** holds the full scope. The
-cross-repository roadmap lives in `dileepadev/TODO.md`.
+This app follows `dileepa-dev`'s component contract. Brand provenance is recorded in
+[docs/brand-source.md](docs/brand-source.md). [TODO.md](TODO.md) records scope; detailed tasks and
+verification are in [issue #10](https://github.com/dileepadev/admin-dileepa-dev/issues/10).
 
 ## Layout
 
@@ -49,7 +44,7 @@ cross-repository roadmap lives in `dileepadev/TODO.md`.
 | `proxy.ts` | **Built.** Cookie-gated route protection; matcher excludes `api` and `_next` |
 | `lib/session.ts` | **Built.** Session cookie handling |
 | `components/layout/` | **Built.** Header, Sidebar, grouped `navigation.ts` |
-| `components/ui/` | **Built.** AlertBox, Badge, Button, Card, Container, Section, Field, DataTable, EmptyState, FormMessage, ImageField, RepeatableGroup, Lockup, ThemeToggle |
+| `components/ui/` | **Built.** AlertBox, Badge, Button, Card, Container, Section, Field, ValidatedForm, DataTable, EmptyState, FormMessage, ImageField, RepeatableGroup, Lockup, ThemeToggle |
 | `components/providers/` | **Built.** alert, theme, toast |
 | `app/brand-tokens.css` | **Vendored** from `dileepadev/docs/brand/`. A copy — re-copy it when the canonical file changes; never patch it here |
 
@@ -65,18 +60,17 @@ either file.
 
 ## Toolchain
 
-- Node + npm. `npm install`, then `npm run dev` — **port 3001**, not 3000.
+- Node + npm. `npm install`, then `npm run dev -- --port 3001` for local development.
 - `npm run build` · `npm run start` · `npm run lint`
 - Next.js App Router. Mutations go through **server actions** in `app/actions/`, not client
   fetches. Default to server components.
 - Tailwind CSS 4 via `@tailwindcss/postcss`, configured in CSS.
 - Zod for form validation. Prettier with `prettier-plugin-tailwindcss` — class order is
   enforced by the plugin, don't hand-sort.
-- `.env.local` from `.env.example`.
+- One gitignored `.env` copied from `.env.example`; keep the API setting server-side.
 
-Target versions for v2.0.0: Next.js **16.3.x**, React **19.2.x**, Tailwind **4.3.x**,
-`@types/node` **^22** — matching `dileepa-dev` **exactly**. This app is currently on Next
-16.1.4 while the main site is on 16.1.6; that drift is precisely what v2.0.0 exists to end.
+The installed versions in `package.json` and `package-lock.json` are the authority.
+No dependency upgrade is part of the visual v2.1.0 release.
 
 ## Coding standards
 
@@ -130,7 +124,7 @@ There is no test suite. Before calling a change done:
 
 - `README.md` describes the screens as they are, comments moderation and reordering included.
   Keep it that way: it is the first thing anyone reads about this app.
-- The demo video linked in `README.md` shows the v1.0 UI; re-record or re-caption it at release.
+- The obsolete v1 demo video was removed in v2.0.0; do not restore it.
 - `CHANGELOG.md` gets categorised entries at release time.
 
 ## Git workflow
@@ -139,13 +133,13 @@ There is no test suite. Before calling a change done:
   protected; never commit to them directly.
 - Commits: [COMMIT_MESSAGE_GUIDELINES.md](COMMIT_MESSAGE_GUIDELINES.md) — if the work traces to
   a GitHub issue, reference it (`fixes #12`, `refs #12`); don't invent an issue number if none
-  was given. v2.0.0 work traces to `refs #4`.
+  was given. v2.1.0 work traces to `refs #10`.
 - PRs: [PULL_REQUEST_GUIDELINES.md](PULL_REQUEST_GUIDELINES.md)
 - Versioning: [VERSIONING.md](VERSIONING.md) — SemVer.
 
 ## Secrets
 
-- Real values live in `.env.local` (gitignored) — never in `.env.example`, never committed.
+- Real values live in `.env` (gitignored) — never in `.env.example`, never committed.
 - Anything prefixed `NEXT_PUBLIC_` ships to the browser. The admin talks to the API with
   credentials; keep those server-side.
 - Session cookies are auth material. Never log one, never widen its scope to make local
@@ -194,3 +188,26 @@ This version has breaking changes — APIs, conventions, and file structure may 
 This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
 
 <!-- END:nextjs-agent-rules -->
+
+## Brand vendoring and release review
+
+- `docs/brand-tokens.css`, `docs/brand-guide.md`, `docs/design-system.md` and
+  `DESIGN.md` are exact canonical copies. Re-copy; never tune a copy in place.
+- The runtime token sheet removes only the Google Fonts import. Its header
+  records the source and how fonts load. Application-specific styles
+  use semantic tokens in global/component CSS.
+- [docs/brand-source.md](docs/brand-source.md) records the source and the
+  refresh procedure. There is no `docs/brand/` folder here: the logo, icons and
+  covers live in `dileepadev` only.
+- Detailed checklists belong in the GitHub issue, not in `TODO.md`.
+- Merge, tag and GitHub release each require owner approval.
+- **Forms show their own validation messages**, not the browser's bubble, as the contact form on
+  `dileepa-dev` does. Use `ValidatedForm` (`components/ui/useFormErrors.tsx`) in place of `<form>`:
+  it is `noValidate`, checks every field on submit, writes each failure under its field with
+  `Field`, focuses the first, and clears a message as the value becomes acceptable. Copy comes from
+  the form's `messages` prop or, failing that, the field's label.
+- **The theme toggle is the website's radial reveal**, ported from `dileepa-dev`: it uses the View
+  Transitions API and falls back to an instant switch for reduced motion. Keep the
+  `::view-transition-*(root)` rules in `app/globals.css` with it.
+- **Arrows are one mask in the text colour**, as on `dileepa-dev`: `a[target='_blank']` and
+  `.text-link` in `app/globals.css` draw them. Never type `↗` or `→` into link text.

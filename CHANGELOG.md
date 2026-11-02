@@ -13,6 +13,33 @@ Changes are organized into the following categories:
 
 Unreleased changes go here.
 
+## [v2.1.0] - 2026-11-03
+
+### Changed
+
+- Adopt the monochrome design contract: medium-weight headings, three text
+  contrast levels, capsule controls and panel/card surfaces in Carbon and Paper.
+- Admin shell, sign-in and 404 screens, page headings, cards, forms, tables,
+  labels, confirmation dialogs and feedback.
+- Change theme with the main site's radial reveal, in place of an instant swap; the theme
+  follows the system until a choice is saved, as on the main site.
+- Show form validation as the main site's contact form does: no browser bubble, each message
+  written under its field with an icon, focus moved to the first failure, and the message cleared
+  as the value becomes acceptable. This covers sign-in, every resource form and the media upload.
+- Style the scrollbar to match the main site.
+- Draw link arrows the way the main site does: one mask in the text colour (↗ off the
+  app, → within it) at the same size and position, in place of a typed arrow.
+- Serve the website's whole public set (favicons, app icons, manifest, OG cards, portrait) as an exact copy of its v2.1.0 tag, and declare the same icon set; drop the stale `public/favicon.ico`, since `app/favicon.ico` is the one served.
+- Record the vendored source and font-loading adaptation; update release scope,
+  package/lockfile version and repository instructions.
+
+### Fixed
+
+- Resolve the Manrope and JetBrains Mono aliases on the body where `next/font`
+  supplies them, so the UI and data no longer fall back to system fonts.
+- Contain positioned table controls within their horizontal scrollport and
+  wrap long database-action labels at mobile widths.
+
 ## [v2.0.0] - 2026-09-02
 
 > [!NOTE]
@@ -272,11 +299,13 @@ limit, offset }` on collections, `{ error: { code, message, details } }` on fail
 
 <!-- e.g., -->
 <!-- Unreleased -->
+<!-- v2.1.0 -->
 <!-- v2.0.0 -->
 <!-- v1.1.0 -->
 <!-- v1.0.0 -->
 <!-- v0.0.1 -->
 
 [Unreleased]: https://github.com/dileepadev/admin-dileepa-dev/branches
+[v2.1.0]: https://github.com/dileepadev/admin-dileepa-dev/releases/tag/v2.1.0
 [v2.0.0]: https://github.com/dileepadev/admin-dileepa-dev/releases/tag/v2.0.0
 [v1.0.0]: https://github.com/dileepadev/admin-dileepa-dev/releases/tag/v1.0.0
