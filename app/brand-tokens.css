@@ -1,20 +1,9 @@
-/* ============================================================
-   VENDORED COPY — do not edit here.
-
+/* VENDORED COPY — do not edit here.
    Source: dileepadev/docs/brand/brand-tokens.css
-   Vendored: brand tokens v2.1.0
-
-   This is a copy, and a copy can drift. When the canonical file
-   changes, re-copy it; never patch this one in place. The only
-   permitted local change is the one below, which the design system
-   asks Next.js apps to make.
-
-   CHANGED FROM SOURCE: the Google Fonts @import is removed. Manrope
-   and JetBrains Mono load through next/font in app/layout.tsx, which
-   self-hosts them and avoids a render-blocking request to a third
-   party. --font-sans and --font-mono are re-pointed at the next/font
-   variables in globals.css. Everything else is identical.
-   ============================================================ */
+   Brand version: 2.1.0.
+   Adaptation: only the Google Fonts @import is removed; fonts load via
+   next/font in app/layout.tsx. All remaining source bytes are unchanged.
+   See docs/brand-source.md for provenance and the refresh procedure. */
 
 /* ============================================================
    CANONICAL TOKEN SHEET - do not fork, do not re-declare.
@@ -39,6 +28,7 @@
    muted.
    Every pairing below is verified against WCAG AA minimum.
    ============================================================ */
+
 
 :root {
   /* --- raw palette (never reference these directly in components) --- */
