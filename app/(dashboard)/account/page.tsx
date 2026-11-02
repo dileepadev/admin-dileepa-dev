@@ -52,7 +52,7 @@ export default async function AccountPage() {
     <Section>
       <SectionHeading
         label="Account"
-        title="Who you are signed in as, and for how long"
+        title="Signed in as and session length"
         intro="The account is read from the API, so it is current. The session is read from the token in your cookie, so it is a snapshot of what was true when you signed in. Where the two disagree, the token is the stale one."
       />
 

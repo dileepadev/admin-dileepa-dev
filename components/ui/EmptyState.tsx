@@ -14,9 +14,9 @@ export function EmptyState({
   action?: ReactNode;
 }) {
   return (
-    <div className="border-border-strong bg-bg-surface rounded-lg border px-6 py-12 text-center">
+    <div className="bg-bg rounded-tile px-6 py-12 text-center">
       <p className="text-fg font-medium">{title}</p>
-      {hint && <p className="text-fg-muted text-small mt-2">{hint}</p>}
+      {hint && <p className="text-fg-body text-small mt-2">{hint}</p>}
       {action && <div className="mt-6 flex justify-center">{action}</div>}
     </div>
   );

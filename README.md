@@ -7,6 +7,13 @@ This is the administrative dashboard for managing content and data for [dileepa.
 > is why it has a single `.env` rather than the per-environment split the API and the main site
 > use — two files would always hold the same values.
 
+## v2.1.0
+
+The monochrome brand and design system, released as
+[v2.1.0](https://github.com/dileepadev/admin-dileepa-dev/releases/tag/v2.1.0). Work was tracked in
+[issue #10](https://github.com/dileepadev/admin-dileepa-dev/issues/10);
+[brand provenance](docs/brand-source.md) records the canonical source.
+
 ## Overview
 
 This application serves as the central admin interface for:
@@ -62,8 +69,9 @@ This application serves as the central admin interface for:
   expired token signs out at the door rather than on the first save.
 - **An unreachable API degrades rather than crashes.** Every list read falls back to empty and a
   banner names the API that is not answering, so a blank table is never mistaken for no data.
-- **Themes** — dark and light, sharing the `dileepa-theme` storage key with every other surface,
-  so the theme follows you between them.
+- **Themes** — dark and light, following the system until you choose, and changing with the
+  main site's radial reveal from the toggle. The choice is saved under the `dileepa-theme` key
+  that every surface uses, so each surface remembers it.
 
 ## Tech Stack
 

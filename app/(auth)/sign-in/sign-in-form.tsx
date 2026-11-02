@@ -2,15 +2,24 @@
 
 import { useActionState } from 'react';
 import { signIn, type SignInState } from '@/app/actions/auth';
-import { Button, Field, FormMessage, Input, PasswordInput } from '@/components/ui';
+import { Button, Field, FormMessage, Input, PasswordInput, ValidatedForm } from '@/components/ui';
 
 const initialState: SignInState = {};
+
+/** The sign-in form's validation copy - see `useFormErrors`. */
+const FIELD_MESSAGES = {
+  email: {
+    missing: 'Enter your email address.',
+    invalid: 'Enter an email address like you@example.com.',
+  },
+  password: { missing: 'Enter your password.' },
+};
 
 export function SignInForm() {
   const [state, action, pending] = useActionState(signIn, initialState);
 
   return (
-    <form action={action} className="grid gap-4">
+    <ValidatedForm action={action} className="grid gap-4" messages={FIELD_MESSAGES}>
       <FormMessage message={state.message} />
 
       <Field name="email" label="Email" required errors={state.errors?.email}>
@@ -37,6 +46,6 @@ export function SignInForm() {
           {pending ? 'Signing in…' : 'Sign in'}
         </Button>
       </div>
-    </form>
+    </ValidatedForm>
   );
 }

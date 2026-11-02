@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
  * One treatment for every badge.
  *
  * With a single accent colour, badges are told apart by their label, not by
- * hue — design system §6. `filled` is the one emerald variant and is reserved:
+ * hue — design system §6. `filled` is the one filled variant and is reserved:
  * at most one per view.
  */
 export function Badge({
@@ -20,10 +20,10 @@ export function Badge({
   return (
     <span
       className={cn(
-        'text-label inline-block rounded-sm border px-3 py-1 font-medium tracking-[0.01em] whitespace-nowrap',
+        'text-label rounded-pill inline-block border border-transparent px-3 py-1 font-medium tracking-[0.01em] whitespace-nowrap',
         variant === 'filled' && 'bg-brand-fill text-on-brand border-transparent',
-        variant === 'error' && 'text-error border-error/40 bg-transparent',
-        variant === 'default' && 'border-border-strong bg-bg-surface text-fg-muted',
+        variant === 'error' && 'text-error bg-bg',
+        variant === 'default' && 'bg-bg-surface text-fg-muted',
         className,
       )}
     >
@@ -39,5 +39,7 @@ export function Badge({
  * person is actually asking is whether a visitor can see it.
  */
 export function PublishedBadge({ published }: { published: boolean }) {
-  return <Badge variant={published ? 'filled' : 'default'}>{published ? 'Live' : 'Hidden'}</Badge>;
+  return (
+    <Badge className={published ? 'text-fg' : undefined}>{published ? 'Live' : 'Hidden'}</Badge>
+  );
 }

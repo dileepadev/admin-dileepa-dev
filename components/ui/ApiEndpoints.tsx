@@ -87,7 +87,7 @@ export function ApiEndpoints({ link }: { link: ApiLink | null }) {
  * Grouped rather than listed flat because "what does it expect" is really four
  * questions — what is in the path, what can I filter by, what do I send, what
  * do I have to set as a header — and a single row of thirty chips answers none
- * of them. A required one carries the same emerald asterisk a required form
+ * of them. A required one carries the same asterisk a required form
  * field does, so the mark means one thing across the whole app.
  */
 function Parameters({ parameters }: { parameters: EndpointParameter[] }) {

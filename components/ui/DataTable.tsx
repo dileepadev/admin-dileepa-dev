@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
  *
  * A wide table scrolls inside its own box rather than pushing the page
  * sideways, which is what `.table-wrap` is for. Column headers are mono,
- * uppercase and small; they are labels, not headings.
+ * sentence case and small; they are labels, not headings.
  *
  * **Columns say how much room they need.** `table-layout: auto` gave the
  * widest column whatever it asked for and squeezed everything else, which is
@@ -145,13 +145,13 @@ export function DataTable<T>({
                     {/* Drag is a mouse gesture. These are how the same job gets
                         done with a keyboard or a thumb, which is most of the
                         reason they exist rather than being a nicety. */}
-                    <span className="ml-1 flex flex-col">
+                    <span className="ml-1 flex gap-1">
                       <button
                         type="button"
                         disabled={reorder.busy || index === 0}
                         onClick={() => commit(index, index - 1)}
                         aria-label={`Move to position ${index}`}
-                        className="text-fg-muted hover:text-brand disabled:hover:text-fg-muted transition-colors disabled:opacity-30"
+                        className="reorder-button"
                       >
                         <ChevronUp className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
@@ -160,7 +160,7 @@ export function DataTable<T>({
                         disabled={reorder.busy || index === rows.length - 1}
                         onClick={() => commit(index, index + 1)}
                         aria-label={`Move to position ${index + 2}`}
-                        className="text-fg-muted hover:text-brand disabled:hover:text-fg-muted transition-colors disabled:opacity-30"
+                        className="reorder-button"
                       >
                         <ChevronDown className="h-3.5 w-3.5" aria-hidden="true" />
                       </button>
