@@ -22,14 +22,14 @@ export function Header({
     <>
       <header className="border-border-hairline bg-bg/85 sticky top-0 z-30 border-b backdrop-blur">
         <div className="flex h-16 items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
               onClick={() => setOpen((value) => !value)}
               aria-expanded={open}
               aria-controls="admin-nav"
               aria-label={open ? 'Close menu' : 'Open menu'}
-              className="border-border-strong text-fg-muted hover:bg-surface-hover hover:text-fg hover:border-brand ease-brand inline-flex h-10 w-10 items-center justify-center rounded border transition-colors duration-160 lg:hidden"
+              className="border-border-strong text-fg-muted hover:bg-surface-hover hover:text-fg hover:border-brand ease-brand rounded-pill inline-flex h-10 w-10 items-center justify-center border transition-colors duration-160 lg:hidden"
             >
               {open ? (
                 <X className="h-4 w-4" aria-hidden="true" />
@@ -39,7 +39,7 @@ export function Header({
             </button>
 
             <p className="text-fg-muted text-small truncate font-mono">
-              Content for{' '}
+              <span className="hidden sm:inline">Content for </span>
               <a
                 href="https://dileepa.dev"
                 target="_blank"

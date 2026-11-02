@@ -70,6 +70,8 @@ function securityHeaders() {
 }
 
 const nextConfig: NextConfig = {
+  // This is a standalone app; a lockfile in the owner's home is not a workspace.
+  turbopack: { root: process.cwd() },
   // `X-Powered-By: Next.js` names the framework on every response and nothing
   // reads it.
   poweredByHeader: false,
